@@ -1,0 +1,7 @@
+{
+  "name": "Copy of UlumCampus",
+  "description": "UlumCampus is a MicroSaaS platform for online Islamic universities, providing tools for curriculum management, live & on-demand classes, assessments, and an integrated Islamic campus life experience.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
