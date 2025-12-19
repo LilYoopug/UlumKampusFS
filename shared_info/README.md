@@ -8,7 +8,6 @@ This directory contains shared documentation and specifications for the UlumKamp
 - `specs/` - Technical specifications
 - `api/` - API documentation and contracts
 - `components/` - Component specifications
-- `tasks/` - Task tracking and planning
 - `meetings/` - Meeting notes and decisions
 
 ## Purpose
