@@ -5,7 +5,7 @@ import { TranslationKey } from "./translations";
 export type { TranslationKey };
 
 export type Language = 'id' | 'en' | 'ar';
-export type UserRole = 'Mahasiswa' | 'Dosen' | 'Prodi Admin' | 'Manajemen Kampus' | 'Super Admin';
+export type UserRole = 'Mahasiswa' | 'Dosen' | 'Prodi Admin' | 'Manajemen Kampus' | 'Super Admin' | 'MABA';
 export type Page = 'dashboard' | 'calendar' | 'courses' | 'course-detail' | 'create-course' | 'edit-course' | 'grades' | 'gradebook' | 'assignments' | 'video-lectures' | 'elibrary' | 'manage-elibrary' | 'profile' | 'settings' | 'worship' | 'help' | 'notifications' | 'announcements' | 'prodi-courses' | 'prodi-students' | 'prodi-lecturers' | 'administrasi' | 'management-administration' | 'student-registration' | 'user-management' | 'manajemen-fakultas';
 export type CourseStatus = 'Published' | 'Draft' | 'Archived';
 
@@ -19,7 +19,7 @@ export interface User {
   studentId?: string;
   joinDate?: string;
  bio?: string;
- studentStatus?: 'Aktif' | 'Cuti' | 'Lulus' | 'DO';
+ studentStatus?: 'Aktif' | 'Cuti' | 'Lulus' | 'DO' | 'Pendaftaran';
   gpa?: number;
   totalSks?: number;
   facultyId?: string;
@@ -131,6 +131,9 @@ export interface AcademicCalendarEvent {
     endDate?: string;
     category: 'holiday' | 'exam' | 'registration' | 'academic';
 }
+
+// Type alias for CalendarEvent
+export type CalendarEvent = AcademicCalendarEvent;
 
 export interface DiscussionPost {
   id: string;

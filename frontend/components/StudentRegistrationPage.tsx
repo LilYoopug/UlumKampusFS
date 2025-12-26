@@ -832,7 +832,13 @@ export const StudentRegistrationPage: React.FC = () => {
                              ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' 
                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
                        }`}>
-                         {t(`student_registration_payment_${selectedStudent.paymentStatus}`)}
+                         {selectedStudent.paymentStatus === 'completed'
+                           ? t('student_registration_payment_completed')
+                           : selectedStudent.paymentStatus === 'failed'
+                             ? t('student_registration_payment_failed')
+                             : selectedStudent.paymentStatus === 'pending'
+                               ? t('student_registration_payment_pending')
+                               : selectedStudent.paymentStatus}
                        </span>
                      </div>
                    </div>

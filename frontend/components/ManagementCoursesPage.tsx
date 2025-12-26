@@ -3,23 +3,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Course } from '../types';
 import { Icon } from './Icon';
 
-// Add declarations for CDN-loaded libraries to the global window object
-declare global {
-    interface Window {
-        jspdf: {
-            jsPDF: unknown;
-        };
-        XLSX: {
-            utils: {
-                json_to_sheet: (data: unknown) => unknown;
-                book_new: () => unknown;
-                book_append_sheet: (workbook: unknown, worksheet: unknown, name: string) => void;
-            };
-            writeFile: (workbook: unknown, filename: string) => void;
-        };
-    }
-}
-
 interface ManagementCoursesPageProps {
     courses: Course[];
 }
@@ -37,11 +20,11 @@ export const ManagementCoursesPage: React.FC<ManagementCoursesPageProps> = ({ co
     }, [courses, searchTerm]);
     
     const handleExportPDF = () => {
-        const { jsPDF } = window.jspdf as { jsPDF: unknown };
-        const PDFClass = jsPDF as new () => unknown;
-        const doc = new PDFClass();
+        const { jsPDF } = window.jspdf as { jsPDF: any };
+        const PDFClass = jsPDF as any;
+        const doc: any = new PDFClass();
         doc.text("Daftar Mata Kuliah", 14, 16);
-        (doc as { autoTable: (options: unknown) => void }).autoTable({
+        (doc as { autoTable: (options: any) => void }).autoTable({
             startY: 22,
             head: [['Kode MK', 'Nama Mata Kuliah', 'Dosen Pengampu', 'SKS', 'Status']],
             body: filteredCourses.map(c => [c.id, c.title, c.instructor, c.sks, c.status]),
