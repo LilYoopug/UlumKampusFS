@@ -456,8 +456,8 @@ export const RegistrasiPage: React.FC = () => {
                        multiple
                        onChange={(e) => {
                          if (e.target.files) {
-                           const files = Array.from(e.target.files);
-                           const fileUrls = files.map(file => URL.createObjectURL(file));
+                           const files: File[] = Array.from(e.target.files);
+                           const fileUrls = files.map((file: File) => URL.createObjectURL(file));
                            handleChange('documents', 'attachments', fileUrls);
                          }
                        }}

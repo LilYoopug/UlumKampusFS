@@ -109,6 +109,8 @@ export const mockUserAPI = {
     await delay(500);
     const newUser: User = {
       ...userData,
+      name: userData.name || 'New User',
+      email: userData.email || 'newuser@example.com',
       studentId: 'UC' + Date.now().toString().slice(-5),
       avatarUrl: 'https://picsum.photos/seed/' + (userData.name || 'user').split(' ')[0].toLowerCase() + '/100/100',
       role: userData.role || 'Mahasiswa',
