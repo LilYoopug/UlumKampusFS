@@ -18,9 +18,9 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Create Assignment, Announcement, LibraryResource models
 - [x] Create DiscussionThread, Notification, Grade models
 - [x] Register RoleMiddleware in bootstrap/app.php
-- [ ] Update routes/api.php with all route groups
-- [ ] Create API Resource classes for User, Faculty, Major, Course
-- [ ] Create base ApiController with common response methods
+- [x] Update routes/api.php with all route groups
+- [x] Create API Resource classes for User, Faculty, Major, Course
+- [x] Create base ApiController with common response methods
 - [ ] Test server startup with `php artisan serve`
 - [ ] Verify API routes are accessible via `php artisan route:list`
 - [ ] Create a simple health check endpoint
