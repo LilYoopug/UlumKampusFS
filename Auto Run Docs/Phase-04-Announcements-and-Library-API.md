@@ -4,17 +4,17 @@ This phase implements the announcement system with categories and the e-library 
 
 ## Tasks
 
-- [ ] Create AnnouncementRequest validation class
-- [ ] Create AnnouncementController with CRUD operations
-- [ ] Implement announcement filtering by category
-- [ ] Add course-specific announcements support
-- [ ] Create LibraryResourceRequest validation class
-- [ ] Create LibraryResourceController with CRUD operations
-- [ ] Implement library resource search and filtering
-- [ ] Add support for book, journal, and video resource types
-- [ ] Create AnnouncementResource and LibraryResourceResource
-- [ ] Add API routes for announcements and library resources
-- [ ] Implement role-based announcement creation (Dosen, Prodi Admin, etc.)
-- [ ] Create tests for announcement CRUD operations
-- [ ] Create tests for library resource operations
-- [ ] Test announcement category filtering
+- [x] Create AnnouncementRequest validation class
+- [x] Create AnnouncementController with CRUD operations
+- [x] Implement announcement filtering by category
+- [x] Add course-specific announcements support
+- [x] Create LibraryResourceRequest validation class
+- [x] Create LibraryResourceController with CRUD operations
+- [x] Implement library resource search and filtering
+- [x] Add support for book, journal, and video resource types
+- [x] Create AnnouncementResource and LibraryResourceResource
+- [x] Add API routes for announcements and library resources
+- [x] Implement role-based announcement creation (Dosen, Prodi Admin, etc.)
+- [x] Create tests for announcement CRUD operations
+- [x] Create tests for library resource operations
+- [x] Test announcement category filtering
