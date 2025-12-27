@@ -13,7 +13,7 @@ This phase implements the hierarchical faculty and major management system. This
 - [ ] Create FacultyResource with embedded majors
 - [ ] Create MajorResource with faculty details
 - [ ] Add API routes for faculties and majors
-- [ ] Implement cascade delete protection for faculties with users
+- [x] Implement cascade delete protection for faculties with users
 - [ ] Create tests for faculty CRUD operations
 - [ ] Create tests for major CRUD operations
 - [ ] Test faculty-major relationship
