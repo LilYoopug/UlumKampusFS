@@ -27,7 +27,7 @@ class AssignmentSubmissionFactory extends Factory
             'status' => fake()->randomElement(['draft', 'submitted', 'late', 'graded']),
             'submitted_at' => fake()->optional()->dateTimeBetween('-1 month', 'now'),
             'graded_at' => fake()->optional(30)->dateTimeBetween('-2 weeks', 'now'),
-            'graded_by' => fake()->optional(30)->create(\App\Models\User::class, ['role' => 'faculty'])->id,
+            'graded_by' => null,
             'grade' => fake()->optional(30)->randomFloat(2, 0, 100),
             'feedback' => fake()->optional(30)->paragraphs(2, true),
             'instructor_notes' => fake()->optional(20)->paragraphs(1, true),

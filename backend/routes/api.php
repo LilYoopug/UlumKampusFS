@@ -512,4 +512,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-assignments', 'App\Http\Controllers\Api\StudentController@myAssignments');
         Route::get('/my-grades', 'App\Http\Controllers\Api\StudentController@myGrades');
     });
+
+    // ------------------------------------------------------------------------
+    // DASHBOARD ANALYTICS Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('dashboard')->group(function () {
+        // Get dashboard stats based on user role (auto-routes to appropriate role)
+        Route::get('/', 'App\Http\Controllers\Api\DashboardController@index');
+
+        // Student-specific stats
+        Route::middleware('role:student')->get('/student', 'App\Http\Controllers\Api\DashboardController@studentStats');
+
+        // Faculty-specific stats
+        Route::middleware('role:faculty')->get('/faculty', 'App\Http\Controllers\Api\DashboardController@facultyStats');
+
+        // Prodi (program study) stats - requires faculty_id parameter
+        Route::middleware('role:admin,faculty')->get('/prodi', 'App\Http\Controllers\Api\DashboardController@prodiStats');
+
+        // Management (admin) stats
+        Route::middleware('role:admin')->get('/management', 'App\Http\Controllers\Api\DashboardController@managementStats');
+
+        // Analytics endpoints
+        Route::get('/grade-distribution', 'App\Http\Controllers\Api\DashboardController@gradeDistribution');
+        Route::get('/enrollment-trends', 'App\Http\Controllers\Api\DashboardController@enrollmentTrends');
+    });
 });
