@@ -23,6 +23,14 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'faculty_id',
+        'major_id',
+        'student_id',
+        'gpa',
+        'enrollment_year',
+        'graduation_year',
+        'phone',
+        'address',
     ];
 
     /**
@@ -46,5 +54,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function faculty()
+    {
+        return $this->belongsTo(Faculty::class);
+    }
+
+    public function major()
+    {
+        return $this->belongsTo(Major::class);
     }
 }
