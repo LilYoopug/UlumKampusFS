@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FacultyRequest;
+use App\Http\Resources\FacultyResource;
+use App\Models\Course;
 use App\Models\Faculty;
+use App\Models\Major;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -15,26 +20,16 @@ class FacultyController extends Controller
     public function index(): JsonResponse
     {
         $faculties = Faculty::active()->get();
-        return $this->success($faculties);
+        return $this->success(FacultyResource::collection($faculties));
     }
 
     /**
      * Store a newly created faculty.
      */
-    public function store(Request $request): JsonResponse
+    public function store(FacultyRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:faculties',
-            'description' => 'nullable|string',
-            'dean_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
-        ]);
-
-        $faculty = Faculty::create($validated);
-        return $this->created($faculty, 'Faculty created successfully');
+        $faculty = Faculty::create($request->validated());
+        return $this->created(new FacultyResource($faculty), 'Faculty created successfully');
     }
 
     /**
@@ -43,28 +38,17 @@ class FacultyController extends Controller
     public function show(string $id): JsonResponse
     {
         $faculty = Faculty::with('majors')->findOrFail($id);
-        return $this->success($faculty);
+        return $this->success(new FacultyResource($faculty));
     }
 
     /**
      * Update the specified faculty.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(FacultyRequest $request, string $id): JsonResponse
     {
         $faculty = Faculty::findOrFail($id);
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50|unique:faculties,code,' . $id,
-            'description' => 'nullable|string',
-            'dean_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
-        ]);
-
-        $faculty->update($validated);
-        return $this->success($faculty, 'Faculty updated successfully');
+        $faculty->update($request->validated());
+        return $this->success(new FacultyResource($faculty), 'Faculty updated successfully');
     }
 
     /**

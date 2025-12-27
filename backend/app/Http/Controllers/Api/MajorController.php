@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MajorRequest;
+use App\Http\Resources\FacultyResource;
+use App\Http\Resources\MajorResource;
+use App\Models\Course;
 use App\Models\Major;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class MajorController extends Controller
@@ -15,29 +18,16 @@ class MajorController extends Controller
     public function index(): JsonResponse
     {
         $majors = Major::active()->with('faculty')->get();
-        return $this->success($majors);
+        return $this->success(MajorResource::collection($majors));
     }
 
     /**
      * Store a newly created major.
      */
-    public function store(Request $request): JsonResponse
+    public function store(MajorRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'faculty_id' => 'required|exists:faculties,id',
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:majors',
-            'description' => 'nullable|string',
-            'head_of_program' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'duration_years' => 'nullable|integer|min:1|max:10',
-            'credit_hours' => 'nullable|integer|min:1',
-            'is_active' => 'boolean',
-        ]);
-
-        $major = Major::create($validated);
-        return $this->created($major, 'Major created successfully');
+        $major = Major::create($request->validated());
+        return $this->created(new MajorResource($major), 'Major created successfully');
     }
 
     /**
@@ -46,31 +36,17 @@ class MajorController extends Controller
     public function show(string $id): JsonResponse
     {
         $major = Major::with('faculty')->findOrFail($id);
-        return $this->success($major);
+        return $this->success(new MajorResource($major));
     }
 
     /**
      * Update the specified major.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(MajorRequest $request, string $id): JsonResponse
     {
         $major = Major::findOrFail($id);
-
-        $validated = $request->validate([
-            'faculty_id' => 'sometimes|exists:faculties,id',
-            'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50|unique:majors,code,' . $id,
-            'description' => 'nullable|string',
-            'head_of_program' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'duration_years' => 'nullable|integer|min:1|max:10',
-            'credit_hours' => 'nullable|integer|min:1',
-            'is_active' => 'boolean',
-        ]);
-
-        $major->update($validated);
-        return $this->success($major, 'Major updated successfully');
+        $major->update($request->validated());
+        return $this->success(new MajorResource($major), 'Major updated successfully');
     }
 
     /**
@@ -89,8 +65,7 @@ class MajorController extends Controller
     public function faculty(string $id): JsonResponse
     {
         $major = Major::findOrFail($id);
-        $faculty = $major->faculty;
-        return $this->success($faculty);
+        return $this->success(new FacultyResource($major->faculty));
     }
 
     /**
