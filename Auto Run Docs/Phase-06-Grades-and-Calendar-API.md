@@ -14,7 +14,7 @@ This phase implements the grade management system and academic calendar. This en
 - [x] Create AcademicCalendarEventRequest validation class
 - [x] Create AcademicCalendarEventController with CRUD operations
 - [x] Implement calendar event filtering by category and date range
-- [ ] Create AcademicCalendarEventResource
+- [x] Create AcademicCalendarEventResource
 - [x] Create tests for grade CRUD operations
-- [ ] Create tests for calendar event operations
+- [x] Create tests for calendar event operations
 - [x] Test grade distribution analytics
