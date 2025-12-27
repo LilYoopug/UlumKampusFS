@@ -4,19 +4,19 @@ This phase implements the discussion forum system and notification management. T
 
 ## Tasks
 
-- [ ] Create DiscussionThreadRequest validation class
-- [ ] Create DiscussionThreadController with CRUD operations
-- [ ] Implement thread pinning and closing functionality
-- [ ] Create DiscussionPostController for post management
-- [ ] Create NotificationRequest validation class
-- [ ] Create NotificationController with CRUD operations
-- [ ] Implement mark-as-read functionality
-- [ ] Add user-specific notification filtering
-- [ ] Create DiscussionThreadResource with posts and author details
-- [ ] Create DiscussionPostResource
-- [ ] Create NotificationResource
-- [ ] Add API routes for discussions and notifications
-- [ ] Implement thread ownership checks for updates/deletes
-- [ ] Create tests for discussion thread operations
-- [ ] Create tests for notification operations
-- [ ] Test notification read status updates
+- [x] Create DiscussionThreadRequest validation class
+- [x] Create DiscussionThreadController with CRUD operations
+- [x] Implement thread pinning and closing functionality
+- [x] Create DiscussionPostController for post management
+- [x] Create NotificationRequest validation class
+- [x] Create NotificationController with CRUD operations
+- [x] Implement mark-as-read functionality
+- [x] Add user-specific notification filtering
+- [x] Create DiscussionThreadResource with posts and author details
+- [x] Create DiscussionPostResource
+- [x] Create NotificationResource
+- [x] Add API routes for discussions and notifications
+- [x] Implement thread ownership checks for updates/deletes
+- [x] Create tests for discussion thread operations
+- [x] Create tests for notification operations
+- [x] Test notification read status updates

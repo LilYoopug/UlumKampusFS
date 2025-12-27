@@ -296,6 +296,28 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ------------------------------------------------------------------------
+    // ACADEMIC CALENDAR EVENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('calendar-events')->group(function () {
+        // All authenticated users can view calendar events
+        Route::get('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@show');
+        Route::get('/upcoming', 'App\Http\Controllers\Api\AcademicCalendarEventController@upcoming');
+        Route::get('/current', 'App\Http\Controllers\Api\AcademicCalendarEventController@current');
+        Route::get('/categories', 'App\Http\Controllers\Api\AcademicCalendarEventController@categories');
+        Route::get('/category/{category}', 'App\Http\Controllers\Api\AcademicCalendarEventController@byCategory');
+        Route::get('/by-date-range', 'App\Http\Controllers\Api\AcademicCalendarEventController@byDateRange');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
     // GRADE Routes
     // ------------------------------------------------------------------------
 
