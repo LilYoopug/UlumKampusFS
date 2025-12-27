@@ -6,6 +6,7 @@
 **Frontend Location**: Login.tsx (handleSubmit function), App.tsx (handleLogin function)
 **Triggers**: Form submission on login page
 **Auth Required**: No
+**Auth Type**: Sanctum Bearer Token (returned in response)
 
 Request Body:
 ```json
@@ -33,12 +34,13 @@ Response:
 }
 ```
 
-**Notes**: Based on form fields in Login.tsx lines 48-63 and handleLogin function in App.tsx lines 137-160. Uses mock data in current implementation.
+**Notes**: Based on form fields in Login.tsx lines 48-63 and handleLogin function in App.tsx lines 137-160. Uses mock data in current implementation. Returns Sanctum Bearer token for authentication in subsequent requests.
 
 ### POST /api/auth/register
 **Frontend Location**: Register.tsx (handleSubmit function), App.tsx (handleRegister function)
 **Triggers**: Form submission on registration page
 **Auth Required**: No
+**Auth Type**: Sanctum Bearer Token (returned in response)
 
 Request Body:
 ```json
@@ -70,12 +72,13 @@ Response:
 }
 ```
 
-**Notes**: Based on form fields in Register.tsx lines 81-113 and handleRegister function in App.tsx lines 356-381. Uses mock data in current implementation.
+**Notes**: Based on form fields in Register.tsx lines 81-113 and handleRegister function in App.tsx lines 356-381. Uses mock data in current implementation. Returns Sanctum Bearer token for authentication in subsequent requests.
 
 ### POST /api/auth/register/student
 **Frontend Location**: RegistrasiPage.tsx (handleSubmit function)
 **Triggers**: New student submits comprehensive registration form
 **Auth Required**: No (for new registrations) / Yes (for logged in users)
+**Auth Type**: Sanctum Bearer Token (required when logged in)
 **Role Access**: All
 
 Request Body:
@@ -139,6 +142,7 @@ Response:
 **Frontend Location**: Settings.tsx (Account section logout button)
 **Triggers**: User clicks logout button
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 
 Request Body: (empty)
 
@@ -157,6 +161,7 @@ Response:
 **Frontend Location**: UserManagementPage.tsx (useEffect that loads users), App.tsx (currentUser and users state)
 **Triggers**: Loading user management page, dashboard, or other pages that display user data
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus, Prodi Admin
 
 Query Parameters:
@@ -207,6 +212,7 @@ Response:
 **Frontend Location**: UserManagementPage.tsx (handleAddUser function - modal functionality)
 **Triggers**: Admin adds new user
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Request Body:
@@ -247,6 +253,7 @@ Response:
 **Frontend Location**: Profile.tsx (useEffect that loads user profile), UserManagementPage.tsx (edit modal)
 **Triggers**: Loading user profile page or viewing user details
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: All (with authorization checks for viewing other users)
 
 Response:
@@ -280,6 +287,7 @@ Response:
 **Frontend Location**: Profile.tsx (saveProfile function), UserManagementPage.tsx (edit modal save)
 **Triggers**: User updates their profile or admin updates user details
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: User can update own profile, Admin can update any user
 
 Request Body:
@@ -327,6 +335,7 @@ Response:
 **Frontend Location**: UserManagementPage.tsx (deleteUser function)
 **Triggers**: Admin deletes user
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Response:
@@ -342,6 +351,7 @@ Response:
 **Frontend Location**: Profile.tsx (useEffect that loads user profile)
 **Triggers**: Loading user's own profile page
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: User can access own profile
 
 Response:
@@ -375,6 +385,7 @@ Response:
 **Frontend Location**: Settings.tsx (saveProfile function)
 **Triggers**: User updates their profile information
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: User can update own profile
 
 Request Body:
@@ -411,6 +422,7 @@ Response:
 **Frontend Location**: StudentRegistrationPage.tsx (useEffect that loads registrations)
 **Triggers**: Loading student registration management page
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus, Prodi Admin
 
 Query Parameters:
@@ -485,6 +497,7 @@ Response:
 **Frontend Location**: StudentRegistrationPage.tsx (handleApproveRegistration function)
 **Triggers**: Admin approves student registration
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus, Prodi Admin
 
 Request Body: (empty)
@@ -509,6 +522,7 @@ Response:
 **Frontend Location**: StudentRegistrationPage.tsx (handleRejectRegistration function)
 **Triggers**: Admin rejects student registration
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus, Prodi Admin
 
 Request Body:
@@ -537,6 +551,7 @@ Response:
 **Frontend Location**: RegistrasiPage.tsx (handleSubmit function)
 **Triggers**: New student submits registration form
 **Auth Required**: No (for new registrations) / Yes (for logged in users)
+**Auth Type**: Sanctum Bearer Token (required when logged in)
 **Role Access**: All
 
 Request Body:
@@ -592,6 +607,7 @@ Response:
 **Frontend Location**: AdministrasiPage.tsx (useEffect that loads payment items)
 **Triggers**: Loading payment administration page for students
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: All (students see their own payments)
 
 Query Parameters:
@@ -621,6 +637,7 @@ Response:
 **Frontend Location**: AdministrasiPage.tsx (useEffect that loads payment history)
 **Triggers**: Loading payment administration page for students
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: All (students see their own history)
 
 Query Parameters:
@@ -656,6 +673,7 @@ Response:
 **Frontend Location**: AdministrasiPage.tsx (handlePayment function)
 **Triggers**: Student makes a payment
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Students
 
 Request Body:
@@ -693,6 +711,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (overview data)
 **Triggers**: Loading payment management dashboard
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Response:
@@ -744,6 +763,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (payment management tab)
 **Triggers**: Loading payment management page
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Query Parameters:
@@ -788,6 +808,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (payment types tab)
 **Triggers**: Loading payment types management page
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Response:
@@ -810,6 +831,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (add payment type functionality)
 **Triggers**: Admin adds new payment type
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Request Body:
@@ -839,6 +861,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (edit payment type functionality)
 **Triggers**: Admin updates payment type
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Request Body:
@@ -868,6 +891,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (delete payment type functionality)
 **Triggers**: Admin deletes payment type
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Response:
@@ -883,6 +907,7 @@ Response:
 **Frontend Location**: ManagementAdministrationPage.tsx (payment status toggle functionality)
 **Triggers**: Admin updates payment status (paid/unpaid)
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Request Body:
@@ -911,6 +936,7 @@ Response:
 **Frontend Location**: Dashboard.tsx (useEffect that loads dashboard data)
 **Triggers**: Loading dashboard page
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: All (with role-based data filtering)
 
 Response:
@@ -976,6 +1002,7 @@ Response:
 **Frontend Location**: ManajemenDashboard.tsx (useEffect that loads management data)
 **Triggers**: Loading management dashboard page
 **Auth Required**: Yes (Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Super Admin, Manajemen Kampus
 
 Response:
@@ -1010,6 +1037,7 @@ Response:
 **Frontend Location**: ProdiDashboard.tsx (useEffect that loads prodi data)
 **Triggers**: Loading prodi dashboard page
 **Auth Required**: Yes (Prodi Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Prodi Admin
 
 Response:
@@ -1036,6 +1064,7 @@ Response:
 **Frontend Location**: ProdiStudentsPage.tsx (useEffect that loads students)
 **Triggers**: Loading prodi students page
 **Auth Required**: Yes (Prodi Admin role)
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: Prodi Admin
 
 Query Parameters:
@@ -1067,6 +1096,7 @@ Response:
 **Frontend Location**: Notifications.tsx (props passed from parent)
 **Triggers**: Loading notifications page
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: All (users see their own notifications)
 
 Query Parameters:
@@ -1107,6 +1137,7 @@ Response:
 **Frontend Location**: Notifications.tsx (onMarkAsRead function)
 **Triggers**: User marks notification as read
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: All (users can only mark their own notifications as read)
 
 Request Body: (empty)
@@ -1130,6 +1161,7 @@ Response:
 **Frontend Location**: Settings.tsx (notification toggle functions)
 **Triggers**: User updates notification preferences
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: User can update own preferences
 
 Request Body:
@@ -1163,6 +1195,7 @@ Response:
 **Frontend Location**: Settings.tsx (change password functionality)
 **Triggers**: User changes password
 **Auth Required**: Yes
+**Auth Type**: Sanctum Bearer Token
 **Role Access**: User can change own password
 
 Request Body:

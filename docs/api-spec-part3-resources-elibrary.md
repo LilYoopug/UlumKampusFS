@@ -33,7 +33,7 @@ Response:
 ### POST /api/ai/chat
 **Frontend**: UstadzAI.tsx (lines 31-49)
 **Purpose**: Send message to Islamic AI chatbot and get response
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Request:
 ```json
@@ -53,7 +53,7 @@ Response:
 ### GET /api/ai/chat/conversations
 **Frontend**: UstadzAI.tsx
 **Purpose**: Get user's chat history with the Islamic AI
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Query Parameters:
 - `page`: number (optional)
@@ -91,7 +91,7 @@ Response:
 ### POST /api/ai/chat/conversation
 **Frontend**: UstadzAI.tsx
 **Purpose**: Create new AI conversation with context
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Request:
 ```json
@@ -126,7 +126,7 @@ Response:
 ### GET /api/elibrary/resources
 **Frontend**: ELibrary.tsx (lines 105-138)
 **Purpose**: Get list of e-library resources
-**Auth**: JWT (all authenticated users)
+**Auth**: Sanctum Bearer Token (all authenticated users)
 
 Query Parameters:
 - `keyword`: string (search in title/description)
@@ -164,7 +164,7 @@ Response:
 ### GET /api/elibrary/resources/{id}
 **Frontend**: ELibrary.tsx
 **Purpose**: Get specific e-library resource
-**Auth**: JWT (all authenticated users)
+**Auth**: Sanctum Bearer Token (all authenticated users)
 
 Response:
 ```json
@@ -188,7 +188,7 @@ Response:
 ### POST /api/elibrary/resources
 **Frontend**: ResourceForm.tsx (lines 60-93)
 **Purpose**: Create new e-library resource
-**Auth**: JWT (admin/lecturer roles)
+**Auth**: Sanctum Bearer Token (admin/lecturer roles)
 
 Request:
 ```json
@@ -221,12 +221,10 @@ Response:
     "updated_at": "2025-01-01T00:00:00Z"
   }
 }
-```
-
-### PUT /api/elibrary/resources/{id}
+```### PUT /api/elibrary/resources/{id}
 **Frontend**: ResourceForm.tsx (lines 60-93)
 **Purpose**: Update existing e-library resource
-**Auth**: JWT (admin/lecturer roles)
+**Auth**: Sanctum Bearer Token (admin/lecturer roles)
 
 Request:
 ```json
@@ -264,7 +262,7 @@ Response:
 ### DELETE /api/elibrary/resources/{id}
 **Frontend**: ManageELibrary.tsx (lines 81-90)
 **Purpose**: Delete e-library resource
-**Auth**: JWT (admin roles)
+**Auth**: Sanctum Bearer Token (admin roles)
 
 Response:
 ```json
@@ -277,7 +275,7 @@ Response:
 ### POST /api/elibrary/resources/{id}/toggle-bookmark
 **Frontend**: ELibrary.tsx (lines 105-138)
 **Purpose**: Add/remove resource to/from user's personal library
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Response:
 ```json
@@ -290,7 +288,7 @@ Response:
 ### GET /api/elibrary/my-library
 **Frontend**: ELibrary.tsx
 **Purpose**: Get user's personal library resources
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Response:
 ```json
@@ -316,7 +314,7 @@ Response:
 ### GET /api/announcements
 **Frontend**: AnnouncementsPage.tsx (lines 33-191)
 **Purpose**: Get paginated list of announcements
-**Auth**: JWT (all authenticated users)
+**Auth**: Sanctum Bearer Token (all authenticated users)
 
 Query Parameters:
 - `page`: number
@@ -351,7 +349,7 @@ Response:
 ### POST /api/announcements
 **Frontend**: AnnouncementsPage.tsx (lines 64-82)
 **Purpose**: Create new announcement
-**Auth**: JWT (Dosen/Prodi Admin/Manajemen Kampus/Super Admin)
+**Auth**: Sanctum Bearer Token (Dosen/Prodi Admin/Manajemen Kampus/Super Admin)
 
 Request:
 ```json
@@ -383,7 +381,7 @@ Response:
 ### PUT /api/announcements/{id}
 **Frontend**: AnnouncementsPage.tsx
 **Purpose**: Update existing announcement
-**Auth**: JWT (announcement author or admin roles)
+**Auth**: Sanctum Bearer Token (announcement author or admin roles)
 
 Request:
 ```json
@@ -415,7 +413,7 @@ Response:
 ### DELETE /api/announcements/{id}
 **Frontend**: AnnouncementsPage.tsx
 **Purpose**: Delete announcement
-**Auth**: JWT (announcement author or admin roles)
+**Auth**: Sanctum Bearer Token (announcement author or admin roles)
 
 Response:
 ```json
@@ -430,7 +428,7 @@ Response:
 ### GET /api/forum/threads
 **Frontend**: DiscussionForum.tsx (lines 14-196)
 **Purpose**: Get list of discussion threads for a course
-**Auth**: JWT (all authenticated users)
+**Auth**: Sanctum Bearer Token (all authenticated users)
 
 Query Parameters:
 - `courseId`: string
@@ -464,7 +462,7 @@ Response:
 ### POST /api/forum/threads
 **Frontend**: DiscussionForum.tsx (lines 45-70)
 **Purpose**: Create new discussion thread
-**Auth**: JWT (all authenticated users)
+**Auth**: Sanctum Bearer Token (all authenticated users)
 
 Request:
 ```json
@@ -501,7 +499,7 @@ Response:
 ### POST /api/forum/threads/{threadId}/posts
 **Frontend**: DiscussionForum.tsx (lines 72-93)
 **Purpose**: Add reply to existing discussion thread
-**Auth**: JWT (all authenticated users)
+**Auth**: Sanctum Bearer Token (all authenticated users)
 
 Request:
 ```json
@@ -525,7 +523,7 @@ Response:
 ### PUT /api/forum/threads/{threadId}/pin
 **Frontend**: DiscussionForum.tsx
 **Purpose**: Pin/unpin discussion thread
-**Auth**: JWT (Dosen/Prodi Admin/Super Admin)
+**Auth**: Sanctum Bearer Token (Dosen/Prodi Admin/Super Admin)
 
 Request:
 ```json
@@ -553,7 +551,7 @@ Response:
 ### PUT /api/forum/threads/{threadId}/close
 **Frontend**: DiscussionForum.tsx
 **Purpose**: Close/open discussion thread
-**Auth**: JWT (Dosen/Prodi Admin/Super Admin)
+**Auth**: Sanctum Bearer Token (Dosen/Prodi Admin/Super Admin)
 
 Request:
 ```json
@@ -583,7 +581,7 @@ Response:
 ### GET /api/calendar/events
 **Frontend**: Calendar.tsx (lines 15-71)
 **Purpose**: Get calendar events for user
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Query Parameters:
 - `startDate`: string (ISO date format)
@@ -628,7 +626,7 @@ Response:
 ### POST /api/calendar/events
 **Frontend**: Calendar.tsx
 **Purpose**: Create new calendar event (admin only)
-**Auth**: JWT (admin roles)
+**Auth**: Sanctum Bearer Token (admin roles)
 
 Request:
 ```json
@@ -656,7 +654,7 @@ Response:
 ### PUT /api/calendar/events/{id}
 **Frontend**: Calendar.tsx
 **Purpose**: Update existing calendar event
-**Auth**: JWT (admin roles)
+**Auth**: Sanctum Bearer Token (admin roles)
 
 Request:
 ```json
@@ -684,7 +682,7 @@ Response:
 ### DELETE /api/calendar/events/{id}
 **Frontend**: Calendar.tsx
 **Purpose**: Delete calendar event
-**Auth**: JWT (admin roles)
+**Auth**: Sanctum Bearer Token (admin roles)
 
 Response:
 ```json
@@ -699,7 +697,7 @@ Response:
 ### POST /api/tajwid/analyze
 **Frontend**: HafalanRecorder.tsx (lines 69-81)
 **Purpose**: Analyze recorded audio for tajwid feedback
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Request (multipart/form-data):
 - `audio`: file (audio file)
@@ -724,7 +722,7 @@ Response:
 ### POST /api/submissions
 **Frontend**: HafalanRecorder.tsx (lines 83-95)
 **Purpose**: Submit hafalan recording for assignment
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Request (multipart/form-data):
 - `file`: file (audio file)
@@ -754,7 +752,7 @@ Response:
 ### GET /api/faq
 **Frontend**: FaqContent.tsx (lines 152-196)
 **Purpose**: Get FAQ items filtered by user role
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Query Parameters:
 - `role`: string (user role to filter FAQs for)
@@ -778,7 +776,7 @@ Response:
 ### POST /api/contact
 **Frontend**: ContactSection.tsx
 **Purpose**: Send contact message to support team
-**Auth**: JWT (authenticated users) or Public
+**Auth**: Sanctum Bearer Token (authenticated users) or Public
 
 Request:
 ```json
@@ -803,7 +801,7 @@ Response:
 ### POST /api/upload
 **Frontend**: ResourceForm.tsx, HafalanRecorder.tsx
 **Purpose**: Upload files (documents, audio recordings)
-**Auth**: JWT (authenticated users)
+**Auth**: Sanctum Bearer Token (authenticated users)
 
 Request (multipart/form-data):
 - `file`: file (any supported file type)

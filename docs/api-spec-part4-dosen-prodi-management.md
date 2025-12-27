@@ -5,7 +5,7 @@
 ### GET /api/dosen/dashboard
 **Frontend**: DosenDashboard.tsx (useEffect lines 34-61)
 **Purpose**: Get dosen-specific dashboard statistics
-**Auth**: JWT (Dosen role required)
+**Auth**: Sanctum Bearer Token (Dosen role required)
 
 Query Parameters:
 - `dosenId`: string (authenticated user's dosenId)
@@ -40,7 +40,7 @@ Response:
 ### GET /api/dosen/dashboard/stats
 **Frontend**: DosenDashboard.tsx (useEffect lines 34-61)
 **Purpose**: Get comprehensive teaching statistics for dosen
-**Auth**: JWT (Dosen role required)
+**Auth**: Sanctum Bearer Token (Dosen role required)
 
 Response:
 ```json
@@ -80,7 +80,7 @@ Response:
 ### POST /api/announcements
 **Frontend**: DosenDashboard.tsx (handleAnnouncementSubmit function lines 72-94)
 **Purpose**: Create new announcements for courses or academic purposes
-**Auth**: JWT (Dosen role required)
+**Auth**: Sanctum Bearer Token (Dosen role required)
 
 Request Body:
 ```json
@@ -111,7 +111,7 @@ Response:
 ### GET /api/prodi/{id}/lecturers
 **Frontend**: ProdiLecturersPage.tsx (component logic lines 20-113)
 **Purpose**: Get list of lecturers within a specific prodi
-**Auth**: JWT (Prodi Admin role required)
+**Auth**: Sanctum Bearer Token (Prodi Admin role required)
 
 Response:
 ```json
@@ -131,7 +131,7 @@ Response:
 ### GET /api/prodi/{id}/courses/lecturers
 **Frontend**: ProdiLecturersPage.tsx (component logic lines 20-113)
 **Purpose**: Get lecturers assigned to courses within a specific prodi
-**Auth**: JWT (Prodi Admin role required)
+**Auth**: Sanctum Bearer Token (Prodi Admin role required)
 
 Response:
 ```json
@@ -150,7 +150,7 @@ Response:
 ### PUT /api/prodi/{id}/courses/{courseId}/assign-dosen
 **Frontend**: ProdiLecturersPage.tsx (component logic lines 20-113)
 **Purpose**: Assign a lecturer to a course within a specific prodi
-**Auth**: JWT (Prodi Admin role required)
+**Auth**: Sanctum Bearer Token (Prodi Admin role required)
 
 Request Body:
 ```json
@@ -174,7 +174,7 @@ Response:
 #### GET /api/faculties
 **Frontend**: ManajemenFakultasPage.tsx (component logic lines 20-317)
 **Purpose**: Get all faculties with their details
-**Auth**: JWT (Manajemen Kampus or Super Admin role required)
+**Auth**: Sanctum Bearer Token (Manajemen Kampus or Super Admin role required)
 
 Response:
 ```json
@@ -197,7 +197,7 @@ Response:
 #### POST /api/faculties
 **Frontend**: ManajemenFakultasPage.tsx (handleAddFaculty function lines 65-77)
 **Purpose**: Create a new faculty
-**Auth**: JWT (Manajemen Kampus or Super Admin role required)
+**Auth**: Sanctum Bearer Token (Manajemen Kampus or Super Admin role required)
 
 Request Body:
 ```json
@@ -221,7 +221,7 @@ Response:
 #### PUT /api/faculties/{id}
 **Frontend**: ManajemenFakultasPage.tsx (handleUpdateFaculty function lines 80-88)
 **Purpose**: Update faculty details
-**Auth**: JWT (Manajemen Kampus or Super Admin role required)
+**Auth**: Sanctum Bearer Token (Manajemen Kampus or Super Admin role required)
 
 Request Body:
 ```json
@@ -250,7 +250,7 @@ Response:
 #### DELETE /api/faculties/{id}
 **Frontend**: ManajemenFakultasPage.tsx (handleDeleteFaculty function lines 91-101)
 **Purpose**: Delete a faculty (with validation check for associated users)
-**Auth**: JWT (Manajemen Kampus or Super Admin role required)
+**Auth**: Sanctum Bearer Token (Manajemen Kampus or Super Admin role required)
 
 Response:
 ```json
@@ -265,7 +265,7 @@ Response:
 ### GET /api/courses/{id}/modules
 **Frontend**: ModuleManagement.tsx (component logic lines 175-261)
 **Purpose**: Get all modules for a specific course
-**Auth**: JWT (Dosen role required for their courses, Prodi Admin for their prodi courses)
+**Auth**: Sanctum Bearer Token (Dosen role required for their courses, Prodi Admin for their prodi courses)
 
 Response:
 ```json
@@ -290,7 +290,7 @@ Response:
 ### POST /api/courses/{id}/modules
 **Frontend**: ModuleManagement.tsx (handleSaveModule function lines 205-213)
 **Purpose**: Create a new module for a specific course
-**Auth**: JWT (Dosen role required for their courses)
+**Auth**: Sanctum Bearer Token (Dosen role required for their courses)
 
 Request Body:
 ```json
@@ -326,7 +326,7 @@ Response:
 ### PUT /api/courses/{id}/modules/{moduleId}
 **Frontend**: ModuleManagement.tsx (handleSaveModule function lines 205-213)
 **Purpose**: Update an existing module for a specific course
-**Auth**: JWT (Dosen role required for their courses)
+**Auth**: Sanctum Bearer Token (Dosen role required for their courses)
 
 Request Body:
 ```json
@@ -362,7 +362,7 @@ Response:
 ### DELETE /api/courses/{id}/modules/{moduleId}
 **Frontend**: ModuleManagement.tsx (handleDeleteModule function lines 201-203)
 **Purpose**: Delete a module from a specific course
-**Auth**: JWT (Dosen role required for their courses)
+**Auth**: Sanctum Bearer Token (Dosen role required for their courses)
 
 Response:
 ```json
@@ -377,7 +377,7 @@ Response:
 ### GET /api/superadmin/dashboard
 **Frontend**: SuperAdminDashboard.tsx (component logic lines 82-122)
 **Purpose**: Get super admin dashboard statistics and system status
-**Auth**: JWT (Super Admin role required)
+**Auth**: Sanctum Bearer Token (Super Admin role required)
 
 Response:
 ```json
@@ -402,7 +402,7 @@ Response:
 ### GET /api/users/all
 **Frontend**: RoleSwitcher.tsx (using ALL_USERS constant from constants.ts)
 **Purpose**: Get all users for role switching functionality
-**Auth**: JWT (Super Admin role required)
+**Auth**: Sanctum Bearer Token (Super Admin role required)
 
 Response:
 ```json
@@ -422,7 +422,7 @@ Response:
 ### GET /api/users/{id}/preferences
 **Frontend**: Settings.tsx (component logic lines 25-374)
 **Purpose**: Get user preferences and settings
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Response:
 ```json
@@ -440,7 +440,7 @@ Response:
 ### PUT /api/users/{id}/preferences
 **Frontend**: Settings.tsx (saveProfile function lines 37-63)
 **Purpose**: Update user preferences and settings
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Request Body:
 ```json
@@ -466,7 +466,7 @@ Response:
 ### PUT /api/users/{id}/profile
 **Frontend**: Settings.tsx (saveProfile function lines 37-63)
 **Purpose**: Update user profile information
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Request Body:
 ```json
@@ -494,7 +494,7 @@ Response:
 ### GET /api/notifications
 **Frontend**: Notifications.tsx (component logic lines 13-56)
 **Purpose**: Get user notifications
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Response:
 ```json
@@ -517,7 +517,7 @@ Response:
 ### PUT /api/notifications/{id}/read
 **Frontend**: Notifications.tsx (onMarkAsRead callback lines 23-27)
 **Purpose**: Mark a notification as read
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Response:
 ```json
@@ -532,7 +532,7 @@ Response:
 ### POST /api/support/bugs
 **Frontend**: ReportBugForm.tsx (handleSubmit function lines 11-22)
 **Purpose**: Submit bug reports
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Request Body:
 ```json
@@ -556,7 +556,7 @@ Response:
 ### POST /api/ai/chat
 **Frontend**: UstadzAI.tsx (askUstadzAI function called from handleSend lines 31-49)
 **Purpose**: Send message to Islamic AI assistant
-**Auth**: JWT (Authenticated user)
+**Auth**: Sanctum Bearer Token (Authenticated user)
 
 Request Body:
 ```json

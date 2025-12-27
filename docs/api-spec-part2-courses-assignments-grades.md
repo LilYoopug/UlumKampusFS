@@ -24,7 +24,7 @@
 ### GET /api/courses
 **Frontend**: CourseCatalog.tsx (useEffect, lines 108-112)
 **Purpose**: Get list of courses for browsing
-**Auth**: Public or JWT (depends if enrolled only)
+**Auth**: Public or Sanctum Bearer Token (depends if enrolled only)
 
 Query Parameters:
 - `search`: string (search by title or description)
@@ -90,7 +90,7 @@ Response:
 ### GET /api/courses/{id}
 **Frontend**: CourseDetail.tsx (useEffect, lines 9-88)
 **Purpose**: Get detailed information about a specific course
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Response:
 ```json
@@ -141,7 +141,7 @@ Response:
 ### POST /api/courses
 **Frontend**: CourseForm.tsx (handleSubmit, lines 117-120)
 **Purpose**: Create a new course
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
@@ -228,7 +228,7 @@ Response:
 ### PUT /api/courses/{id}
 **Frontend**: CourseForm.tsx (handleSubmit, lines 117-120)
 **Purpose**: Update an existing course
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
@@ -315,7 +315,7 @@ Response:
 ### DELETE /api/courses/{id}
 **Frontend**: CourseForm.tsx (not explicitly shown but needed for management)
 **Purpose**: Delete a course
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Response: 204 No Content
 
@@ -324,7 +324,7 @@ Response: 204 No Content
 ### GET /api/courses/{courseId}/assignments
 **Frontend**: CourseDetail.tsx (CourseAssignmentsTab component)
 **Purpose**: Get all assignments for a specific course
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Query Parameters:
 - `status`: string (submitted, pending, graded)
@@ -384,7 +384,7 @@ Response:
 ### GET /api/courses/{courseId}/modules
 **Frontend**: CourseDetail.tsx (useEffect, lines 9-88)
 **Purpose**: Get all modules for a specific course
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Response:
 ```json
@@ -410,7 +410,7 @@ Response:
 ### POST /api/courses/{courseId}/modules/{moduleId}/complete
 **Frontend**: CourseDetail.tsx (markModuleAsCompleted function)
 **Purpose**: Mark a course module as completed
-**Auth**: JWT (Student enrolled in course)
+**Auth**: Sanctum Bearer Token (Student enrolled in course)
 
 Request Body:
 ```json
@@ -436,7 +436,7 @@ Response:
 ### GET /api/assignments/{id}
 **Frontend**: AssignmentDetailView.tsx (useEffect, lines 92-180)
 **Purpose**: Get detailed information about a specific assignment
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Response:
 ```json
@@ -478,7 +478,7 @@ Response:
 ### POST /api/assignments
 **Frontend**: AssignmentForm.tsx (handleSubmit, lines 21-35)
 **Purpose**: Create a new assignment
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
@@ -523,7 +523,7 @@ Response:
 ### PUT /api/assignments/{id}
 **Frontend**: AssignmentDetailView.tsx (onUpdateAssignment, lines 86-92)
 **Purpose**: Update an existing assignment
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
@@ -578,7 +578,7 @@ Response:
 ### POST /api/assignments/{id}/submissions
 **Frontend**: AssignmentDetailView.tsx (handleNewSubmission, lines 123-136)
 **Purpose**: Submit an assignment
-**Auth**: JWT (Mahasiswa role)
+**Auth**: Sanctum Bearer Token (Mahasiswa role)
 
 Request Body:
 ```json
@@ -606,7 +606,7 @@ Response:
 ### POST /api/assignments/{id}/hafalan-submission
 **Frontend**: HafalanRecorder.tsx (handleSubmit, lines 83-95)
 **Purpose**: Submit a hafalan (memorization) assignment with audio recording
-**Auth**: JWT (Mahasiswa role)
+**Auth**: Sanctum Bearer Token (Mahasiswa role)
 
 Request Body:
 ```json
@@ -634,7 +634,7 @@ Response:
 ### PUT /api/submissions/{id}/grade
 **Frontend**: AssignmentDetailView.tsx (handleSaveGrade, lines 170-179)
 **Purpose**: Grade a student submission
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
@@ -665,7 +665,7 @@ Response:
 ### GET /api/grades/gradebook
 **Frontend**: Gradebook.tsx (useEffect, lines 95-124)
 **Purpose**: Get gradebook data for all courses and students
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Query Parameters:
 - `courseId`: string (optional, filter by course)
@@ -780,7 +780,7 @@ Response:
 ### GET /api/students/{id}/grades
 **Frontend**: Grades.tsx (useEffect, lines 95-124)
 **Purpose**: Get grades for a specific student
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Response:
 ```json
@@ -834,7 +834,7 @@ Response:
 ### GET /api/grades
 **Frontend**: Grades.tsx (useEffect, lines 95-124)
 **Purpose**: Get grades with optional filters
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Query Parameters:
 - `studentId`: string (optional, filter by student)
@@ -968,7 +968,7 @@ Response:
 ### GET /api/courses/{courseId}/grades
 **Frontend**: Gradebook.tsx (useEffect, lines 95-124)
 **Purpose**: Get grades for all students in a course
-**Auth**: JWT (Dosen teaching course or Student enrolled)
+**Auth**: Sanctum Bearer Token (Dosen teaching course or Student enrolled)
 
 Response:
 ```json
@@ -1002,7 +1002,7 @@ Response:
 ### GET /api/students/{studentId}/grades
 **Frontend**: Grades.tsx (useEffect, lines 95-124)
 **Purpose**: Get grades for a specific student across courses
-**Auth**: JWT (Student or authorized Dosen/Admin)
+**Auth**: Sanctum Bearer Token (Student or authorized Dosen/Admin)
 
 Response:
 ```json
@@ -1036,7 +1036,7 @@ Response:
 ### POST /api/grades/batch-update
 **Frontend**: Gradebook.tsx (handleSaveGrade in bulk mode)
 **Purpose**: Update multiple grades at once
-**Auth**: JWT (Dosen or Admin)
+**Auth**: Sanctum Bearer Token (Dosen or Admin)
 
 Request Body:
 ```json
@@ -1079,7 +1079,7 @@ Response:
 ### POST /api/grades
 **Frontend**: AssignmentDetailView.tsx (handleSaveGrade, lines 170-179)
 **Purpose**: Create or update a grade for a student assignment
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
@@ -1113,7 +1113,7 @@ Response:
 ### GET /api/resources/videos
 **Frontend**: VideoLectures.tsx (useEffect, lines 17-34)
 **Purpose**: Get list of video lectures for all courses
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Query Parameters:
 - `courseId`: string (optional, filter by course)
@@ -1185,7 +1185,7 @@ Response:
 ### POST /api/assignments/{id}/tajwid-analysis
 **Frontend**: HafalanRecorder.tsx (handleAnalyze, lines 69-81)
 **Purpose**: Analyze hafalan (memorization) submission using AI
-**Auth**: JWT
+**Auth**: Sanctum Bearer Token
 
 Request Body:
 ```json
@@ -1211,7 +1211,7 @@ Response:
 ### POST /api/assignments/{id}/hafalan-analysis
 **Frontend**: HafalanRecorder.tsx (handleSubmit, lines 83-95)
 **Purpose**: Submit and analyze hafalan (memorization) with detailed tajwid analysis
-**Auth**: JWT (Student or Dosen)
+**Auth**: Sanctum Bearer Token (Student or Dosen)
 
 Request Body:
 ```json
@@ -1256,7 +1256,7 @@ Response:
 ### GET /api/prodi/courses
 **Frontend**: ManagementCoursesPage.tsx (useEffect, lines 14-20)
 **Purpose**: Get all courses for prodi administration
-**Auth**: JWT (Prodi Admin role)
+**Auth**: Sanctum Bearer Token (Prodi Admin role)
 
 Query Parameters:
 - `facultyId`: string (optional, filter by faculty)
@@ -1280,7 +1280,7 @@ Response:
 ### GET /api/prodi/courses/{id}
 **Frontend**: ProdiCourseForm.tsx (useEffect, lines 29-50)
 **Purpose**: Get detailed information about a specific course for prodi administration
-**Auth**: JWT (Prodi Admin role)
+**Auth**: Sanctum Bearer Token (Prodi Admin role)
 
 Response:
 ```json
@@ -1298,7 +1298,7 @@ Response:
 ### POST /api/prodi/courses
 **Frontend**: ProdiCourseForm.tsx (handleSubmit, lines 70-83)
 **Purpose**: Create a new course for prodi administration
-**Auth**: JWT (Prodi Admin role)
+**Auth**: Sanctum Bearer Token (Prodi Admin role)
 
 Request Body:
 ```json
@@ -1328,7 +1328,7 @@ Response:
 ### PUT /api/prodi/courses/{id}
 **Frontend**: ProdiCourseForm.tsx (handleSubmit, lines 70-83)
 **Purpose**: Update an existing course for prodi administration
-**Auth**: JWT (Prodi Admin role)
+**Auth**: Sanctum Bearer Token (Prodi Admin role)
 
 Request Body:
 ```json
@@ -1358,7 +1358,7 @@ Response:
 ### POST /api/courses/{id}/students/{studentId}/complete
 **Frontend**: Gradebook.tsx (handleMarkAsComplete, lines 140-147)
 **Purpose**: Mark a student as having completed a course
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Response:
 ```json
@@ -1374,7 +1374,7 @@ Response:
 ### POST /api/students/{id}/badges
 **Frontend**: Gradebook.tsx (handleAwardBadge, lines 157-164)
 **Purpose**: Award a badge to a student
-**Auth**: JWT (Dosen role)
+**Auth**: Sanctum Bearer Token (Dosen role)
 
 Request Body:
 ```json
