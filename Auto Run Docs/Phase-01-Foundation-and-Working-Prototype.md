@@ -9,7 +9,7 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Create Assignment, AssignmentSubmission migrations
 - [x] Create Announcement migration with categories
 - [x] Create LibraryResource migration
-- [ ] Create DiscussionThread and DiscussionPost migrations
+- [x] Create DiscussionThread and DiscussionPost migrations
 - [ ] Create Notification migration
 - [ ] Create Grade and AcademicCalendarEvent migrations
 - [ ] Update User model with additional fields (facultyId, majorId, gpa, etc.)
