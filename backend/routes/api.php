@@ -55,6 +55,36 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // ------------------------------------------------------------------------
+    // USER MANAGEMENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('users')->group(function () {
+        // All authenticated users can view users
+        Route::get('/', 'App\Http\Controllers\Api\UserController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\UserController@show');
+
+        // Users can view their own profile and update it
+        Route::get('/me/profile', 'App\Http\Controllers\Api\UserController@me');
+        Route::put('/me/profile', 'App\Http\Controllers\Api\UserController@updateProfile');
+        Route::post('/me/change-password', 'App\Http\Controllers\Api\UserController@changePassword');
+
+        // Filtered user lists (read-only for authenticated users)
+        Route::get('/role/{role}', 'App\Http\Controllers\Api\UserController@byRole');
+        Route::get('/faculty/{facultyId}', 'App\Http\Controllers\Api\UserController@byFaculty');
+        Route::get('/major/{majorId}', 'App\Http\Controllers\Api\UserController@byMajor');
+        Route::get('/list/faculty', 'App\Http\Controllers\Api\UserController@faculty');
+        Route::get('/list/students', 'App\Http\Controllers\Api\UserController@students');
+
+        // Admin and Faculty only - CRUD operations
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\UserController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\UserController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\UserController@destroy');
+            Route::post('/{id}/toggle-status', 'App\Http\Controllers\Api\UserController@toggleStatus');
+        });
+    });
+
+    // ------------------------------------------------------------------------
     // FACULTY Routes
     // ------------------------------------------------------------------------
 
