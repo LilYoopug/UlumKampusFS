@@ -122,11 +122,12 @@ class NotificationRequestTest extends TestCase
      */
     public function test_all_valid_priorities_pass_validation(): void
     {
+        $user = User::factory()->create();
         $validPriorities = ['low', 'medium', 'high', 'urgent'];
 
         foreach ($validPriorities as $priority) {
             $data = [
-                'user_id' => 1,
+                'user_id' => $user->id,
                 'type' => 'test',
                 'title' => 'Test',
                 'message' => 'Test message',
@@ -188,8 +189,9 @@ class NotificationRequestTest extends TestCase
      */
     public function test_read_at_can_be_nullable(): void
     {
+        $user = User::factory()->create();
         $data = [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'type' => 'test',
             'title' => 'Test',
             'message' => 'Test message',
@@ -208,8 +210,9 @@ class NotificationRequestTest extends TestCase
      */
     public function test_is_read_accepts_boolean_values(): void
     {
+        $user = User::factory()->create();
         $data = [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'type' => 'test',
             'title' => 'Test',
             'message' => 'Test message',
@@ -228,8 +231,9 @@ class NotificationRequestTest extends TestCase
      */
     public function test_minimal_valid_data_passes_validation(): void
     {
+        $user = User::factory()->create();
         $data = [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'type' => 'test',
             'title' => 'Test',
             'message' => 'Test message',
@@ -268,6 +272,7 @@ class NotificationRequestTest extends TestCase
      */
     public function test_type_is_nullable_during_update(): void
     {
+        $user = User::factory()->create();
         // Simulate update request by setting method to PUT
         $request = new NotificationRequest();
         $request->setMethod('PUT');
@@ -275,7 +280,7 @@ class NotificationRequestTest extends TestCase
         $rules = $request->rules();
 
         $data = [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'title' => 'Updated Title',
             'message' => 'Updated message',
         ];
@@ -290,8 +295,9 @@ class NotificationRequestTest extends TestCase
      */
     public function test_sent_at_can_be_nullable(): void
     {
+        $user = User::factory()->create();
         $data = [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'type' => 'test',
             'title' => 'Test',
             'message' => 'Test message',
@@ -310,8 +316,9 @@ class NotificationRequestTest extends TestCase
      */
     public function test_is_sent_accepts_boolean_values(): void
     {
+        $user = User::factory()->create();
         $data = [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'type' => 'test',
             'title' => 'Test',
             'message' => 'Test message',
