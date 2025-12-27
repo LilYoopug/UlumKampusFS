@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\EnrollmentResource;
 use App\Models\CourseEnrollment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class EnrollmentController extends Controller
+class EnrollmentController extends ApiController
 {
     /**
      * Display a listing of enrollments for the current student.
@@ -18,7 +19,10 @@ class EnrollmentController extends Controller
         $enrollments = CourseEnrollment::where('student_id', $user->id)
             ->with(['course.faculty', 'course.major', 'course.instructor'])
             ->get();
-        return $this->success($enrollments);
+        return $this->success(
+            EnrollmentResource::collection($enrollments),
+            'Enrollments retrieved successfully'
+        );
     }
 
     /**
@@ -31,7 +35,10 @@ class EnrollmentController extends Controller
             ->where('student_id', $user->id)
             ->with('course')
             ->firstOrFail();
-        return $this->success($enrollment);
+        return $this->success(
+            new EnrollmentResource($enrollment),
+            'Enrollment retrieved successfully'
+        );
     }
 
     /**
@@ -42,7 +49,10 @@ class EnrollmentController extends Controller
         $enrollments = CourseEnrollment::where('course_id', $courseId)
             ->with('student')
             ->get();
-        return $this->success($enrollments);
+        return $this->success(
+            EnrollmentResource::collection($enrollments),
+            'Course enrollments retrieved successfully'
+        );
     }
 
     /**
@@ -59,7 +69,10 @@ class EnrollmentController extends Controller
         $course = $enrollment->course;
         $course->increment('current_enrollment');
 
-        return $this->success($enrollment, 'Enrollment approved successfully');
+        return $this->success(
+            new EnrollmentResource($enrollment->load('course', 'student')),
+            'Enrollment approved successfully'
+        );
     }
 
     /**
@@ -71,7 +84,10 @@ class EnrollmentController extends Controller
         $enrollment->update([
             'status' => 'rejected',
         ]);
-        return $this->success($enrollment, 'Enrollment rejected');
+        return $this->success(
+            new EnrollmentResource($enrollment->load('course', 'student')),
+            'Enrollment rejected'
+        );
     }
 
     /**

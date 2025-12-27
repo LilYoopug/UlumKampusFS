@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AssignmentSubmissionResource;
 use App\Models\AssignmentSubmission;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class SubmissionController extends Controller
+class SubmissionController extends ApiController
 {
     /**
      * Display a listing of submissions for the current student.
@@ -20,7 +21,10 @@ class SubmissionController extends Controller
             ->with(['assignment.course', 'assignment.module'])
             ->latest('submitted_at')
             ->get();
-        return $this->success($submissions);
+        return $this->success(
+            AssignmentSubmissionResource::collection($submissions),
+            'Submissions retrieved successfully'
+        );
     }
 
     /**
@@ -33,7 +37,10 @@ class SubmissionController extends Controller
             ->where('student_id', $user->id)
             ->with(['assignment', 'assignment.course', 'grader'])
             ->firstOrFail();
-        return $this->success($submission);
+        return $this->success(
+            new AssignmentSubmissionResource($submission),
+            'Submission retrieved successfully'
+        );
     }
 
     /**
@@ -59,7 +66,10 @@ class SubmissionController extends Controller
         ]);
 
         $submission->update($validated);
-        return $this->success($submission, 'Submission updated successfully');
+        return $this->success(
+            new AssignmentSubmissionResource($submission->load(['assignment', 'student'])),
+            'Submission updated successfully'
+        );
     }
 
     /**
@@ -71,7 +81,10 @@ class SubmissionController extends Controller
             ->with(['student', 'grader'])
             ->latest('submitted_at')
             ->get();
-        return $this->success($submissions);
+        return $this->success(
+            AssignmentSubmissionResource::collection($submissions),
+            'Assignment submissions retrieved successfully'
+        );
     }
 
     /**
@@ -105,7 +118,10 @@ class SubmissionController extends Controller
             ]
         );
 
-        return $this->success($submission, 'Submission graded successfully');
+        return $this->success(
+            new AssignmentSubmissionResource($submission->load(['assignment', 'student', 'grader'])),
+            'Submission graded successfully'
+        );
     }
 
     /**
@@ -131,6 +147,9 @@ class SubmissionController extends Controller
                 ]);
         }
 
-        return $this->success($submission, 'Feedback added successfully');
+        return $this->success(
+            new AssignmentSubmissionResource($submission->load(['assignment', 'student', 'grader'])),
+            'Feedback added successfully'
+        );
     }
 }

@@ -47,7 +47,7 @@ class UserRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:50',
-                $isUpdate ? Rule::unique('')->ignore($userId) : 'unique:users',
+                $isUpdate ? Rule::unique('users')->ignore($userId) : 'unique:users',
             ],
             'gpa' => ['nullable', 'numeric', 'min:0', 'max:4'],
             'enrollment_year' => ['nullable', 'integer', 'min:2000', 'max:2100'],

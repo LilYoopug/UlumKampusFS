@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AssignmentRequest;
+use App\Http\Resources\AssignmentResource;
+use App\Http\Resources\AssignmentSubmissionResource;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class AssignmentController extends Controller
+class AssignmentController extends ApiController
 {
     /**
      * Display a listing of assignments.
@@ -19,37 +22,25 @@ class AssignmentController extends Controller
             ->with(['course', 'module', 'creator'])
             ->ordered()
             ->get();
-        return $this->success($assignments);
+        return $this->success(
+            AssignmentResource::collection($assignments),
+            'Assignments retrieved successfully'
+        );
     }
 
     /**
      * Store a newly created assignment.
      */
-    public function store(Request $request): JsonResponse
+    public function store(AssignmentRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'module_id' => 'nullable|exists:course_modules,id',
-            'created_by' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'instructions' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'max_points' => 'nullable|numeric|min:0',
-            'submission_type' => 'nullable|in:text,file,link,mixed',
-            'allowed_file_types' => 'nullable|string',
-            'max_file_size' => 'nullable|integer|min:1',
-            'attempts_allowed' => 'nullable|integer|min:1',
-            'is_published' => 'boolean',
-            'allow_late_submission' => 'boolean',
-            'late_penalty' => 'nullable|numeric|min:0',
-            'order' => 'nullable|integer|min:0',
-        ]);
-
-        $validated['published_at'] = $validated['is_published'] ? now() : null;
+        $validated = $request->validated();
+        $validated['published_at'] = $validated['is_published'] ?? false ? now() : null;
 
         $assignment = Assignment::create($validated);
-        return $this->created($assignment, 'Assignment created successfully');
+        return $this->created(
+            new AssignmentResource($assignment->load(['course', 'module', 'creator'])),
+            'Assignment created successfully'
+        );
     }
 
     /**
@@ -58,40 +49,29 @@ class AssignmentController extends Controller
     public function show(string $id): JsonResponse
     {
         $assignment = Assignment::with(['course', 'module', 'creator'])->findOrFail($id);
-        return $this->success($assignment);
+        return $this->success(
+            new AssignmentResource($assignment),
+            'Assignment retrieved successfully'
+        );
     }
 
     /**
      * Update the specified assignment.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(AssignmentRequest $request, string $id): JsonResponse
     {
         $assignment = Assignment::findOrFail($id);
-
-        $validated = $request->validate([
-            'course_id' => 'sometimes|exists:courses,id',
-            'module_id' => 'nullable|exists:course_modules,id',
-            'title' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'instructions' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'max_points' => 'nullable|numeric|min:0',
-            'submission_type' => 'nullable|in:text,file,link,mixed',
-            'allowed_file_types' => 'nullable|string',
-            'max_file_size' => 'nullable|integer|min:1',
-            'attempts_allowed' => 'nullable|integer|min:1',
-            'is_published' => 'boolean',
-            'allow_late_submission' => 'boolean',
-            'late_penalty' => 'nullable|numeric|min:0',
-            'order' => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['is_published']) && $validated['is_published'] && !$assignment->is_published) {
             $validated['published_at'] = now();
         }
 
         $assignment->update($validated);
-        return $this->success($assignment, 'Assignment updated successfully');
+        return $this->success(
+            new AssignmentResource($assignment->load(['course', 'module', 'creator'])),
+            'Assignment updated successfully'
+        );
     }
 
     /**
@@ -111,7 +91,10 @@ class AssignmentController extends Controller
     {
         $assignment = Assignment::findOrFail($id);
         $submissions = $assignment->submissions()->with('student')->get();
-        return $this->success($submissions);
+        return $this->success(
+            AssignmentSubmissionResource::collection($submissions),
+            'Assignment submissions retrieved successfully'
+        );
     }
 
     /**
@@ -150,7 +133,10 @@ class AssignmentController extends Controller
             'attempt_number' => $attemptNumber,
         ]);
 
-        return $this->created($submission, 'Assignment submitted successfully');
+        return $this->created(
+            new AssignmentSubmissionResource($submission->load(['assignment', 'student'])),
+            'Assignment submitted successfully'
+        );
     }
 
     /**
@@ -168,7 +154,10 @@ class AssignmentController extends Controller
             return $this->notFound('No submission found for this assignment');
         }
 
-        return $this->success($submission);
+        return $this->success(
+            new AssignmentSubmissionResource($submission->load(['assignment', 'student'])),
+            'Submission retrieved successfully'
+        );
     }
 
     /**
@@ -181,7 +170,10 @@ class AssignmentController extends Controller
             'is_published' => true,
             'published_at' => now(),
         ]);
-        return $this->success($assignment, 'Assignment published successfully');
+        return $this->success(
+            new AssignmentResource($assignment->load(['course', 'module', 'creator'])),
+            'Assignment published successfully'
+        );
     }
 
     /**
@@ -194,6 +186,9 @@ class AssignmentController extends Controller
             'is_published' => false,
             'published_at' => null,
         ]);
-        return $this->success($assignment, 'Assignment unpublished');
+        return $this->success(
+            new AssignmentResource($assignment->load(['course', 'module', 'creator'])),
+            'Assignment unpublished'
+        );
     }
 }
