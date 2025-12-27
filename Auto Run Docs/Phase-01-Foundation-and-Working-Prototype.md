@@ -13,7 +13,7 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Create Notification migration
 - [x] Create Grade and AcademicCalendarEvent migrations
 - [x] Update User model with additional fields (facultyId, majorId, gpa, etc.)
-- [ ] Create Faculty and Major models with relationships
+- [x] Create Faculty and Major models with relationships
 - [ ] Create Course model with relationships to Faculty, Major, User
 - [ ] Create Assignment, Announcement, LibraryResource models
 - [ ] Create DiscussionThread, Notification, Grade models
