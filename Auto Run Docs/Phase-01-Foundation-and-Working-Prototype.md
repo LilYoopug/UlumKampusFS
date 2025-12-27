@@ -14,9 +14,9 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Create Grade and AcademicCalendarEvent migrations
 - [x] Update User model with additional fields (facultyId, majorId, gpa, etc.)
 - [x] Create Faculty and Major models with relationships
-- [ ] Create Course model with relationships to Faculty, Major, User
-- [ ] Create Assignment, Announcement, LibraryResource models
-- [ ] Create DiscussionThread, Notification, Grade models
+- [x] Create Course model with relationships to Faculty, Major, User
+- [x] Create Assignment, Announcement, LibraryResource models
+- [x] Create DiscussionThread, Notification, Grade models
 - [ ] Register RoleMiddleware in bootstrap/app.php
 - [ ] Update routes/api.php with all route groups
 - [ ] Create API Resource classes for User, Faculty, Major, Course

@@ -1,0 +1,204 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Course extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'faculty_id',
+        'major_id',
+        'instructor_id',
+        'code',
+        'name',
+        'description',
+        'credit_hours',
+        'capacity',
+        'current_enrollment',
+        'semester',
+        'year',
+        'schedule',
+        'room',
+        'is_active',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'credit_hours' => 'integer',
+            'capacity' => 'integer',
+            'current_enrollment' => 'integer',
+            'year' => 'integer',
+            'is_active' => 'boolean',
+        ];
+    }
+
+    /**
+     * Get the faculty that owns this course.
+     */
+    public function faculty()
+    {
+        return $this->belongsTo(Faculty::class);
+    }
+
+    /**
+     * Get the major that owns this course.
+     */
+    public function major()
+    {
+        return $this->belongsTo(Major::class);
+    }
+
+    /**
+     * Get the instructor (user) that teaches this course.
+     */
+    public function instructor()
+    {
+        return $this->belongsTo(User::class, 'instructor_id');
+    }
+
+    /**
+     * Get the modules for this course.
+     */
+    public function modules()
+    {
+        return $this->hasMany(CourseModule::class);
+    }
+
+    /**
+     * Get the enrollments for this course.
+     */
+    public function enrollments()
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
+
+    /**
+     * Get the students enrolled in this course.
+     */
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'course_enrollments', 'course_id', 'student_id')
+            ->withPivot('status', 'enrolled_at', 'completed_at', 'final_grade', 'notes')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the assignments for this course.
+     */
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
+    /**
+     * Get the announcements for this course.
+     */
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
+    /**
+     * Get the library resources for this course.
+     */
+    public function libraryResources()
+    {
+        return $this->hasMany(LibraryResource::class);
+    }
+
+    /**
+     * Get the discussion threads for this course.
+     */
+    public function discussionThreads()
+    {
+        return $this->hasMany(DiscussionThread::class);
+    }
+
+    /**
+     * Get the grades for this course.
+     */
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
+    }
+
+    /**
+     * Scope a query to only include active courses.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope a query to filter by semester.
+     */
+    public function scopeBySemester($query, $semester)
+    {
+        return $query->where('semester', $semester);
+    }
+
+    /**
+     * Scope a query to filter by year.
+     */
+    public function scopeByYear($query, $year)
+    {
+        return $query->where('year', $year);
+    }
+
+    /**
+     * Scope a query to filter by faculty.
+     */
+    public function scopeByFaculty($query, $facultyId)
+    {
+        return $query->where('faculty_id', $facultyId);
+    }
+
+    /**
+     * Scope a query to filter by major.
+     */
+    public function scopeByMajor($query, $majorId)
+    {
+        return $query->where('major_id', $majorId);
+    }
+
+    /**
+     * Scope a query to filter by instructor.
+     */
+    public function scopeByInstructor($query, $instructorId)
+    {
+        return $query->where('instructor_id', $instructorId);
+    }
+
+    /**
+     * Check if the course has available capacity.
+     */
+    public function hasCapacity(): bool
+    {
+        return $this->current_enrollment < $this->capacity;
+    }
+
+    /**
+     * Get the number of available spots.
+     */
+    public function availableSpots(): int
+    {
+        return max(0, $this->capacity - $this->current_enrollment);
+    }
+}
