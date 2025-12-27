@@ -318,6 +318,35 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ------------------------------------------------------------------------
+    // DISCUSSION POST Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('discussion-threads')->group(function () {
+        // All authenticated users can create posts
+        Route::post('/{id}/posts', 'App\Http\Controllers\Api\DiscussionPostController@store');
+    });
+
+    Route::prefix('discussion-posts')->group(function () {
+        // All authenticated users can read posts
+        Route::get('/{id}', 'App\Http\Controllers\Api\DiscussionPostController@show');
+        Route::get('/{id}/replies', 'App\Http\Controllers\Api\DiscussionPostController@replies');
+
+        // Post owners can update their own posts
+        Route::put('/{id}', 'App\Http\Controllers\Api\DiscussionPostController@update');
+
+        // Post owners can delete their own posts
+        Route::delete('/{id}', 'App\Http\Controllers\Api\DiscussionPostController@destroy');
+
+        // All authenticated users can like posts
+        Route::post('/{id}/like', 'App\Http\Controllers\Api\DiscussionPostController@like');
+        Route::post('/{id}/unlike', 'App\Http\Controllers\Api\DiscussionPostController@unlike');
+
+        // Solution marking (thread creator or admin)
+        Route::post('/{id}/mark-as-solution', 'App\Http\Controllers\Api\DiscussionPostController@markAsSolution');
+        Route::post('/{id}/unmark-as-solution', 'App\Http\Controllers\Api\DiscussionPostController@unmarkAsSolution');
+    });
+
+    // ------------------------------------------------------------------------
     // NOTIFICATION Routes
     // ------------------------------------------------------------------------
 
