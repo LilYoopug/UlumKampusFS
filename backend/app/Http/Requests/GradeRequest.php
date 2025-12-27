@@ -72,6 +72,44 @@ class GradeRequest extends FormRequest
     }
 
     /**
+     * Configure the validator instance.
+     *
+     * Add custom validation to ensure the student is enrolled in the course
+     * and that the assignment belongs to the course (if provided).
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $userId = $this->input('user_id');
+            $courseId = $this->input('course_id');
+            $assignmentId = $this->input('assignment_id');
+
+            // Ensure student is enrolled in the course
+            if ($userId && $courseId) {
+                $enrollment = \App\Models\CourseEnrollment::where('student_id', $userId)
+                    ->where('course_id', $courseId)
+                    ->where('status', 'enrolled')
+                    ->first();
+
+                if (!$enrollment) {
+                    $validator->errors()->add('user_id', 'The student is not enrolled in this course.');
+                }
+            }
+
+            // Ensure assignment belongs to the course (if assignment_id is provided)
+            if ($assignmentId && $courseId) {
+                $assignment = \App\Models\Assignment::where('id', $assignmentId)
+                    ->where('course_id', $courseId)
+                    ->first();
+
+                if (!$assignment) {
+                    $validator->errors()->add('assignment_id', 'The assignment does not belong to this course.');
+                }
+            }
+        });
+    }
+
+    /**
      * Prepare data for validation.
      */
     protected function prepareForValidation(): void

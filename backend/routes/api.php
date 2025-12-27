@@ -432,6 +432,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/course/{courseId}', 'App\Http\Controllers\Api\GradeController@byCourse');
             Route::get('/assignment/{assignmentId}', 'App\Http\Controllers\Api\GradeController@byAssignment');
             Route::get('/student/{studentId}', 'App\Http\Controllers\Api\GradeController@byStudent');
+            Route::get('/distribution/{courseId}', 'App\Http\Controllers\Api\GradeController@distribution');
+            Route::get('/analytics/faculty', 'App\Http\Controllers\Api\GradeController@analyticsByFaculty');
+            Route::get('/analytics/course', 'App\Http\Controllers\Api\GradeController@analyticsByCourse');
             Route::post('/', 'App\Http\Controllers\Api\GradeController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\GradeController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\GradeController@destroy');
