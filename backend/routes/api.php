@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -18,31 +17,359 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Rute publik (tidak memerlukan otentikasi)
+// ============================================================================
+// PUBLIC ROUTES (No authentication required)
+// ============================================================================
+
+// Authentication routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Rute webhook untuk notifikasi dari Midtrans (tidak perlu otentikasi)
+// Webhook for Midtrans payment notifications (no auth required)
 Route::post('/payment/notification', [PaymentController::class, 'notificationHandler']);
 
-// Rute yang dilindungi (memerlukan otentikasi via Sanctum)
+// Health check endpoint
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toIso8601String(),
+        'version' => '1.0.0',
+    ]);
+});
+
+// ============================================================================
+// PROTECTED ROUTES (Authentication required)
+// ============================================================================
+
 Route::middleware('auth:sanctum')->group(function () {
+
+    // ------------------------------------------------------------------------
+    // User Profile & Authentication
+    // ------------------------------------------------------------------------
+
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // ------------------------------------------------------------------------
+    // FACULTY Routes
+    // ------------------------------------------------------------------------
 
-    // Payment Routes
-    Route::post('/payment/create-transaction', [PaymentController::class, 'createTransaction']);
-    Route::get('/payment/status/{order_id}', [PaymentController::class, 'checkTransactionStatus']);
+    Route::prefix('faculties')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\FacultyController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\FacultyController@show');
+        Route::get('/{id}/majors', 'App\Http\Controllers\Api\FacultyController@majors');
+        Route::get('/{id}/courses', 'App\Http\Controllers\Api\FacultyController@courses');
 
-    // Rute khusus Admin
-    Route::middleware('role:admin')->group(function() {
-        Route::get('/admin/dashboard', fn() => response()->json(['message' => 'Welcome Admin!']));
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\FacultyController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\FacultyController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\FacultyController@destroy');
+        });
+    });
 
-        // Masukan Route Lainnya Disini 
+    // ------------------------------------------------------------------------
+    // MAJOR Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('majors')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\MajorController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\MajorController@show');
+        Route::get('/{id}/faculty', 'App\Http\Controllers\Api\MajorController@faculty');
+        Route::get('/{id}/courses', 'App\Http\Controllers\Api\MajorController@courses');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\MajorController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\MajorController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\MajorController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // COURSE Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('courses')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\CourseController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\CourseController@show');
+        Route::get('/{id}/modules', 'App\Http\Controllers\Api\CourseController@modules');
+        Route::get('/{id}/enrollments', 'App\Http\Controllers\Api\CourseController@enrollments');
+        Route::get('/{id}/students', 'App\Http\Controllers\Api\CourseController@students');
+        Route::get('/{id}/assignments', 'App\Http\Controllers\Api\CourseController@assignments');
+        Route::get('/{id}/announcements', 'App\Http\Controllers\Api\CourseController@announcements');
+        Route::get('/{id}/library-resources', 'App\Http\Controllers\Api\CourseController@libraryResources');
+        Route::get('/{id}/discussion-threads', 'App\Http\Controllers\Api\CourseController@discussionThreads');
+        Route::get('/{id}/grades', 'App\Http\Controllers\Api\CourseController@grades');
+
+        // Student enrollment
+        Route::middleware('role:student')->group(function () {
+            Route::post('/{id}/enroll', 'App\Http\Controllers\Api\CourseController@enroll');
+            Route::post('/{id}/drop', 'App\Http\Controllers\Api\CourseController@drop');
+        });
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\CourseController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\CourseController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\CourseController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // COURSE MODULE Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('course-modules')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\CourseModuleController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\CourseModuleController@show');
+        Route::get('/{id}/assignments', 'App\Http\Controllers\Api\CourseModuleController@assignments');
+        Route::get('/{id}/discussions', 'App\Http\Controllers\Api\CourseModuleController@discussions');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\CourseModuleController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\CourseModuleController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\CourseModuleController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // COURSE ENROLLMENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('enrollments')->group(function () {
+        // Students view their own enrollments
+        Route::middleware('role:student')->group(function () {
+            Route::get('/', 'App\Http\Controllers\Api\EnrollmentController@index');
+            Route::get('/{id}', 'App\Http\Controllers\Api\EnrollmentController@show');
+        });
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::get('/course/{courseId}', 'App\Http\Controllers\Api\EnrollmentController@byCourse');
+            Route::put('/{id}/approve', 'App\Http\Controllers\Api\EnrollmentController@approve');
+            Route::put('/{id}/reject', 'App\Http\Controllers\Api\EnrollmentController@reject');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\EnrollmentController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // ASSIGNMENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('assignments')->group(function () {
+        // Public (read-only) access for enrolled students
+        Route::get('/', 'App\Http\Controllers\Api\AssignmentController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\AssignmentController@show');
+        Route::get('/{id}/submissions', 'App\Http\Controllers\Api\AssignmentController@submissions');
+
+        // Student submission
+        Route::middleware('role:student')->group(function () {
+            Route::post('/{id}/submit', 'App\Http\Controllers\Api\AssignmentController@submit');
+            Route::get('/{id}/my-submission', 'App\Http\Controllers\Api\AssignmentController@mySubmission');
+        });
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\AssignmentController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\AssignmentController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\AssignmentController@destroy');
+            Route::post('/{id}/publish', 'App\Http\Controllers\Api\AssignmentController@publish');
+            Route::post('/{id}/unpublish', 'App\Http\Controllers\Api\AssignmentController@unpublish');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // ASSIGNMENT SUBMISSION Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('submissions')->group(function () {
+        // Students view their own submissions
+        Route::middleware('role:student')->group(function () {
+            Route::get('/', 'App\Http\Controllers\Api\SubmissionController@index');
+            Route::get('/{id}', 'App\Http\Controllers\Api\SubmissionController@show');
+            Route::put('/{id}', 'App\Http\Controllers\Api\SubmissionController@update');
+        });
+
+        // Admin and Faculty only (grading)
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::get('/assignment/{assignmentId}', 'App\Http\Controllers\Api\SubmissionController@byAssignment');
+            Route::post('/{id}/grade', 'App\Http\Controllers\Api\SubmissionController@grade');
+            Route::post('/{id}/feedback', 'App\Http\Controllers\Api\SubmissionController@feedback');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // ANNOUNCEMENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('announcements')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\AnnouncementController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\AnnouncementController@show');
+        Route::post('/{id}/mark-read', 'App\Http\Controllers\Api\AnnouncementController@markRead');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\AnnouncementController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\AnnouncementController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\AnnouncementController@destroy');
+            Route::post('/{id}/publish', 'App\Http\Controllers\Api\AnnouncementController@publish');
+            Route::post('/{id}/unpublish', 'App\Http\Controllers\Api\AnnouncementController@unpublish');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // LIBRARY RESOURCE Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('library')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\LibraryResourceController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@show');
+        Route::post('/{id}/download', 'App\Http\Controllers\Api\LibraryResourceController@download');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\LibraryResourceController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@destroy');
+            Route::post('/{id}/publish', 'App\Http\Controllers\Api\LibraryResourceController@publish');
+            Route::post('/{id}/unpublish', 'App\Http\Controllers\Api\LibraryResourceController@unpublish');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // DISCUSSION THREAD Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('discussions')->group(function () {
+        // All authenticated users can read discussions
+        Route::get('/', 'App\Http\Controllers\Api\DiscussionController@index');
+        Route::get('/threads', 'App\Http\Controllers\Api\DiscussionController@threads');
+        Route::get('/threads/{id}', 'App\Http\Controllers\Api\DiscussionController@showThread');
+        Route::get('/threads/{id}/posts', 'App\Http\Controllers\Api\DiscussionController@posts');
+
+        // All authenticated users can participate in discussions
+        Route::post('/threads', 'App\Http\Controllers\Api\DiscussionController@storeThread');
+        Route::post('/threads/{id}/posts', 'App\Http\Controllers\Api\DiscussionController@storePost');
+        Route::put('/threads/{id}', 'App\Http\Controllers\Api\DiscussionController@updateThread');
+        Route::put('/posts/{id}', 'App\Http\Controllers\Api\DiscussionController@updatePost');
+        Route::delete('/threads/{id}', 'App\Http\Controllers\Api\DiscussionController@deleteThread');
+        Route::delete('/posts/{id}', 'App\Http\Controllers\Api\DiscussionController@deletePost');
+        Route::post('/threads/{id}/like', 'App\Http\Controllers\Api\DiscussionController@likePost');
+
+        // Admin and Faculty moderation
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/threads/{id}/pin', 'App\Http\Controllers\Api\DiscussionController@pinThread');
+            Route::post('/threads/{id}/unpin', 'App\Http\Controllers\Api\DiscussionController@unpinThread');
+            Route::post('/threads/{id}/lock', 'App\Http\Controllers\Api\DiscussionController@lockThread');
+            Route::post('/threads/{id}/unlock', 'App\Http\Controllers\Api\DiscussionController@unlockThread');
+            Route::post('/threads/{id}/close', 'App\Http\Controllers\Api\DiscussionController@closeThread');
+            Route::post('/threads/{id}/reopen', 'App\Http\Controllers\Api\DiscussionController@reopenThread');
+            Route::post('/posts/{id}/mark-solution', 'App\Http\Controllers\Api\DiscussionController@markSolution');
+            Route::post('/posts/{id}/unmark-solution', 'App\Http\Controllers\Api\DiscussionController@unmarkSolution');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // NOTIFICATION Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('notifications')->group(function () {
+        // Users manage their own notifications
+        Route::get('/', 'App\Http\Controllers\Api\NotificationController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\NotificationController@show');
+        Route::post('/{id}/mark-read', 'App\Http\Controllers\Api\NotificationController@markRead');
+        Route::post('/mark-all-read', 'App\Http\Controllers\Api\NotificationController@markAllRead');
+        Route::delete('/{id}', 'App\Http\Controllers\Api\NotificationController@destroy');
+        Route::delete('/clear-read', 'App\Http\Controllers\Api\NotificationController@clearRead');
+    });
+
+    // ------------------------------------------------------------------------
+    // GRADE Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('grades')->group(function () {
+        // Students view their own grades
+        Route::middleware('role:student')->group(function () {
+            Route::get('/', 'App\Http\Controllers\Api\GradeController@index');
+            Route::get('/my-grades', 'App\Http\Controllers\Api\GradeController@myGrades');
+            Route::get('/{id}', 'App\Http\Controllers\Api\GradeController@show');
+        });
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::get('/course/{courseId}', 'App\Http\Controllers\Api\GradeController@byCourse');
+            Route::get('/assignment/{assignmentId}', 'App\Http\Controllers\Api\GradeController@byAssignment');
+            Route::get('/student/{studentId}', 'App\Http\Controllers\Api\GradeController@byStudent');
+            Route::post('/', 'App\Http\Controllers\Api\GradeController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\GradeController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\GradeController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
+    // PAYMENT Routes (existing)
+    // ------------------------------------------------------------------------
+
+    Route::prefix('payment')->group(function () {
+        Route::post('/create-transaction', [PaymentController::class, 'createTransaction']);
+        Route::get('/status/{order_id}', [PaymentController::class, 'checkTransactionStatus']);
+    });
+
+    // ------------------------------------------------------------------------
+    // PRODUCT Routes (existing)
+    // ------------------------------------------------------------------------
+
+    Route::prefix('products')->group(function () {
+        Route::get('/', [ProductController::class, 'index']);
+        Route::get('/{id}', [ProductController::class, 'show']);
+    });
+
+    // ------------------------------------------------------------------------
+    // ADMIN DASHBOARD Routes
+    // ------------------------------------------------------------------------
+
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return response()->json(['message' => 'Welcome Admin!']);
+        });
+        Route::get('/stats', 'App\Http\Controllers\Api\AdminController@stats');
+        Route::get('/users', 'App\Http\Controllers\Api\AdminController@users');
+    });
+
+    // ------------------------------------------------------------------------
+    // FACULTY DASHBOARD Routes
+    // ------------------------------------------------------------------------
+
+    Route::middleware('role:faculty')->prefix('faculty')->group(function () {
+        Route::get('/dashboard', function () {
+            return response()->json(['message' => 'Welcome Faculty!']);
+        });
+        Route::get('/my-courses', 'App\Http\Controllers\Api\FacultyController@myCourses');
+        Route::get('/stats', 'App\Http\Controllers\Api\FacultyController@stats');
+    });
+
+    // ------------------------------------------------------------------------
+    // STUDENT DASHBOARD Routes
+    // ------------------------------------------------------------------------
+
+    Route::middleware('role:student')->prefix('student')->group(function () {
+        Route::get('/dashboard', function () {
+            return response()->json(['message' => 'Welcome Student!']);
+        });
+        Route::get('/my-courses', 'App\Http\Controllers\Api\StudentController@myCourses');
+        Route::get('/my-assignments', 'App\Http\Controllers\Api\StudentController@myAssignments');
+        Route::get('/my-grades', 'App\Http\Controllers\Api\StudentController@myGrades');
     });
 });

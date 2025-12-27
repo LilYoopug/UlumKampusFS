@@ -17,7 +17,7 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Create Course model with relationships to Faculty, Major, User
 - [x] Create Assignment, Announcement, LibraryResource models
 - [x] Create DiscussionThread, Notification, Grade models
-- [ ] Register RoleMiddleware in bootstrap/app.php
+- [x] Register RoleMiddleware in bootstrap/app.php
 - [ ] Update routes/api.php with all route groups
 - [ ] Create API Resource classes for User, Faculty, Major, Course
 - [ ] Create base ApiController with common response methods
