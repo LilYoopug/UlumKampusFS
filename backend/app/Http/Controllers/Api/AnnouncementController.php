@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AnnouncementRequest;
+use App\Http\Resources\AnnouncementResource;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,43 +14,68 @@ class AnnouncementController extends Controller
     /**
      * Display a listing of announcements.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $announcements = Announcement::published()
-            ->active()
-            ->with(['course', 'faculty', 'creator'])
+        $query = Announcement::query();
+
+        // Filter by category
+        if ($request->has('category') && $request->category) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by priority
+        if ($request->has('priority') && $request->priority) {
+            $query->where('priority', $request->priority);
+        }
+
+        // Filter by target audience
+        if ($request->has('target_audience') && $request->target_audience) {
+            $query->where('target_audience', $request->target_audience);
+        }
+
+        // Filter by course
+        if ($request->has('course_id') && $request->course_id) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        // Filter by faculty
+        if ($request->has('faculty_id') && $request->faculty_id) {
+            $query->where('faculty_id', $request->faculty_id);
+        }
+
+        // Search in title and content
+        if ($request->has('search') && $request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('content', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Only show published and active announcements for non-admin/faculty
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'faculty'])) {
+            $query->published()->active();
+        }
+
+        $announcements = $query->with(['course', 'faculty', 'creator'])
             ->ordered()
             ->latest('created_at')
             ->get();
+
         return $this->success($announcements);
     }
 
     /**
      * Store a newly created announcement.
      */
-    public function store(Request $request): JsonResponse
+    public function store(AnnouncementRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'course_id' => 'nullable|exists:courses,id',
-            'faculty_id' => 'nullable|exists:faculties,id',
-            'created_by' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'category' => 'nullable|in:general,academic,event,deadline,policy,other',
-            'target_audience' => 'nullable|in:all,students,faculty,specific_course',
-            'priority' => 'nullable|in:low,normal,high,urgent',
-            'is_published' => 'boolean',
-            'expires_at' => 'nullable|date|after:now',
-            'allow_comments' => 'boolean',
-            'attachment_url' => 'nullable|url|max:500',
-            'attachment_type' => 'nullable|string|max:50',
-            'order' => 'nullable|integer|min:0',
-        ]);
-
-        $validated['published_at'] = $validated['is_published'] ? now() : null;
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $validated['published_at'] = $validated['is_published'] ?? false ? now() : null;
 
         $announcement = Announcement::create($validated);
-        return $this->created($announcement, 'Announcement created successfully');
+        return $this->created(new AnnouncementResource($announcement), 'Announcement created successfully');
     }
 
     /**
@@ -58,38 +85,23 @@ class AnnouncementController extends Controller
     {
         $announcement = Announcement::with(['course', 'faculty', 'creator'])->findOrFail($id);
         $announcement->increment('view_count');
-        return $this->success($announcement);
+        return $this->success(new AnnouncementResource($announcement));
     }
 
     /**
      * Update the specified announcement.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(AnnouncementRequest $request, string $id): JsonResponse
     {
         $announcement = Announcement::findOrFail($id);
-
-        $validated = $request->validate([
-            'course_id' => 'nullable|exists:courses,id',
-            'faculty_id' => 'nullable|exists:faculties,id',
-            'title' => 'sometimes|string|max:255',
-            'content' => 'sometimes|string',
-            'category' => 'nullable|in:general,academic,event,deadline,policy,other',
-            'target_audience' => 'nullable|in:all,students,faculty,specific_course',
-            'priority' => 'nullable|in:low,normal,high,urgent',
-            'is_published' => 'boolean',
-            'expires_at' => 'nullable|date|after:now',
-            'allow_comments' => 'boolean',
-            'attachment_url' => 'nullable|url|max:500',
-            'attachment_type' => 'nullable|string|max:50',
-            'order' => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['is_published']) && $validated['is_published'] && !$announcement->is_published) {
             $validated['published_at'] = now();
         }
 
         $announcement->update($validated);
-        return $this->success($announcement, 'Announcement updated successfully');
+        return $this->success(new AnnouncementResource($announcement), 'Announcement updated successfully');
     }
 
     /**
@@ -123,7 +135,7 @@ class AnnouncementController extends Controller
             'is_published' => true,
             'published_at' => now(),
         ]);
-        return $this->success($announcement, 'Announcement published successfully');
+        return $this->success(new AnnouncementResource($announcement), 'Announcement published successfully');
     }
 
     /**
@@ -136,6 +148,6 @@ class AnnouncementController extends Controller
             'is_published' => false,
             'published_at' => null,
         ]);
-        return $this->success($announcement, 'Announcement unpublished');
+        return $this->success(new AnnouncementResource($announcement), 'Announcement unpublished');
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LibraryResourceRequest;
+use App\Http\Resources\LibraryResourceResource;
 use App\Models\LibraryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,46 +14,76 @@ class LibraryResourceController extends Controller
     /**
      * Display a listing of library resources.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $resources = LibraryResource::published()
-            ->with(['course', 'faculty', 'creator'])
+        $query = LibraryResource::query();
+
+        // Filter by resource type
+        if ($request->has('resource_type') && $request->resource_type) {
+            $query->where('resource_type', $request->resource_type);
+        }
+
+        // Filter by access level
+        if ($request->has('access_level') && $request->access_level) {
+            $query->where('access_level', $request->access_level);
+        }
+
+        // Filter by course
+        if ($request->has('course_id') && $request->course_id) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        // Filter by faculty
+        if ($request->has('faculty_id') && $request->faculty_id) {
+            $query->where('faculty_id', $request->faculty_id);
+        }
+
+        // Filter by publication year
+        if ($request->has('publication_year') && $request->publication_year) {
+            $query->where('publication_year', $request->publication_year);
+        }
+
+        // Search in title, description, author, publisher
+        if ($request->has('search') && $request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%')
+                  ->orWhere('author', 'like', '%' . $request->search . '%')
+                  ->orWhere('publisher', 'like', '%' . $request->search . '%')
+                  ->orWhere('tags', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter by tags
+        if ($request->has('tag') && $request->tag) {
+            $query->where('tags', 'like', '%' . $request->tag . '%');
+        }
+
+        // Only show published resources for non-admin/faculty
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'faculty'])) {
+            $query->published();
+        }
+
+        $resources = $query->with(['course', 'faculty', 'creator'])
             ->ordered()
+            ->latest('created_at')
             ->get();
+
         return $this->success($resources);
     }
 
     /**
      * Store a newly created library resource.
      */
-    public function store(Request $request): JsonResponse
+    public function store(LibraryResourceRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'course_id' => 'nullable|exists:courses,id',
-            'faculty_id' => 'nullable|exists:faculties,id',
-            'created_by' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'resource_type' => 'nullable|in:document,video,audio,link,book,article,other',
-            'access_level' => 'nullable|in:public,faculty,course',
-            'file_url' => 'nullable|url|max:500',
-            'file_type' => 'nullable|string|max:50',
-            'file_size' => 'nullable|integer',
-            'external_link' => 'nullable|url|max:500',
-            'author' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
-            'isbn' => 'nullable|string|max:50',
-            'doi' => 'nullable|string|max:100',
-            'publication_year' => 'nullable|integer|min:1000|max:2100',
-            'tags' => 'nullable|string',
-            'is_published' => 'boolean',
-            'order' => 'nullable|integer|min:0',
-        ]);
-
-        $validated['published_at'] = $validated['is_published'] ? now() : null;
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $validated['published_at'] = $validated['is_published'] ?? false ? now() : null;
 
         $resource = LibraryResource::create($validated);
-        return $this->created($resource, 'Library resource created successfully');
+        return $this->created(new LibraryResourceResource($resource), 'Library resource created successfully');
     }
 
     /**
@@ -61,43 +93,23 @@ class LibraryResourceController extends Controller
     {
         $resource = LibraryResource::with(['course', 'faculty', 'creator'])->findOrFail($id);
         $resource->increment('view_count');
-        return $this->success($resource);
+        return $this->success(new LibraryResourceResource($resource));
     }
 
     /**
      * Update the specified library resource.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(LibraryResourceRequest $request, string $id): JsonResponse
     {
         $resource = LibraryResource::findOrFail($id);
-
-        $validated = $request->validate([
-            'course_id' => 'nullable|exists:courses,id',
-            'faculty_id' => 'nullable|exists:faculties,id',
-            'title' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'resource_type' => 'nullable|in:document,video,audio,link,book,article,other',
-            'access_level' => 'nullable|in:public,faculty,course',
-            'file_url' => 'nullable|url|max:500',
-            'file_type' => 'nullable|string|max:50',
-            'file_size' => 'nullable|integer',
-            'external_link' => 'nullable|url|max:500',
-            'author' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
-            'isbn' => 'nullable|string|max:50',
-            'doi' => 'nullable|string|max:100',
-            'publication_year' => 'nullable|integer|min:1000|max:2100',
-            'tags' => 'nullable|string',
-            'is_published' => 'boolean',
-            'order' => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['is_published']) && $validated['is_published'] && !$resource->is_published) {
             $validated['published_at'] = now();
         }
 
         $resource->update($validated);
-        return $this->success($resource, 'Library resource updated successfully');
+        return $this->success(new LibraryResourceResource($resource), 'Library resource updated successfully');
     }
 
     /**
@@ -143,7 +155,7 @@ class LibraryResourceController extends Controller
             'is_published' => true,
             'published_at' => now(),
         ]);
-        return $this->success($resource, 'Library resource published successfully');
+        return $this->success(new LibraryResourceResource($resource), 'Library resource published successfully');
     }
 
     /**
@@ -156,6 +168,6 @@ class LibraryResourceController extends Controller
             'is_published' => false,
             'published_at' => null,
         ]);
-        return $this->success($resource, 'Library resource unpublished');
+        return $this->success(new LibraryResourceResource($resource), 'Library resource unpublished');
     }
 }
