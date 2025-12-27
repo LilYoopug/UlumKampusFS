@@ -127,6 +127,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // ------------------------------------------------------------------------
 
     Route::prefix('courses')->group(function () {
+        // Faculty only - get their courses (must come before /{id} route)
+        Route::middleware('role:faculty')->group(function () {
+            Route::get('/my-courses', 'App\Http\Controllers\Api\CourseController@myCourses');
+        });
+
         // Public (read-only) access for authenticated users
         Route::get('/', 'App\Http\Controllers\Api\CourseController@index');
         Route::get('/{id}', 'App\Http\Controllers\Api\CourseController@show');
@@ -151,11 +156,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{id}', 'App\Http\Controllers\Api\CourseController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\CourseController@destroy');
             Route::post('/{id}/toggle-status', 'App\Http\Controllers\Api\CourseController@toggleStatus');
-        });
-
-        // Faculty only - get their courses
-        Route::middleware('role:faculty')->group(function () {
-            Route::get('/my-courses', 'App\Http\Controllers\Api\CourseController@myCourses');
         });
     });
 

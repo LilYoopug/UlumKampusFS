@@ -43,7 +43,7 @@ class LibraryResourceFactory extends Factory
                 'journal',
                 'other',
             ]),
-            'access_level' => fake()->randomElement(['public', 'faculty', 'course']),
+            'access_level' => fake()->randomElement(['public', 'students', 'faculty', 'specific_course', 'specific_faculty']),
             'file_url' => fake()->optional(50)->url(),
             'file_type' => fake()->optional()->randomElement(['pdf', 'doc', 'docx', 'mp4', 'mp3', 'zip']),
             'file_size' => fake()->optional()->numberBetween(1024, 104857600), // 1KB to 100MB
@@ -169,7 +169,7 @@ class LibraryResourceFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'course_id' => $courseId,
-            'access_level' => 'course',
+            'access_level' => 'specific_course',
         ]);
     }
 

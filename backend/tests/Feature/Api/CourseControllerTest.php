@@ -234,7 +234,9 @@ class CourseControllerTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'pagination' => [
-                    'per_page' => 5,
+                    'meta' => [
+                        'per_page' => 5,
+                    ],
                 ],
             ]);
     }
