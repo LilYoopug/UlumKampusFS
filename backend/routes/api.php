@@ -288,8 +288,45 @@ Route::middleware('auth:sanctum')->group(function () {
     // DISCUSSION THREAD Routes
     // ------------------------------------------------------------------------
 
-    Route::prefix('discussions')->group(function () {
+    Route::prefix('discussion-threads')->group(function () {
         // All authenticated users can read discussions
+        Route::get('/', 'App\Http\Controllers\Api\DiscussionThreadController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\DiscussionThreadController@show');
+        Route::get('/{id}/posts', 'App\Http\Controllers\Api\DiscussionThreadController@posts');
+
+        // Admin and Faculty can create threads
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\DiscussionThreadController@store');
+        });
+
+        // Thread owner or admin/faculty can update
+        Route::put('/{id}', 'App\Http\Controllers\Api\DiscussionThreadController@update');
+
+        // Thread owner or admin/faculty can delete
+        Route::delete('/{id}', 'App\Http\Controllers\Api\DiscussionThreadController@destroy');
+
+        // Thread owner or admin/faculty can close/reopen
+        Route::post('/{id}/close', 'App\Http\Controllers\Api\DiscussionThreadController@close');
+        Route::post('/{id}/reopen', 'App\Http\Controllers\Api\DiscussionThreadController@reopen');
+
+        // Admin and Faculty moderation
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/{id}/pin', 'App\Http\Controllers\Api\DiscussionThreadController@pin');
+            Route::post('/{id}/unpin', 'App\Http\Controllers\Api\DiscussionThreadController@unpin');
+            Route::post('/{id}/lock', 'App\Http\Controllers\Api\DiscussionThreadController@lock');
+            Route::post('/{id}/unlock', 'App\Http\Controllers\Api\DiscussionThreadController@unlock');
+            Route::post('/{id}/archive', 'App\Http\Controllers\Api\DiscussionThreadController@archive');
+            Route::post('/{id}/restore', 'App\Http\Controllers\Api\DiscussionThreadController@restore');
+        });
+
+        // User-specific routes
+        Route::get('/my-threads', 'App\Http\Controllers\Api\DiscussionThreadController@myThreads');
+        Route::get('/by-course/{courseId}', 'App\Http\Controllers\Api\DiscussionThreadController@byCourse');
+        Route::get('/by-module/{moduleId}', 'App\Http\Controllers\Api\DiscussionThreadController@byModule');
+    });
+
+    Route::prefix('discussions')->group(function () {
+        // Legacy DiscussionController routes
         Route::get('/', 'App\Http\Controllers\Api\DiscussionController@index');
         Route::get('/threads', 'App\Http\Controllers\Api\DiscussionController@threads');
         Route::get('/threads/{id}', 'App\Http\Controllers\Api\DiscussionController@showThread');
@@ -331,6 +368,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', 'App\Http\Controllers\Api\DiscussionPostController@show');
         Route::get('/{id}/replies', 'App\Http\Controllers\Api\DiscussionPostController@replies');
 
+        // All authenticated users can create replies
+        Route::post('/{id}/reply', 'App\Http\Controllers\Api\DiscussionPostController@reply');
+
+        // User-specific routes
+        Route::get('/my-posts', 'App\Http\Controllers\Api\DiscussionPostController@myPosts');
+        Route::get('/by-thread/{threadId}', 'App\Http\Controllers\Api\DiscussionPostController@byThread');
+        Route::get('/solution-by-thread/{threadId}', 'App\Http\Controllers\Api\DiscussionPostController@solutionByThread');
+
         // Post owners can update their own posts
         Route::put('/{id}', 'App\Http\Controllers\Api\DiscussionPostController@update');
 
@@ -355,9 +400,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\NotificationController@index');
         Route::get('/{id}', 'App\Http\Controllers\Api\NotificationController@show');
         Route::post('/{id}/mark-read', 'App\Http\Controllers\Api\NotificationController@markRead');
+        Route::post('/{id}/mark-unread', 'App\Http\Controllers\Api\NotificationController@markUnread');
         Route::post('/mark-all-read', 'App\Http\Controllers\Api\NotificationController@markAllRead');
+        Route::get('/unread', 'App\Http\Controllers\Api\NotificationController@unread');
+        Route::get('/urgent', 'App\Http\Controllers\Api\NotificationController@urgent');
+        Route::get('/counts', 'App\Http\Controllers\Api\NotificationController@counts');
         Route::delete('/{id}', 'App\Http\Controllers\Api\NotificationController@destroy');
         Route::delete('/clear-read', 'App\Http\Controllers\Api\NotificationController@clearRead');
+
+        // Admin only - create and update notifications
+        Route::middleware('role:admin')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\NotificationController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\NotificationController@update');
+        });
     });
 
     // ------------------------------------------------------------------------
