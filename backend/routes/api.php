@@ -442,6 +442,23 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ------------------------------------------------------------------------
+    // ACADEMIC CALENDAR EVENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('academic-calendar-events')->group(function () {
+        // All authenticated users can view calendar events
+        Route::get('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@show');
+
+        // Admin and Faculty only - create, update, delete
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@destroy');
+        });
+    });
+
+    // ------------------------------------------------------------------------
     // PAYMENT Routes (existing)
     // ------------------------------------------------------------------------
 
