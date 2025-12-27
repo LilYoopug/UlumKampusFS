@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\AcademicCalendarEventRequest;
+use App\Http\Resources\AcademicCalendarEventResource;
 use App\Models\AcademicCalendarEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -62,7 +63,7 @@ class AcademicCalendarEventController extends ApiController
 
         $events = $query->get();
 
-        return $this->success($events);
+        return $this->success(AcademicCalendarEventResource::collection($events));
     }
 
     /**
@@ -77,7 +78,7 @@ class AcademicCalendarEventController extends ApiController
     {
         $event = AcademicCalendarEvent::create($request->validated());
 
-        return $this->created($event, 'Calendar event created successfully');
+        return $this->created(new AcademicCalendarEventResource($event), 'Calendar event created successfully');
     }
 
     /**
@@ -90,7 +91,7 @@ class AcademicCalendarEventController extends ApiController
     {
         $event = AcademicCalendarEvent::findOrFail($id);
 
-        return $this->success($event);
+        return $this->success(new AcademicCalendarEventResource($event));
     }
 
     /**
@@ -108,7 +109,7 @@ class AcademicCalendarEventController extends ApiController
 
         $event->update($request->validated());
 
-        return $this->success($event, 'Calendar event updated successfully');
+        return $this->success(new AcademicCalendarEventResource($event), 'Calendar event updated successfully');
     }
 
     /**
@@ -141,7 +142,7 @@ class AcademicCalendarEventController extends ApiController
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return $this->success($events);
+        return $this->success(AcademicCalendarEventResource::collection($events));
     }
 
     /**
@@ -157,7 +158,7 @@ class AcademicCalendarEventController extends ApiController
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return $this->success($events);
+        return $this->success(AcademicCalendarEventResource::collection($events));
     }
 
     /**
@@ -184,7 +185,7 @@ class AcademicCalendarEventController extends ApiController
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return $this->success($events);
+        return $this->success(AcademicCalendarEventResource::collection($events));
     }
 
     /**
@@ -207,6 +208,6 @@ class AcademicCalendarEventController extends ApiController
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return $this->success($events);
+        return $this->success(AcademicCalendarEventResource::collection($events));
     }
 }
