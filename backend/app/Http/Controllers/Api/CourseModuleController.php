@@ -3,19 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AssignmentResource;
+use App\Http\Resources\CourseModuleResource;
 use App\Models\CourseModule;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class CourseModuleController extends Controller
-{
+class CourseModuleController extends ApiController {
     /**
      * Display a listing of course modules.
      */
     public function index(): JsonResponse
     {
         $modules = CourseModule::with('course')->ordered()->get();
-        return $this->success($modules);
+        return $this->success(
+            CourseModuleResource::collection($modules),
+            'Course modules retrieved successfully'
+        );
     }
 
     /**
@@ -31,11 +35,15 @@ class CourseModuleController extends Controller
             'video_url' => 'nullable|url|max:500',
             'document_url' => 'nullable|url|max:500',
             'order' => 'nullable|integer|min:0',
-            'is_published' => 'boolean',
+            'is_published' => 'nullable|boolean',
         ]);
 
+        $validated['published_at'] = $validated['is_published'] ?? false ? now() : null;
         $module = CourseModule::create($validated);
-        return $this->created($module, 'Course module created successfully');
+        return $this->created(
+            new CourseModuleResource($module->load('course')),
+            'Course module created successfully'
+        );
     }
 
     /**
@@ -44,7 +52,10 @@ class CourseModuleController extends Controller
     public function show(string $id): JsonResponse
     {
         $module = CourseModule::with('course')->findOrFail($id);
-        return $this->success($module);
+        return $this->success(
+            new CourseModuleResource($module),
+            'Course module retrieved successfully'
+        );
     }
 
     /**
@@ -62,11 +73,18 @@ class CourseModuleController extends Controller
             'video_url' => 'nullable|url|max:500',
             'document_url' => 'nullable|url|max:500',
             'order' => 'nullable|integer|min:0',
-            'is_published' => 'boolean',
+            'is_published' => 'nullable|boolean',
         ]);
 
+        if (isset($validated['is_published']) && $validated['is_published'] && !$module->is_published) {
+            $validated['published_at'] = now();
+        }
+
         $module->update($validated);
-        return $this->success($module, 'Course module updated successfully');
+        return $this->success(
+            new CourseModuleResource($module->load('course')),
+            'Course module updated successfully'
+        );
     }
 
     /**
@@ -86,7 +104,10 @@ class CourseModuleController extends Controller
     {
         $module = CourseModule::findOrFail($id);
         $assignments = $module->assignments()->ordered()->get();
-        return $this->success($assignments);
+        return $this->success(
+            AssignmentResource::collection($assignments),
+            'Module assignments retrieved successfully'
+        );
     }
 
     /**
@@ -96,6 +117,9 @@ class CourseModuleController extends Controller
     {
         $module = CourseModule::findOrFail($id);
         $threads = $module->discussionThreads()->recent()->get();
-        return $this->success($threads);
+        return $this->success(
+            $threads,
+            'Module discussions retrieved successfully'
+        );
     }
 }
