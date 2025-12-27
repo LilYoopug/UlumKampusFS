@@ -150,6 +150,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\CourseController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\CourseController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\CourseController@destroy');
+            Route::post('/{id}/toggle-status', 'App\Http\Controllers\Api\CourseController@toggleStatus');
+        });
+
+        // Faculty only - get their courses
+        Route::middleware('role:faculty')->group(function () {
+            Route::get('/my-courses', 'App\Http\Controllers\Api\CourseController@myCourses');
         });
     });
 
