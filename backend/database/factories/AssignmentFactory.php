@@ -18,7 +18,7 @@ class AssignmentFactory extends Factory
     {
         return [
             'course_id' => \App\Models\Course::factory(),
-            'module_id' => fake()->optional(50)->create(\App\Models\CourseModule::class)->id,
+            'module_id' => fake()->optional(50, null)->randomElement([null]),
             'created_by' => \App\Models\User::factory()->create(['role' => 'faculty']),
             'title' => fake()->randomElement([
                 'Homework 1',

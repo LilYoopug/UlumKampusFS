@@ -36,7 +36,6 @@ class LibraryResourceFactory extends Factory
             'resource_type' => fake()->randomElement([
                 'document',
                 'video',
-                'audio',
                 'link',
                 'book',
                 'article',

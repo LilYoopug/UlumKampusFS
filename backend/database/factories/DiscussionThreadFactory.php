@@ -18,7 +18,7 @@ class DiscussionThreadFactory extends Factory
     {
         return [
             'course_id' => \App\Models\Course::factory(),
-            'module_id' => fake()->optional(30)->create(\App\Models\CourseModule::class)->id,
+            'module_id' => fake()->optional(30, null)->randomElement([null]),
             'created_by' => \App\Models\User::factory(),
             'title' => fake()->randomElement([
                 'Question about homework',
@@ -50,7 +50,7 @@ class DiscussionThreadFactory extends Factory
     }
 
     /**
-     * Indicate that the thread is open.
+     * Indicate that the thread is open (not closed).
      */
     public function open(): static
     {

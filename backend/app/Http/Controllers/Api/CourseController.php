@@ -267,7 +267,7 @@ class CourseController extends ApiController
     {
         $course = Course::findOrFail($id);
         $threads = $course->discussionThreads()
-            ->where('is_closed', false)
+            ->where('status', 'open')
             ->orderBy('created_at', 'desc')
             ->get();
 

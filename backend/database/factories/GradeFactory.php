@@ -19,7 +19,7 @@ class GradeFactory extends Factory
         return [
             'user_id' => \App\Models\User::factory()->create(['role' => 'student']),
             'course_id' => \App\Models\Course::factory(),
-            'assignment_id' => fake()->optional(70)->create(\App\Models\Assignment::class)->id,
+            'assignment_id' => fake()->optional(70, null)->randomElement([null, \App\Models\Assignment::factory()]),
             'grade' => fake()->randomFloat(2, 0, 100),
             'grade_letter' => fake()->optional()->randomElement(['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F']),
             'comments' => fake()->optional()->sentence(),

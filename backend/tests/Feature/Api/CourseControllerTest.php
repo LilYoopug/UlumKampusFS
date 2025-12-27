@@ -800,11 +800,11 @@ class CourseControllerTest extends TestCase
         $course = Course::factory()->create();
         \App\Models\DiscussionThread::factory()->create([
             'course_id' => $course->id,
-            'is_closed' => false,
+            'status' => 'open',
         ]);
         \App\Models\DiscussionThread::factory()->create([
             'course_id' => $course->id,
-            'is_closed' => true,
+            'status' => 'closed',
         ]);
 
         Sanctum::actingAs($this->student);
