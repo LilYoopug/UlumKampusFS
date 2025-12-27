@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Assignment, Course, User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Assignment, Course, User } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { AssignmentCard } from './AssignmentCard';
 import { AssignmentDetailView } from './AssignmentDetailView';
-import { Icon } from './Icon';
+import { Icon } from '../../src/ui/components/Icon';
 import { AssignmentForm } from './AssignmentForm';
-import { COURSES_DATA } from '../constants';
+import { COURSES_DATA } from '../../constants';
 
 
 interface CourseAssignmentsTabProps {

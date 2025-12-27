@@ -1,7 +1,7 @@
 import React from 'react';
-import { Assignment, Course, Submission, User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
+import { Assignment, Course, Submission, User } from '../../../../types';
+import { useLanguage } from '../../../../contexts/LanguageContext';
+import { Icon } from '../../../ui/components/Icon';
 
 
 // Helper to get assignment status for the logged-in user

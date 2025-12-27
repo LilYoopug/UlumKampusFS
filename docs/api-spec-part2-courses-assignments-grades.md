@@ -326,6 +326,14 @@ Response: 204 No Content
 **Purpose**: Get all assignments for a specific course
 **Auth**: JWT
 
+Query Parameters:
+- `status`: string (submitted, pending, graded)
+- `category`: string (Tugas, Ujian)
+- `dueDateFrom`: string (filter by due date range)
+- `dueDateTo`: string (filter by due date range)
+- `page`: number
+- `limit`: number
+
 Response:
 ```json
 {
@@ -363,7 +371,65 @@ Response:
       "createdAt": "string",
       "updatedAt": "string"
     }
+  ],
+  "pagination": {
+    "page": number,
+    "limit": number,
+    "total": number,
+    "totalPages": number
+  }
+}
+```
+
+### GET /api/courses/{courseId}/modules
+**Frontend**: CourseDetail.tsx (useEffect, lines 9-88)
+**Purpose**: Get all modules for a specific course
+**Auth**: JWT
+
+Response:
+```json
+{
+  "modules": [
+    {
+      "id": "string",
+      "title": "string",
+      "type": "video | pdf | quiz | hafalan | live",
+      "description": "string",
+      "duration": "string",
+      "resourceUrl": "string",
+      "captionsUrl": "string",
+      "attachmentUrl": "string",
+      "startTime": "string",
+      "liveUrl": "string",
+      "order": "number"
+    }
   ]
+}
+```
+
+### POST /api/courses/{courseId}/modules/{moduleId}/complete
+**Frontend**: CourseDetail.tsx (markModuleAsCompleted function)
+**Purpose**: Mark a course module as completed
+**Auth**: JWT (Student enrolled in course)
+
+Request Body:
+```json
+{
+  "moduleId": "string",
+  "completedAt": "string",
+  "progressPercentage": "number"
+}
+```
+
+Response:
+```json
+{
+  "id": "string",
+  "courseId": "string",
+  "moduleId": "string",
+  "completedAt": "string",
+  "progressPercentage": "number",
+  "status": "completed | in_progress"
 }
 ```
 
@@ -773,6 +839,11 @@ Response:
 Query Parameters:
 - `studentId`: string (optional, filter by student)
 - `courseId`: string (optional, filter by course)
+- `assignmentId`: string (optional, filter by assignment)
+- `semester`: string (optional, filter by semester)
+- `year`: number (optional, filter by year)
+- `page`: number (optional)
+- `limit`: number (optional)
 
 Response:
 ```json
@@ -883,6 +954,123 @@ Response:
         "createdAt": "string",
         "updatedAt": "string"
       }
+    }
+  ],
+  "pagination": {
+    "page": number,
+    "limit": number,
+    "total": number,
+    "totalPages": number
+  }
+}
+```
+
+### GET /api/courses/{courseId}/grades
+**Frontend**: Gradebook.tsx (useEffect, lines 95-124)
+**Purpose**: Get grades for all students in a course
+**Auth**: JWT (Dosen teaching course or Student enrolled)
+
+Response:
+```json
+{
+  "grades": [
+    {
+      "id": "string",
+      "user_id": "string",
+      "course_id": "string",
+      "assignment_id": "string",
+      "grade": "number",
+      "grade_letter": "string",
+      "comments": "string",
+      "created_at": "string",
+      "updated_at": "string",
+      "user": {
+        "id": "string",
+        "name": "string",
+        "studentId": "string"
+      },
+      "assignment": {
+        "id": "string",
+        "title": "string",
+        "category": "string"
+      }
+    }
+  ]
+}
+```
+
+### GET /api/students/{studentId}/grades
+**Frontend**: Grades.tsx (useEffect, lines 95-124)
+**Purpose**: Get grades for a specific student across courses
+**Auth**: JWT (Student or authorized Dosen/Admin)
+
+Response:
+```json
+{
+  "grades": [
+    {
+      "id": "string",
+      "user_id": "string",
+      "course_id": "string",
+      "assignment_id": "string",
+      "grade": "number",
+      "grade_letter": "string",
+      "comments": "string",
+      "created_at": "string",
+      "updated_at": "string",
+      "course": {
+        "id": "string",
+        "title": "string",
+        "instructor": "string"
+      },
+      "assignment": {
+        "id": "string",
+        "title": "string",
+        "category": "string"
+      }
+    }
+  ]
+}
+```
+
+### POST /api/grades/batch-update
+**Frontend**: Gradebook.tsx (handleSaveGrade in bulk mode)
+**Purpose**: Update multiple grades at once
+**Auth**: JWT (Dosen or Admin)
+
+Request Body:
+```json
+{
+  "grades": [
+    {
+      "studentId": "string",
+      "assignmentId": "string",
+      "grade": "number",
+      "gradeLetter": "string",
+      "comments": "string"
+    }
+  ]
+}
+```
+
+Response:
+```json
+{
+  "updatedGrades": [
+    {
+      "id": "string",
+      "user_id": "string",
+      "assignment_id": "string",
+      "grade": "number",
+      "grade_letter": "string",
+      "comments": "string"
+    }
+  ],
+  "failedUpdates": [
+    {
+      "studentId": "string",
+      "assignmentId": "string",
+      "error": "string"
     }
   ]
 }
@@ -1017,6 +1205,49 @@ Response:
       "comment": "string"
     }
   ]
+}
+```
+
+### POST /api/assignments/{id}/hafalan-analysis
+**Frontend**: HafalanRecorder.tsx (handleSubmit, lines 83-95)
+**Purpose**: Submit and analyze hafalan (memorization) with detailed tajwid analysis
+**Auth**: JWT (Student or Dosen)
+
+Request Body:
+```json
+{
+  "audioUrl": "string",
+  "surahNumber": "number",
+  "ayahRange": {
+    "start": "number",
+    "end": "number"
+  },
+  "submissionId": "string"
+}
+```
+
+Response:
+```json
+{
+  "id": "string",
+  "submissionId": "string",
+  "audioUrl": "string",
+  "analysis": {
+    "accuracyScore": "number",
+    "tajwidMistakes": [
+      {
+        "ayahNumber": "number",
+        "position": "number",
+        "mistakeType": "string",
+        "correction": "string",
+        "feedback": "string"
+      }
+    ],
+    "pronunciationScore": "number",
+    "fluencyScore": "number"
+  },
+  "createdAt": "string",
+  "completedAt": "string"
 }
 ```
 

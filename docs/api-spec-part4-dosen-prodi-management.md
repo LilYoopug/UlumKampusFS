@@ -37,6 +37,46 @@ Response:
 - Shows assignments needing grading
 - Uses mock data in DosenDashboard.tsx lines 40-80
 
+### GET /api/dosen/dashboard/stats
+**Frontend**: DosenDashboard.tsx (useEffect lines 34-61)
+**Purpose**: Get comprehensive teaching statistics for dosen
+**Auth**: JWT (Dosen role required)
+
+Response:
+```json
+{
+  "stats": {
+    "coursesTeaching": number,
+    "totalStudents": number,
+    "pendingGrades": number,
+    "recentSubmissions": number,
+    "courseCompletionRate": number,
+    "averageGrade": number,
+    "attendanceRate": number
+  },
+  "trends": {
+    "monthlySubmissions": [
+      {
+        "month": "string",
+        "count": number
+      }
+    ],
+    "gradeDistribution": {
+      "A": number,
+      "B": number,
+      "C": number,
+      "D": number,
+      "E": number
+    }
+  }
+}
+```
+
+**Frontend Notes**:
+- Enhanced statistics for dosen dashboard
+- Includes trends and grade distribution
+- Provides more comprehensive teaching metrics
+
 ### POST /api/announcements
 **Frontend**: DosenDashboard.tsx (handleAnnouncementSubmit function lines 72-94)
 **Purpose**: Create new announcements for courses or academic purposes
@@ -532,45 +572,6 @@ Response:
 }
 ```
 
-### GET /api/prayer-times
-**Frontend**: PrayerTimes.tsx (component logic lines 65-310)
-**Purpose**: Get prayer times for a specific location
-**Auth**: JWT (Authenticated user)
-
-Query Parameters:
-- `locationId`: string
-- `date`: string (optional, defaults to today)
-
-Response:
-```json
-{
-  "imsak": "string",
-  "subuh": "string",
-  "terbit": "string",
-  "dhuha": "string",
-  "dzuhur": "string",
-  "ashar": "string",
-  "maghrib": "string",
-  "isya": "string",
-  "tanggal": "string",
-  "date": "string"
-}
-```
-
-### GET /api/prayer-times/locations
-**Frontend**: PrayerTimes.tsx (component logic lines 159-188)
-**Purpose**: Get all available prayer time locations
-**Auth**: JWT (Authenticated user)
-
-Response:
-```json
-[
-  {
-    "id": "string",
-    "lokasi": "string"
-  }
-]
-```
 
 ## Type Definitions Summary
 

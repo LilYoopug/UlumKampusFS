@@ -16,40 +16,48 @@ import {
   USER_PASSWORDS
 } from './constants';
 
-// Import all components using new feature-based barrel files
-import { Sidebar, Header } from './src/features/dashboard';
-import { Dashboard } from './src/features/dashboard';
-import { DosenDashboard } from './src/features/dosen';
-import { ProdiDashboard } from './src/features/prodi';
-import { ManajemenDashboard } from './src/features/management';
-import { SuperAdminDashboard } from './src/features/superadmin';
-import { CourseCatalog, CourseDetail, CreateCourse } from './src/features/courses';
-import { Grades, Gradebook } from './src/features/grades';
-import { Assignments as AssignmentsPage } from './src/features/assignments';
-import { VideoLectures } from './src/features/resources';
-import { ELibrary, ManageELibrary } from './src/features/resources';
-import { Profile } from './src/features/auth';
-import { Settings } from './src/ui';
-import { Worship } from './src/features/resources';
-import { Help } from './src/ui';
-import { Calendar } from './src/features/calendar';
-import { Notifications as NotificationsPage } from './src/ui';
-import { AnnouncementsPage as AllAnnouncementsPage } from './src/features/landing';
-import { ProdiCoursesPage, ProdiStudentsPage, ProdiLecturersPage } from './src/features/prodi';
-import { ManagementCoursesPage } from './src/features/management';
-import { UstadzAI } from './src/features/resources';
-import { Homepage } from './src/features/landing';
-import { Login, Register } from './src/features/auth';
-import { PublicCourseCatalog } from './src/features/courses';
-import { AdministrasiPage } from './src/features/administration';
-import { ManagementAdministrationPage } from './src/features/management';
-import { StudentRegistrationPage } from './src/features/administration';
+// Import all components
+import { Sidebar } from './components/Sidebar';
+import { Header } from './components/Header';
+import { Dashboard } from './components/Dashboard';
+import { DosenDashboard } from './components/DosenDashboard';
+import { ProdiDashboard } from './components/ProdiDashboard';
+import { ManajemenDashboard } from './components/ManajemenDashboard';
+import { SuperAdminDashboard } from './components/SuperAdminDashboard';
+import { CourseCatalog } from './components/CourseCatalog';
+import { CourseDetail } from './components/CourseDetail';
+import { CreateCourse } from './components/CreateCourse';
+import { Grades } from './components/Grades';
+import { Gradebook } from './components/Gradebook';
+import { Assignments as AssignmentsPage } from './components/Assignments';
+import { VideoLectures } from './components/VideoLectures';
+import { ELibrary } from './components/ELibrary';
+import { ManageELibrary } from './components/ManageELibrary';
+import { Profile } from './components/Profile';
+import { Settings } from './components/Settings';
+import { Worship } from './components/Worship';
+import { Help } from './components/Help';
+import { Calendar } from './components/Calendar';
+import { Notifications as NotificationsPage } from './components/Notifications';
+import { AnnouncementsPage as AllAnnouncementsPage } from './components/AnnouncementsPage';
+import { ProdiCoursesPage } from './components/ProdiCoursesPage';
+import { ProdiStudentsPage } from './components/ProdiStudentsPage';
+import { ProdiLecturersPage } from './components/ProdiLecturersPage';
+import { ManagementCoursesPage } from './components/ManagementCoursesPage';
+import { UstadzAI } from './components/UstadzAI';
+import { Homepage } from './components/Homepage';
+import { Login } from './components/Login';
+import { Register } from './components/Register';
+import { PublicCourseCatalog } from './components/PublicCourseCatalog';
+import { AdministrasiPage } from './components/AdministrasiPage';
+import { ManagementAdministrationPage } from './components/ManagementAdministrationPage';
+import { StudentRegistrationPage } from './components/StudentRegistrationPage';
 
-import { RegistrasiPage } from './src/features/administration';
-import { PageNotFound } from './src/ui';
- import { RolePageNotAvailable } from './src/ui';
- import { UserManagementPage } from './src/features/management';
- import { ManajemenFakultasPage } from './src/features/management';
+import { RegistrasiPage } from './components/RegistrasiPage';
+import { PageNotFound } from './components/PageNotFound';
+ import { RolePageNotAvailable } from './components/RolePageNotAvailable';
+ import { UserManagementPage } from './components/UserManagementPage';
+ import { ManajemenFakultasPage } from './components/ManajemenFakultasPage';
 
 // FIX: Export handleNavClick for use in landing page components.
 export const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

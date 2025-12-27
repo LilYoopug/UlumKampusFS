@@ -1,0 +1,11 @@
+export { QuranReader } from './components/QuranReader';
+export { HadithReader } from './components/HadithReader';
+export { DoaReader } from './components/DoaReader';
+export { VideoLectures } from './components/VideoLectures';
+export { ELibrary } from './components/ELibrary';
+export { ManageELibrary } from './components/ManageELibrary';
+export { IslamicResources } from './components/IslamicResources';
+export { HafalanRecorder } from './components/HafalanRecorder';
+export { UstadzAI } from './components/UstadzAI';
+export { Worship } from './components/Worship';
+export { PrayerTimes } from './components/PrayerTimes';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { User } from '../types';
-import { PAYMENT_ITEMS_MOCK, PAYMENT_HISTORY_MOCK, PaymentMethod, PAYMENT_METHODS, PaymentItem, PaymentHistoryItem } from '../constants';
+import { useLanguage } from '../../../../contexts/LanguageContext';
+import { User } from '../../../../types';
+import { PAYMENT_ITEMS_MOCK, PAYMENT_HISTORY_MOCK, PaymentMethod, PAYMENT_METHODS, PaymentItem, PaymentHistoryItem } from '../../../../constants';
 
 
 

@@ -1,310 +1,30 @@
 # API Specification Part 3 - Resources, E-Library & Islamic Content
 
-## Quran Reader
 
-### GET /api/resources/quran/surah
-**Frontend**: QuranReader.tsx (lines 46-65)
-**Purpose**: Get list of all Quran surahs
-**Auth**: Public
-
-Response:
-```json
-{
-  "code": 200,
-  "data": [
-    {
-      "nomor": 1,
-      "nama": "الفاتحة",
-      "namaLatin": "Al-Fatihah",
-      "jumlahAyat": 7,
-      "tempatTurun": "Mekah",
-      "arti": "Pembukaan",
-      "deskripsi": "Surah Al-Fatihah adalah surah pertama dalam Al-Qur'an...",
-      "audioFull": {
-        "01": "https://..."
-      }
-    }
-  ]
-}
-```
-
-### GET /api/resources/quran/surah/{surahNumber}
-**Frontend**: QuranReader.tsx (lines 73-93)
-**Purpose**: Get specific surah with all its ayahs
-**Auth**: Public
-
-Response:
-```json
-{
-  "code": 200,
-  "data": {
-    "nomor": 1,
-    "nama": "الفاتحة",
-    "namaLatin": "Al-Fatihah",
-    "jumlahAyat": 7,
-    "tempatTurun": "Mekah",
-    "arti": "Pembukaan",
-    "deskripsi": "Surah Al-Fatihah adalah surah pertama dalam Al-Qur'an...",
-    "ayat": [
-      {
-        "nomorAyat": 1,
-        "teksArab": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-        "teksLatin": "bismillāhir-raḥmānir-raḥīm(i)",
-        "teksIndonesia": "Dengan nama Allah, Yang Maha Pengasih, Maha Penyayang.",
-        "audio": {
-          "01": "https://..."
-        }
-      }
-    ],
-    "audioFull": {
-      "01": "https://..."
-    }
-  }
-}
-```
-
-### GET /api/resources/quran/tafsir/{surahNumber}
-**Frontend**: QuranReader.tsx (lines 73-93)
-**Purpose**: Get tafsir for specific surah
-**Auth**: Public
-
-Response:
-```json
-{
-  "code": 200,
-  "data": {
-    "tafsir": [
-      {
-        "ayat": 1,
-        "teks": "Tafsir ayat pertama..."
-      }
-    ]
-  }
-}
-```
-
-### GET /api/resources/quran/random
-**Frontend**: QuranReader.tsx (lines 28-44)
-**Purpose**: Get random ayah from Quran
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": {
-    "ayat": {
-      "id": "1:1",
-      "surat": "Al-Fatihah",
-      "ayah": "1",
-      "text": "Dengan nama Allah, Yang Maha Pengasih, Maha Penyayang.",
-      "arab": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-      "latin": "bismillāhir-raḥmānir-raḥīm(i)"
-    },
-    "info": {
-      "surat": {
-        "id": 1,
-        "nama": {
-          "id": "Al-Fatihah",
-          "ar": "الفاتحة",
-          "en": "The Opening"
-        },
-        "arti": {
-          "id": "Pembukaan",
-          "en": "The Opening"
-        },
-        "ayat": 7
-      }
-    }
-  }
-}
-```
-
-## Hadith Reader
-
-### GET /api/resources/hadith/arbain/random
-**Frontend**: HadithReader.tsx (lines 28-40)
-**Purpose**: Get random hadith from Arbain Nawawi collection
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": {
-    "id": 1,
-    "number": 1,
-    "arab": "حَدَّثَنَا أَبُو بَكْرٍ مُحَمَّدُ بْنُ الْعَلَاءِ، حَدَّثَنَا أَبُو أُسَامَةَ، حَدَّثَنَا بُرَيْدٌ، عَنِ الأَعْمَشِ، عَنْ أَبِي سُفْيَانَ، عَنْ جَابِرٍ، قَالَ قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم: إِنَّ اللَّهَ وَفَّى لَكُمْ حَجَّكُمْ، وَعُمْرَتَكُمْ، وَغَزْوَتَكُمْ، وَمَحَّلَكُمْ، فَاحْفَظُوا أَنْفُسَكُمْ، وَأَهْلِيكُمْ، وَمَوَالِيكُمْ، وَإِخْوَانَكُمْ، وَجِيرَانَكُمْ، وَصَدِيقَكُمْ، وَمَنْ صَلَحَ مِنَ الْمُسْلِمِينَ، فَإِنَّ لَكُمْ فِي كُلِّ ذَلِكَ أَجْرًا.",
-    "indo": "Sesungguhnya Allah telah menyempurnakan haji kalian, umroh kalian, peperangan kalian, dan tempat kalian. Maka peliharalah diri kalian, istri kalian, hamba sahaya kalian, saudara kalian, tetangga kalian, teman kalian, dan orang-orang baik dari kaum muslimin, karena sesungguhnya kalian mendapatkan pahala di setiap hal itu.",
-    "judul": "Kewajiban menjaga diri dan orang lain"
-  }
-}
-```
-
-### GET /api/resources/hadith/arbain/all
-**Frontend**: HadithReader.tsx (lines 42-50)
-**Purpose**: Get all hadith from Arbain Nawawi collection
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": [
-    {
-      "id": 1,
-      "number": 1,
-      "arab": "...",
-      "indo": "...",
-      "judul": "..."
-    }
-  ]
-}
-```
-
-### GET /api/resources/hadith/perawi
-**Frontend**: HadithReader.tsx (lines 50-55)
-**Purpose**: Get list of hadith perawi/authors
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": [
-    {
-      "name": "Imam Bukhari",
-      "slug": "bukhari",
-      "total": 7275
-    }
-  ]
-}
-```
-
-### GET /api/resources/hadith/{perawi}/{number}
-**Frontend**: HadithReader.tsx (lines 63-85)
-**Purpose**: Get specific hadith from specific perawi
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": {
-    "id": 1,
-    "number": 1,
-    "arab": "...",
-    "indo": "...",
-    "judul": "..."
-  }
-}
-```
-
-## Doa Reader
-
-### GET /api/resources/doa/random
-**Frontend**: DoaReader.tsx (lines 24-36)
-**Purpose**: Get random doa
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": {
-    "id": "1",
-    "judul": "Doa Sebelum Makan",
-    "arab": "اَللَّهُمَّ بَارِكْ لَنَا فِيْمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
-    "indo": "Ya Allah, berkahilah kami dalam rezeki yang telah Engkau berikan kepada kami dan peliharalah kami dari siksa api neraka"
-  }
-}
-```
-
-### GET /api/resources/doa/sources
-**Frontend**: DoaReader.tsx (lines 38-54)
-**Purpose**: Get list of doa sources/categories
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": [
-    "sehari-hari",
-    "ibadah",
-    "makan-minum",
-    "tidur",
-    "perjalanan"
-  ]
-}
-```
-
-### GET /api/resources/doa/sources/{source}
-**Frontend**: DoaReader.tsx (lines 64-76)
-**Purpose**: Get doa from specific source
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": [
-    {
-      "id": "1",
-      "judul": "Doa Sebelum Makan",
-      "arab": "اَللَّهُمَّ بَارِكْ لَنَا فِيْمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
-      "indo": "Ya Allah, berkahilah kami dalam rezeki yang telah Engkau berikan kepada kami dan peliharalah kami dari siksa api neraka"
-    }
-  ]
-}
-```
-
-## Prayer Times
-
-### GET /api/prayer-times/locations
-**Frontend**: PrayerTimes.tsx (lines 172-188)
-**Purpose**: Get list of available prayer time locations
-**Auth**: Public
-
-Response:
-```json
-{
-  "status": true,
-  "data": [
-    {
-      "id": "1",
-      "lokasi": "Jakarta"
-    }
-  ]
-}
-```
-
-### GET /api/prayer-times/{locationId}/{date}
-**Frontend**: PrayerTimes.tsx (lines 190-214)
-**Purpose**: Get prayer times for specific location and date
+### GET /api/resources/islamic/search
+**Frontend**: IslamicResources.tsx
+**Purpose**: Search across all Islamic content (Quran, Hadith, Doa)
 **Auth**: Public
 
 Query Parameters:
-- `date`: string (ISO date format)
+- `query`: string (search term)
+- `contentType`: string (quran, hadith, doa, all)
+- `language`: string (arabic, translation, both)
 
 Response:
 ```json
 {
   "status": true,
-  "data": {
-    "jadwal": {
-      "tanggal": "01 Januari 2025",
-      "imsak": "04:25",
-      "subuh": "04:35",
-      "terbit": "05:50",
-      "dhuha": "06:15",
-      "dzuhur": "12:00",
-      "ashar": "15:15",
-      "maghrib": "18:00",
-      "isya": "19:15",
-      "date": "2025-01-01"
+  "data": [
+    {
+      "type": "quran | hadith | doa",
+      "id": "string",
+      "title": "string",
+      "arabic": "string",
+      "translation": "string",
+      "reference": "string"
     }
-  }
+  ]
 }
 ```
 
@@ -327,6 +47,77 @@ Response:
 {
   "status": "success",
   "response": "Shalat jamaah hukumnya..."
+}
+```
+
+### GET /api/ai/chat/conversations
+**Frontend**: UstadzAI.tsx
+**Purpose**: Get user's chat history with the Islamic AI
+**Auth**: JWT (authenticated users)
+
+Query Parameters:
+- `page`: number (optional)
+- `limit`: number (optional)
+- `filter`: string (optional, subject or topic filter)
+
+Response:
+```json
+{
+  "conversations": [
+    {
+      "id": "string",
+      "title": "string",
+      "createdAt": "string",
+      "lastMessage": "string",
+      "messages": [
+        {
+          "id": "string",
+          "role": "user | assistant",
+          "content": "string",
+          "timestamp": "string"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": number,
+    "limit": number,
+    "total": number,
+    "totalPages": number
+  }
+}
+```
+
+### POST /api/ai/chat/conversation
+**Frontend**: UstadzAI.tsx
+**Purpose**: Create new AI conversation with context
+**Auth**: JWT (authenticated users)
+
+Request:
+```json
+{
+  "initialMessage": "string",
+  "context": {
+    "subject": "string",
+    "topic": "string",
+    "gradeLevel": "string",
+    "preferences": "object"
+  }
+}
+```
+
+Response:
+```json
+{
+  "conversationId": "string",
+  "title": "string",
+  "createdAt": "string",
+  "message": {
+    "id": "string",
+    "role": "assistant",
+    "content": "string",
+    "timestamp": "string"
+  }
 }
 ```
 
@@ -1007,17 +798,6 @@ Response:
 }
 ```
 
-## Static Content (No API needed)
-
-The following components use static content or external APIs that don't require backend endpoints:
-
-- **QuranReader.tsx**: Uses external APIs from api.myquran.com and equran.id
-- **HadithReader.tsx**: Uses external API from api.myquran.com
-- **DoaReader.tsx**: Uses external API from api.myquran.com
-- **PrayerTimes.tsx**: Uses external API from api.myquran.com
-- **FaqSection.tsx**: Uses hardcoded FAQ content
-- **ContactSection.tsx**: Uses hardcoded contact information
-
 ## File Upload Endpoints
 
 ### POST /api/upload
@@ -1043,10 +823,7 @@ Response:
 
 ## Frontend Notes
 
-- Quran, Hadith, and Doa readers use external APIs from api.myquran.com and equran.id - no backend needed for these
-- Prayer times use external API from api.myquran.com - no backend needed for this
 - Video player component uses direct URLs for video playback - backend needed for managing video resources
-- Most Islamic content is fetched from external APIs, but the application provides UI and caching mechanisms
 - User-generated content (announcements, forum posts, submissions) requires backend endpoints
 - E-library system requires full CRUD operations for managing resources
 - Calendar events require backend for academic events, but assignments and classes are derived from existing data

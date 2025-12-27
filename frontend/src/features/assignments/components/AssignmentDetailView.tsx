@@ -1,10 +1,10 @@
 import React, { useState, useMemo, ChangeEvent } from 'react';
-import { Assignment, Course, Submission, User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { ALL_USERS } from '../constants';
-import { HafalanRecorder } from './HafalanRecorder';
-import { numericToLetter } from '../utils/gradeConverter';
+import { Assignment, Course, Submission, User } from '../../../../types';
+import { useLanguage } from '../../../../contexts/LanguageContext';
+import { Icon } from '../../../ui/components/Icon';
+import { ALL_USERS } from '../../../../constants';
+import { HafalanRecorder } from '../../../features/resources/components/HafalanRecorder';
+import { numericToLetter } from '../../../../utils/gradeConverter';
 
 const SubmissionGradingCard: React.FC<{
     submission: Submission;

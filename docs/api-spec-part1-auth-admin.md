@@ -72,6 +72,69 @@ Response:
 
 **Notes**: Based on form fields in Register.tsx lines 81-113 and handleRegister function in App.tsx lines 356-381. Uses mock data in current implementation.
 
+### POST /api/auth/register/student
+**Frontend Location**: RegistrasiPage.tsx (handleSubmit function)
+**Triggers**: New student submits comprehensive registration form
+**Auth Required**: No (for new registrations) / Yes (for logged in users)
+**Role Access**: All
+
+Request Body:
+```json
+{
+  "registrationType": "string",
+  "personalInfo": {
+    "name": "string",
+    "email": "string",
+    "phone_number": "string",
+    "address": "string",
+    "date_of_birth": "string",
+    "place_of_birth": "string",
+    "gender": "string",
+    "religion": "string",
+    "city": "string",
+    "postal_code": "string",
+    "nationality": "string",
+    "parent_name": "string",
+    "parent_occupation": "string",
+    "parent_phone": "string",
+    "nisn": "string",
+    "nik": "string"
+  },
+  "educationInfo": {
+    "high_school_name": "string",
+    "high_school_address": "string",
+    "high_school_graduation_year": "number",
+    "high_school_type": "string",
+    "high_school_major": "string",
+    "high_school_average_grade": "number"
+  },
+  "preferences": {
+    "faculty_preference_1": "string",
+    "faculty_preference_2": "string"
+  },
+  "documents": [
+    {
+      "type": "string",
+      "url": "string"
+    }
+  ]
+}
+```
+
+Response:
+```json
+{
+  "message": "Registration submitted successfully",
+  "registration": {
+    "id": "string",
+    "status": "pending",
+    "applicationDate": "string"
+  }
+}
+```
+
+**Notes**: Based on comprehensive student registration form in RegistrasiPage.tsx lines 38-370. Includes additional fields beyond basic registration.
+
 ### POST /api/auth/logout
 **Frontend Location**: Settings.tsx (Account section logout button)
 **Triggers**: User clicks logout button
@@ -102,6 +165,9 @@ Query Parameters:
 - `search` (optional): Search term for filtering users
 - `role` (optional): Filter by user role
 - `facultyId` (optional): Filter by faculty
+- `status` (optional): Filter by user status
+- `sortBy` (optional): Field to sort by (name, email, joinDate, etc.)
+- `sortOrder` (optional): Sort order (asc, desc)
 
 Response:
 ```json
@@ -271,6 +337,39 @@ Response:
 ```
 
 **Notes**: Based on delete functionality in UserManagementPage.tsx lines 156-161.
+
+### GET /api/users/profile
+**Frontend Location**: Profile.tsx (useEffect that loads user profile)
+**Triggers**: Loading user's own profile page
+**Auth Required**: Yes
+**Role Access**: User can access own profile
+
+Response:
+```json
+{
+  "user": {
+    "id": "string",
+    "name": "string",
+    "email": "string",
+    "role": "string",
+    "avatarUrl": "string",
+    "studentId": "string",
+    "facultyId": "string",
+    "majorId": "string",
+    "studentStatus": "Aktif | Cuti | Lulus | DO | Pendaftaran",
+    "gpa": "number",
+    "totalSks": "number",
+    "bio": "string",
+    "phoneNumber": "string",
+    "joinDate": "string",
+    "badges": ["string"],
+    "created_at": "string",
+    "updated_at": "string"
+  }
+}
+```
+
+**Notes**: Based on Profile.tsx where user profile data is loaded and displayed for the currently authenticated user.
 
 ### PUT /api/users/{id}/profile
 **Frontend Location**: Settings.tsx (saveProfile function)
@@ -780,6 +879,32 @@ Response:
 
 **Notes**: Based on delete payment type functionality in ManagementAdministrationPage.tsx lines 620-622.
 
+### PUT /api/management/payments/{id}/status
+**Frontend Location**: ManagementAdministrationPage.tsx (payment status toggle functionality)
+**Triggers**: Admin updates payment status (paid/unpaid)
+**Auth Required**: Yes (Admin role)
+**Role Access**: Super Admin, Manajemen Kampus
+
+Request Body:
+```json
+{
+  "status": "paid | unpaid"
+}
+```
+
+Response:
+```json
+{
+  "message": "Payment status updated successfully",
+  "payment": {
+    "id": "string",
+    "status": "paid | unpaid"
+  }
+}
+```
+
+**Notes**: Based on payment status toggle functionality in ManagementAdministrationPage.tsx lines 416-452 where admin can change payment status in bulk.
+
 ## Dashboard Endpoints
 
 ### GET /api/dashboard/overview
@@ -1058,60 +1183,6 @@ Response:
 
 **Notes**: Based on password change button in Settings.tsx lines 326-328.
 
-## Prayer Times
-
-### GET /api/prayer-times
-**Frontend Location**: PrayerTimes.tsx (fetches from external API)
-**Triggers**: Loading prayer times page or when location is selected
-**Auth Required**: No
-**Role Access**: All
-
-Query Parameters:
-- `location_id` (required): ID of the location for prayer times
-- `date` (optional): Date for which to get prayer times (defaults to today)
-
-Response:
-```json
-{
-  "data": {
-    "tanggal": "string",
-    "imsak": "string",
-    "subuh": "string",
-    "terbit": "string",
-    "dhuha": "string",
-    "dzuhur": "string",
-    "ashar": "string",
-    "maghrib": "string",
-    "isya": "string",
-    "date": "string"
-  }
-}
-```
-
-**Notes**: Based on external API integration in PrayerTimes.tsx lines 202-212 where it fetches from api.myquran.com.
-
-### GET /api/prayer-times/locations
-**Frontend Location**: PrayerTimes.tsx (fetches from external API)
-**Triggers**: When user starts searching for location
-**Auth Required**: No
-**Role Access**: All
-
-Query Parameters:
-- `search` (optional): Search term for filtering locations
-
-Response:
-```json
-{
-  "data": [
-    {
-      "id": "string",
-      "lokasi": "string"
-    }
-  ]
-}
-```
-
-**Notes**: Based on external API integration in PrayerTimes.tsx lines 172-187 where it fetches from api.myquran.com.
 
 ## Analysis Complete
 - [x] Login.tsx - analyzed, POST /api/auth/login documented
