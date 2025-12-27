@@ -8,7 +8,7 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Create Course, CourseModule, CourseEnrollment migrations
 - [x] Create Assignment, AssignmentSubmission migrations
 - [x] Create Announcement migration with categories
-- [ ] Create LibraryResource migration
+- [x] Create LibraryResource migration
 - [ ] Create DiscussionThread and DiscussionPost migrations
 - [ ] Create Notification migration
 - [ ] Create Grade and AcademicCalendarEvent migrations
