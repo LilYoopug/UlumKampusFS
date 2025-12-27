@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\FacultyRequest;
 use App\Http\Resources\FacultyResource;
 use App\Models\Course;
@@ -12,7 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class FacultyController extends Controller
+class FacultyController extends ApiController
 {
     /**
      * Display a listing of faculties.
@@ -53,10 +52,20 @@ class FacultyController extends Controller
 
     /**
      * Remove the specified faculty.
+     *
+     * Prevents deletion if the faculty has associated users.
      */
     public function destroy(string $id): JsonResponse
     {
         $faculty = Faculty::findOrFail($id);
+
+        // Check if faculty has any users (students or faculty members)
+        if ($faculty->users()->exists()) {
+            return $this->conflict(
+                'Cannot delete faculty with associated users. Please reassign or remove all users first.'
+            );
+        }
+
         $faculty->delete();
         return $this->noContent();
     }

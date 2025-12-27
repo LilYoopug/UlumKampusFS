@@ -310,7 +310,7 @@ class FacultyControllerTest extends TestCase
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('faculties', ['id' => $faculty->id]);
+        $this->assertSoftDeleted('faculties', ['id' => $faculty->id]);
     }
 
     public function test_delete_fails_for_student(): void
@@ -322,6 +322,75 @@ class FacultyControllerTest extends TestCase
         $response = $this->deleteJson('/api/faculties/' . $faculty->id);
 
         $response->assertStatus(403);
+    }
+
+    public function test_delete_fails_when_faculty_has_users(): void
+    {
+        $faculty = Faculty::factory()->create();
+        User::factory()->create(['role' => 'student', 'faculty_id' => $faculty->id]);
+
+        Sanctum::actingAs($this->admin);
+
+        $response = $this->deleteJson('/api/faculties/' . $faculty->id);
+
+        $response->assertStatus(409)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Cannot delete faculty with associated users. Please reassign or remove all users first.',
+            ]);
+
+        // Faculty should still exist in database
+        $this->assertDatabaseHas('faculties', ['id' => $faculty->id]);
+    }
+
+    public function test_delete_fails_when_faculty_has_faculty_users(): void
+    {
+        $faculty = Faculty::factory()->create();
+        User::factory()->create(['role' => 'faculty', 'faculty_id' => $faculty->id]);
+
+        Sanctum::actingAs($this->admin);
+
+        $response = $this->deleteJson('/api/faculties/' . $faculty->id);
+
+        $response->assertStatus(409);
+
+        // Faculty should still exist in database
+        $this->assertDatabaseHas('faculties', ['id' => $faculty->id]);
+    }
+
+    public function test_delete_succeeds_when_faculty_has_no_users(): void
+    {
+        $faculty = Faculty::factory()->create();
+
+        Sanctum::actingAs($this->admin);
+
+        $response = $this->deleteJson('/api/faculties/' . $faculty->id);
+
+        $response->assertStatus(204);
+
+        $this->assertSoftDeleted('faculties', ['id' => $faculty->id]);
+    }
+
+    public function test_delete_succeeds_when_users_are_reassigned(): void
+    {
+        $faculty = Faculty::factory()->create();
+        $otherFaculty = Faculty::factory()->create();
+        $user = User::factory()->create(['role' => 'student', 'faculty_id' => $faculty->id]);
+
+        Sanctum::actingAs($this->admin);
+
+        // First attempt should fail
+        $response = $this->deleteJson('/api/faculties/' . $faculty->id);
+        $response->assertStatus(409);
+
+        // Reassign user to other faculty
+        $user->update(['faculty_id' => $otherFaculty->id]);
+
+        // Second attempt should succeed
+        $response = $this->deleteJson('/api/faculties/' . $faculty->id);
+        $response->assertStatus(204);
+
+        $this->assertSoftDeleted('faculties', ['id' => $faculty->id]);
     }
 
     // -------------------------------------------------------------------------
