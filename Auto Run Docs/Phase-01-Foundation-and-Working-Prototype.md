@@ -4,8 +4,8 @@ This phase establishes the core database structure and creates a working API ser
 
 ## Tasks
 
-- [ ] Create Faculty and Major migrations with hierarchical structure
-- [ ] Create Course, CourseModule, CourseEnrollment migrations
+- [x] Create Faculty and Major migrations with hierarchical structure
+- [x] Create Course, CourseModule, CourseEnrollment migrations
 - [ ] Create Assignment, AssignmentSubmission migrations
 - [ ] Create Announcement migration with categories
 - [ ] Create LibraryResource migration
