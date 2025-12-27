@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -19,7 +18,7 @@ use Illuminate\Validation\Rule;
  * - User creation, retrieval, update, and deletion
  * - User profile updates
  */
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of users with optional filtering and search.
