@@ -30,7 +30,6 @@ return new class extends Migration
             $table->boolean('is_late')->default(false);
             $table->timestamp('late_submission_at')->nullable();
             $table->integer('attempt_number')->default(1);
-            $table->timestamp('graded_at')->nullable();
             $table->timestamps();
 
             $table->unique(['assignment_id', 'student_id', 'attempt_number']);

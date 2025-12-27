@@ -21,7 +21,7 @@ This phase establishes the core database structure and creates a working API ser
 - [x] Update routes/api.php with all route groups
 - [x] Create API Resource classes for User, Faculty, Major, Course
 - [x] Create base ApiController with common response methods
-- [ ] Test server startup with `php artisan serve` - BLOCKED: Missing DOMDocument PHP extension
+- [x] Test server startup with `php artisan serve` - Server starts successfully, health check returns {"status":"ok"}
 - [x] Verify API routes are accessible via `php artisan route:list` - All 80+ API routes successfully registered
 - [x] Create a simple health check endpoint - Already exists at `routes/api.php:34-40`
-- [ ] Verify database migrations run successfully - BLOCKED: Missing PHP SQLite PDO driver
+- [x] Verify database migrations run successfully - All 8 pending migrations ran successfully after fixing duplicate `graded_at` column in assignment_submissions_table migration
