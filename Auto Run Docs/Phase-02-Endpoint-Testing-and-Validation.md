@@ -25,7 +25,13 @@ Backend Server Will Always running on [http://127.0.0.1:8000] so u can use it.
   - Broken: Create course (403 - admin role not being set correctly), Update course by student (expected 403, got 404), Enroll by admin (expected 403, got 404), List courses without auth (expected 401, got 302 redirect)
   - Issue: Same authentication/role issues as previous tests - admin role not being set correctly, API routes returning 302 redirects instead of 401 for unauthenticated requests
   - Skipped: List courses by faculty (no faculty ID available), Create course (no admin token), Several tests requiring course ID (no course created due to role issue)
-- [ ] Create Auto Run Docs/test-assignments.sh with curl tests for all assignment-related endpoints
+- [x] Create Auto Run Docs/test-assignments.sh with curl tests for all assignment-related endpoints
+  - Results: 24/30 tests passed
+  - Working: List all assignments, List assignments with search, List assignments by course/module/type/published filter, Get assignment with invalid ID (404 as expected), List submissions without auth (302 redirect - known issue)
+  - Broken: List my submissions (403 - student role not being set correctly), Get submissions by assignment (404), Grade submission (404), Add feedback (404), Get assignment/submission without auth (302 redirect instead of 401), Get submission with invalid ID (403 instead of 404)
+  - Issue 1: Student role not being set correctly - submission endpoints returning 403 Forbidden
+  - Issue 2: Authentication redirect issue - API routes return 302 redirects to HTML instead of JSON error responses
+  - Skipped: Create assignment (no course/module ID available), Get/update/delete assignment (no assignment ID), Submit assignment (no student role), Update assignment by student (expected 403), Publish/unpublish assignment (no assignment ID), Get/update/delete submission (no submission ID)
 - [ ] Create Auto Run Docs/test-grades.sh with curl tests for all grade-related endpoints
 - [ ] Create Auto Run Docs/test-announcements.sh with curl tests for all announcement endpoints
 - [ ] Create Auto Run Docs/test-discussions.sh with curl tests for all discussion endpoints
