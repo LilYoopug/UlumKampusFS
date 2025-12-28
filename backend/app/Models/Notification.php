@@ -24,6 +24,8 @@ class Notification extends Model
         'read_at',
         'priority',
         'action_url',
+        'link',
+        'context',
         'related_entity_type',
         'related_entity_id',
         'expires_at',
@@ -44,6 +46,8 @@ class Notification extends Model
             'expires_at' => 'datetime',
             'is_sent' => 'boolean',
             'sent_at' => 'datetime',
+            'link' => 'array',
+            'context' => 'array',
         ];
     }
 
@@ -160,5 +164,53 @@ class Notification extends Model
             'is_sent' => true,
             'sent_at' => now(),
         ]);
+    }
+
+    /**
+     * Get the isRead value (alias for is_read for frontend compatibility).
+     */
+    protected function getIsReadAttribute(): bool
+    {
+        return (bool) ($this->attributes['is_read'] ?? false);
+    }
+
+    /**
+     * Set the isRead value (alias for is_read for frontend compatibility).
+     */
+    protected function setIsReadAttribute(bool $value): void
+    {
+        $this->attributes['is_read'] = $value;
+    }
+
+    /**
+     * Get the timestamp value (alias for created_at for frontend compatibility).
+     */
+    protected function getTimestampAttribute(): ?string
+    {
+        return $this->attributes['created_at'] ?? null;
+    }
+
+    /**
+     * Set the timestamp value (alias for created_at for frontend compatibility).
+     */
+    protected function setTimestampAttribute(?string $value): void
+    {
+        $this->attributes['created_at'] = $value;
+    }
+
+    /**
+     * Get the userId value (alias for user_id for frontend compatibility).
+     */
+    protected function getUserIdAttribute(): ?string
+    {
+        return $this->attributes['user_id'] ?? null;
+    }
+
+    /**
+     * Set the userId value (alias for user_id for frontend compatibility).
+     */
+    protected function setUserIdAttribute(?string $value): void
+    {
+        $this->attributes['user_id'] = $value;
     }
 }

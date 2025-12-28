@@ -94,4 +94,36 @@ class AcademicCalendarEvent extends Model
     {
         return now()->gt($this->end_date->endOfDay());
     }
+
+    /**
+     * Get the startDate value (alias for start_date for frontend compatibility).
+     */
+    protected function getStartDateAttribute(): ?string
+    {
+        return $this->attributes['start_date'] ?? null;
+    }
+
+    /**
+     * Set the startDate value (alias for start_date for frontend compatibility).
+     */
+    protected function setStartDateAttribute(?string $value): void
+    {
+        $this->attributes['start_date'] = $value;
+    }
+
+    /**
+     * Get the endDate value (alias for end_date for frontend compatibility).
+     */
+    protected function getEndDateAttribute(): ?string
+    {
+        return $this->attributes['end_date'] ?? null;
+    }
+
+    /**
+     * Set the endDate value (alias for end_date for frontend compatibility).
+     */
+    protected function setEndDateAttribute(?string $value): void
+    {
+        $this->attributes['end_date'] = $value;
+    }
 }

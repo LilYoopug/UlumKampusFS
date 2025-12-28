@@ -32,10 +32,16 @@ class CourseModuleController extends ApiController {
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'content' => 'nullable|string',
+            'type' => 'nullable|in:video,pdf,quiz,live,hafalan',
             'video_url' => 'nullable|url|max:500',
             'document_url' => 'nullable|url|max:500',
+            'duration' => 'nullable|string|max:50',
+            'captions_url' => 'nullable|url|max:500',
+            'attachment_url' => 'nullable|url|max:500',
             'order' => 'nullable|integer|min:0',
             'is_published' => 'nullable|boolean',
+            'start_time' => 'nullable|date|after_or_equal:now',
+            'live_url' => 'nullable|url|max:500',
         ]);
 
         $validated['published_at'] = $validated['is_published'] ?? false ? now() : null;
@@ -70,10 +76,16 @@ class CourseModuleController extends ApiController {
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'content' => 'nullable|string',
+            'type' => 'sometimes|in:video,pdf,quiz,live,hafalan',
             'video_url' => 'nullable|url|max:500',
             'document_url' => 'nullable|url|max:500',
+            'duration' => 'nullable|string|max:50',
+            'captions_url' => 'nullable|url|max:500',
+            'attachment_url' => 'nullable|url|max:500',
             'order' => 'nullable|integer|min:0',
             'is_published' => 'nullable|boolean',
+            'start_time' => 'nullable|date|after_or_equal:now',
+            'live_url' => 'nullable|url|max:500',
         ]);
 
         if (isset($validated['is_published']) && $validated['is_published'] && !$module->is_published) {

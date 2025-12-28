@@ -30,6 +30,9 @@ class Course extends Model
         'schedule',
         'room',
         'is_active',
+        'mode',
+        'status',
+        'image_url',
     ];
 
     /**
@@ -47,6 +50,15 @@ class Course extends Model
             'is_active' => 'boolean',
         ];
     }
+
+    /**
+     * The attributes that should be hidden from arrays.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'instructor_avatar_url',
+    ];
 
     /**
      * Get the faculty that owns this course.
@@ -200,5 +212,105 @@ class Course extends Model
     public function availableSpots(): int
     {
         return max(0, $this->capacity - $this->current_enrollment);
+    }
+
+    /**
+     * Get the title value (alias for name for frontend compatibility).
+     */
+    protected function getTitleAttribute(): string
+    {
+        return $this->attributes['name'] ?? '';
+    }
+
+    /**
+     * Set the title value (alias for name for frontend compatibility).
+     */
+    protected function setTitleAttribute(string $value): void
+    {
+        $this->attributes['name'] = $value;
+    }
+
+    /**
+     * Get the sks value (alias for credit_hours for frontend compatibility).
+     */
+    protected function getSksAttribute(): int
+    {
+        return (int) ($this->attributes['credit_hours'] ?? 0);
+    }
+
+    /**
+     * Set the sks value (alias for credit_hours for frontend compatibility).
+     */
+    protected function setSksAttribute(int $value): void
+    {
+        $this->attributes['credit_hours'] = $value;
+    }
+
+    /**
+     * Get the instructorId value (alias for instructor_id for frontend compatibility).
+     */
+    protected function getInstructorIdAttribute(): ?string
+    {
+        return $this->attributes['instructor_id'] ?? null;
+    }
+
+    /**
+     * Set the instructorId value (alias for instructor_id for frontend compatibility).
+     */
+    protected function setInstructorIdAttribute(?string $value): void
+    {
+        $this->attributes['instructor_id'] = $value;
+    }
+
+    /**
+     * Get the imageUrl value (for frontend compatibility).
+     */
+    protected function getImageUrlAttribute(): ?string
+    {
+        return $this->attributes['image_url'] ?? null;
+    }
+
+    /**
+     * Set the imageUrl value (for frontend compatibility).
+     */
+    protected function setImageUrlAttribute(?string $value): void
+    {
+        $this->attributes['image_url'] = $value;
+    }
+
+    /**
+     * Get the instructorAvatarUrl value (for frontend compatibility).
+     */
+    protected function getInstructorAvatarUrlAttribute(): ?string
+    {
+        // Try to get from loaded instructor relationship
+        if ($this->relationLoaded('instructor') && $this->instructor) {
+            return $this->instructor->avatarUrl ?? null;
+        }
+        return $this->attributes['instructor_avatar_url'] ?? null;
+    }
+
+    /**
+     * Alias for creditHours (frontend uses sks).
+     */
+    protected function getCreditHoursAttribute(): int
+    {
+        return (int) ($this->attributes['credit_hours'] ?? 0);
+    }
+
+    /**
+     * Get the mode value (for frontend compatibility).
+     */
+    protected function getModeAttribute(): ?string
+    {
+        return $this->attributes['mode'] ?? null;
+    }
+
+    /**
+     * Set the mode value (for frontend compatibility).
+     */
+    protected function setModeAttribute(?string $value): void
+    {
+        $this->attributes['mode'] = $value;
     }
 }

@@ -168,6 +168,20 @@ Route::middleware('auth:sanctum')->group(function () {
     // COURSE MODULE Routes
     // ------------------------------------------------------------------------
 
+    // Module routes for frontend compatibility (/modules/{id})
+    Route::prefix('modules')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/{id}', 'App\Http\Controllers\Api\CourseModuleController@show');
+        Route::get('/{id}/assignments', 'App\Http\Controllers\Api\CourseModuleController@assignments');
+        Route::get('/{id}/discussions', 'App\Http\Controllers\Api\CourseModuleController@discussions');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::put('/{id}', 'App\Http\Controllers\Api\CourseModuleController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\CourseModuleController@destroy');
+        });
+    });
+
     Route::prefix('course-modules')->group(function () {
         // Public (read-only) access for authenticated users
         Route::get('/', 'App\Http\Controllers\Api\CourseModuleController@index');

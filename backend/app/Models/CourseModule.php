@@ -20,11 +20,17 @@ class CourseModule extends Model
         'title',
         'description',
         'content',
+        'type',
         'video_url',
         'document_url',
+        'duration',
+        'captions_url',
+        'attachment_url',
         'order',
         'is_published',
         'published_at',
+        'start_time',
+        'live_url',
     ];
 
     /**
@@ -38,6 +44,7 @@ class CourseModule extends Model
             'order' => 'integer',
             'is_published' => 'boolean',
             'published_at' => 'datetime',
+            'start_time' => 'datetime',
         ];
     }
 
@@ -79,5 +86,53 @@ class CourseModule extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('order');
+    }
+
+    /**
+     * Get the resourceUrl value (alias for video_url or document_url for frontend compatibility).
+     */
+    protected function getResourceUrlAttribute(): ?string
+    {
+        return $this->attributes['video_url'] ?? $this->attributes['document_url'] ?? null;
+    }
+
+    /**
+     * Set the resourceUrl value (for frontend compatibility).
+     */
+    protected function setResourceUrlAttribute(?string $value): void
+    {
+        $this->attributes['video_url'] = $value;
+    }
+
+    /**
+     * Get the captionsUrl value (alias for captions_url for frontend compatibility).
+     */
+    protected function getCaptionsUrlAttribute(): ?string
+    {
+        return $this->attributes['captions_url'] ?? null;
+    }
+
+    /**
+     * Set the captionsUrl value (alias for captions_url for frontend compatibility).
+     */
+    protected function setCaptionsUrlAttribute(?string $value): void
+    {
+        $this->attributes['captions_url'] = $value;
+    }
+
+    /**
+     * Get the attachmentUrl value (alias for attachment_url for frontend compatibility).
+     */
+    protected function getAttachmentUrlAttribute(): ?string
+    {
+        return $this->attributes['attachment_url'] ?? null;
+    }
+
+    /**
+     * Set the attachmentUrl value (alias for attachment_url for frontend compatibility).
+     */
+    protected function setAttachmentUrlAttribute(?string $value): void
+    {
+        $this->attributes['attachment_url'] = $value;
     }
 }

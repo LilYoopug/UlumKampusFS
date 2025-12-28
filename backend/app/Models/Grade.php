@@ -144,4 +144,52 @@ class Grade extends Model
 
         return ($this->grade / $this->assignment->max_points) * 100;
     }
+
+    /**
+     * Get the userId value (alias for user_id for frontend compatibility).
+     */
+    protected function getUserIdAttribute(): ?string
+    {
+        return $this->attributes['user_id'] ?? null;
+    }
+
+    /**
+     * Set the userId value (alias for user_id for frontend compatibility).
+     */
+    protected function setUserIdAttribute(?string $value): void
+    {
+        $this->attributes['user_id'] = $value;
+    }
+
+    /**
+     * Get the courseId value (alias for course_id for frontend compatibility).
+     */
+    protected function getCourseIdAttribute(): ?string
+    {
+        return $this->attributes['course_id'] ?? null;
+    }
+
+    /**
+     * Set the courseId value (alias for course_id for frontend compatibility).
+     */
+    protected function setCourseIdAttribute(?string $value): void
+    {
+        $this->attributes['course_id'] = $value;
+    }
+
+    /**
+     * Get the assignmentId value (alias for assignment_id for frontend compatibility).
+     */
+    protected function getAssignmentIdAttribute(): ?string
+    {
+        return $this->attributes['assignment_id'] ?? null;
+    }
+
+    /**
+     * Set the assignmentId value (alias for assignment_id for frontend compatibility).
+     */
+    protected function setAssignmentIdAttribute(?string $value): void
+    {
+        $this->attributes['assignment_id'] = $value;
+    }
 }

@@ -135,4 +135,36 @@ class AssignmentSubmission extends Model
 
         return ($this->grade / $this->assignment->max_points) * 100;
     }
+
+    /**
+     * Get the studentId value (alias for student_id for frontend compatibility).
+     */
+    protected function getStudentIdAttribute(): ?string
+    {
+        return $this->attributes['student_id'] ?? null;
+    }
+
+    /**
+     * Set the studentId value (alias for student_id for frontend compatibility).
+     */
+    protected function setStudentIdAttribute(?string $value): void
+    {
+        $this->attributes['student_id'] = $value;
+    }
+
+    /**
+     * Get the submittedAt value (alias for submitted_at for frontend compatibility).
+     */
+    protected function getSubmittedAtAttribute(): ?string
+    {
+        return $this->attributes['submitted_at'] ?? null;
+    }
+
+    /**
+     * Set the submittedAt value (alias for submitted_at for frontend compatibility).
+     */
+    protected function setSubmittedAtAttribute(?string $value): void
+    {
+        $this->attributes['submitted_at'] = $value;
+    }
 }

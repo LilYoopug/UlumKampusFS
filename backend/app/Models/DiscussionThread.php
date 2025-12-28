@@ -265,4 +265,60 @@ class DiscussionThread extends Model
             'closed_at' => null,
         ]);
     }
+
+    /**
+     * Get the authorId value (alias for created_by for frontend compatibility).
+     */
+    protected function getAuthorIdAttribute(): ?string
+    {
+        return $this->attributes['created_by'] ?? null;
+    }
+
+    /**
+     * Set the authorId value (alias for created_by for frontend compatibility).
+     */
+    protected function setAuthorIdAttribute(?string $value): void
+    {
+        $this->attributes['created_by'] = $value;
+    }
+
+    /**
+     * Get the createdAt value (alias for created_at for frontend compatibility).
+     */
+    protected function getCreatedAtAttribute(): ?string
+    {
+        return $this->attributes['created_at'] ?? null;
+    }
+
+    /**
+     * Get the isPinned value (alias for is_pinned for frontend compatibility).
+     */
+    protected function getIsPinnedAttribute(): bool
+    {
+        return (bool) ($this->attributes['is_pinned'] ?? false);
+    }
+
+    /**
+     * Set the isPinned value (alias for is_pinned for frontend compatibility).
+     */
+    protected function setIsPinnedAttribute(bool $value): void
+    {
+        $this->attributes['is_pinned'] = $value;
+    }
+
+    /**
+     * Get the isClosed value (alias for status='closed' for frontend compatibility).
+     */
+    protected function getIsClosedAttribute(): bool
+    {
+        return $this->attributes['status'] === 'closed';
+    }
+
+    /**
+     * Set the isClosed value (alias for status for frontend compatibility).
+     */
+    protected function setIsClosedAttribute(bool $value): void
+    {
+        $this->attributes['status'] = $value ? 'closed' : 'open';
+    }
 }

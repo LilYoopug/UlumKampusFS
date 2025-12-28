@@ -149,4 +149,23 @@ class Announcement extends Model
         $this->increment('view_count');
         return $this->view_count;
     }
+
+    /**
+     * Get the authorName value (alias for creator.name for frontend compatibility).
+     */
+    protected function getAuthorNameAttribute(): ?string
+    {
+        if ($this->relationLoaded('creator') && $this->creator) {
+            return $this->creator->name ?? null;
+        }
+        return $this->attributes['author_name'] ?? null;
+    }
+
+    /**
+     * Get the timestamp value (alias for created_at for frontend compatibility).
+     */
+    protected function getTimestampAttribute(): ?string
+    {
+        return $this->attributes['created_at'] ?? null;
+    }
 }

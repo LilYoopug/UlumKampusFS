@@ -31,6 +31,11 @@ class User extends Authenticatable
         'graduation_year',
         'phone',
         'address',
+        'avatar',
+        'bio',
+        'student_status',
+        'total_sks',
+        'badges',
     ];
 
     /**
@@ -53,6 +58,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'badges' => 'array',
         ];
     }
 
@@ -131,5 +137,136 @@ class User extends Authenticatable
     public function discussionPosts()
     {
         return $this->hasMany(DiscussionPost::class, 'user_id');
+    }
+
+    /**
+     * Get the phoneNumber value (alias for phone for frontend compatibility).
+     */
+    protected function getPhoneNumberAttribute(): ?string
+    {
+        return $this->attributes['phone'] ?? null;
+    }
+
+    /**
+     * Set the phoneNumber value (alias for phone for frontend compatibility).
+     */
+    protected function setPhoneNumberAttribute(?string $value): void
+    {
+        $this->attributes['phone'] = $value;
+    }
+
+    /**
+     * Get the studentId value (alias for student_id for frontend compatibility).
+     */
+    protected function getStudentIdAttribute(): ?string
+    {
+        return $this->attributes['student_id'] ?? null;
+    }
+
+    /**
+     * Set the studentId value (alias for student_id for frontend compatibility).
+     */
+    protected function setStudentIdAttribute(?string $value): void
+    {
+        $this->attributes['student_id'] = $value;
+    }
+
+    /**
+     * Get the facultyId value (alias for faculty_id for frontend compatibility).
+     */
+    protected function getFacultyIdAttribute(): ?string
+    {
+        return $this->attributes['faculty_id'] ?? null;
+    }
+
+    /**
+     * Set the facultyId value (alias for faculty_id for frontend compatibility).
+     */
+    protected function setFacultyIdAttribute(?string $value): void
+    {
+        $this->attributes['faculty_id'] = $value;
+    }
+
+    /**
+     * Get the majorId value (alias for major_id for frontend compatibility).
+     */
+    protected function getMajorIdAttribute(): ?string
+    {
+        return $this->attributes['major_id'] ?? null;
+    }
+
+    /**
+     * Set the majorId value (alias for major_id for frontend compatibility).
+     */
+    protected function setMajorIdAttribute(?string $value): void
+    {
+        $this->attributes['major_id'] = $value;
+    }
+
+    /**
+     * Get the avatarUrl value (alias for avatar for frontend compatibility).
+     */
+    protected function getAvatarUrlAttribute(): ?string
+    {
+        return $this->attributes['avatar'] ?? null;
+    }
+
+    /**
+     * Set the avatarUrl value (alias for avatar for frontend compatibility).
+     */
+    protected function setAvatarUrlAttribute(?string $value): void
+    {
+        $this->attributes['avatar'] = $value;
+    }
+
+    /**
+     * Get the joinDate value (alias for created_at for frontend compatibility).
+     */
+    protected function getJoinDateAttribute(): ?string
+    {
+        return $this->attributes['created_at'] ?? null;
+    }
+
+    /**
+     * Get the studentStatus value (computed from user data for frontend compatibility).
+     */
+    protected function getStudentStatusAttribute(): string
+    {
+        // This would typically come from an enrollment or student_status column
+        // For now, default based on enrollment
+        return $this->attributes['student_status'] ?? 'Aktif';
+    }
+
+    /**
+     * Get the totalSks value (computed from enrollments for frontend compatibility).
+     */
+    protected function getTotalSksAttribute(): int
+    {
+        // This would typically be computed from enrolled courses
+        return (int) ($this->attributes['total_sks'] ?? 0);
+    }
+
+    /**
+     * Set the totalSks value (for frontend compatibility).
+     */
+    protected function setTotalSksAttribute(int $value): void
+    {
+        $this->attributes['total_sks'] = $value;
+    }
+
+    /**
+     * Get the badges value (for frontend compatibility).
+     */
+    protected function getBadgesAttribute(): array
+    {
+        return $this->attributes['badges'] ?? [];
+    }
+
+    /**
+     * Set the badges value (for frontend compatibility).
+     */
+    protected function setBadgesAttribute(array $value): void
+    {
+        $this->attributes['badges'] = json_encode($value);
     }
 }

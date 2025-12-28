@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\LibraryResourceRequest;
 use App\Http\Resources\LibraryResourceResource;
 use App\Models\LibraryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class LibraryResourceController extends Controller
+class LibraryResourceController extends ApiController
 {
     /**
      * Display a listing of library resources.

@@ -192,4 +192,28 @@ class DiscussionPost extends Model
         $this->decrement('likes_count');
         return $this->likes_count;
     }
+
+    /**
+     * Get the authorId value (alias for user_id for frontend compatibility).
+     */
+    protected function getAuthorIdAttribute(): ?string
+    {
+        return $this->attributes['user_id'] ?? null;
+    }
+
+    /**
+     * Set the authorId value (alias for user_id for frontend compatibility).
+     */
+    protected function setAuthorIdAttribute(?string $value): void
+    {
+        $this->attributes['user_id'] = $value;
+    }
+
+    /**
+     * Get the createdAt value (alias for created_at for frontend compatibility).
+     */
+    protected function getCreatedAtAttribute(): ?string
+    {
+        return $this->attributes['created_at'] ?? null;
+    }
 }
