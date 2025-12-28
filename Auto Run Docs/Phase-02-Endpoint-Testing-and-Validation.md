@@ -7,7 +7,11 @@ Backend Server Will Always running on [http://127.0.0.1:8000] so u can use it.
 ## Tasks
 
 - [x] Parse api-routes.json to extract all API endpoints and organize them by resource (users, courses, assignments, etc.)
-- [ ] Create Auto Run Docs/test-authentication.sh with curl tests for login, register, and logout endpoints
+- [x] Create Auto Run Docs/test-authentication.sh with curl tests for login, register, and logout endpoints
+  - Results: 1/12 tests passed
+  - Working: Register (valid data), Forgot password
+  - Broken: Login, Logout, Register with validation errors - returning 302 redirects to HTML instead of JSON
+  - Issue: API routes redirecting to web routes instead of returning JSON error responses
 - [ ] Create Auto Run Docs/test-users.sh with curl tests for all user-related endpoints
 - [ ] Create Auto Run Docs/test-courses.sh with curl tests for all course-related endpoints
 - [ ] Create Auto Run Docs/test-assignments.sh with curl tests for all assignment-related endpoints
