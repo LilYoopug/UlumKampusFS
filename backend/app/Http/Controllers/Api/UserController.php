@@ -62,11 +62,10 @@ class UserController extends ApiController
         // Eager load relationships
         $query->with(['faculty', 'major']);
 
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $users = $query->orderBy('name')->paginate($perPage);
+        // Get all users
+        $users = $query->orderBy('name')->get();
 
-        return $this->paginated(
+        return $this->success(
             UserResource::collection($users),
             'Users retrieved successfully'
         );
@@ -333,6 +332,19 @@ class UserController extends ApiController
         return $this->success(
             new UserResource($user->load(['faculty', 'major'])),
             'User status updated successfully'
+        );
+    }
+
+    /**
+     * Get the currently authenticated user (alias for frontend getCurrentUser).
+     */
+    public function user(): JsonResponse
+    {
+        $user = auth()->user()->load(['faculty', 'major']);
+
+        return $this->success(
+            $user,
+            'Current user retrieved successfully'
         );
     }
 }

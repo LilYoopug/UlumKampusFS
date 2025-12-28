@@ -511,4 +511,135 @@ class DashboardController extends ApiController
 
         return $count > 0 ? round($totalPoints / $count, 2) : 0.0;
     }
+
+    /**
+     * Get dashboard stats for a specific instructor by name.
+     * Used for dosen dashboard view.
+     */
+    public function dosenStats(string $instructorName): JsonResponse
+    {
+        // Find instructor by name
+        $instructor = User::where('role', 'faculty')
+            ->where('name', 'like', "%{$instructorName}%")
+            ->firstOrFail();
+
+        // Get courses taught by this instructor
+        $courses = Course::where('instructor_id', $instructor->id)->get();
+        $totalCourses = $courses->count();
+        $activeCourses = $courses->where('is_active', true)->count();
+
+        // Get total students across all courses
+        $totalStudents = 0;
+        $courseIds = [];
+        foreach ($courses as $course) {
+            $courseIds[] = $course->id;
+            $totalStudents += $course->students()->wherePivot('status', 'enrolled')->count();
+        }
+
+        // Get assignments pending grading
+        $assignmentsPendingGrading = AssignmentSubmission::whereHas('assignment', function ($query) use ($courseIds) {
+            $query->whereIn('course_id', $courseIds);
+        })
+            ->where('status', 'submitted')
+            ->count();
+
+        // Get upcoming classes
+        $upcomingClasses = Course::where('instructor_id', $instructor->id)
+            ->where('is_active', true)
+            ->with(['faculty', 'major'])
+            ->withCount('students')
+            ->orderBy('year', 'desc')
+            ->orderBy('semester', 'desc')
+            ->take(5)
+            ->get();
+
+        // Get average grade per course
+        $courseGrades = [];
+        foreach ($courses as $course) {
+            $grades = Grade::where('course_id', $course->id)->get();
+            $courseGrades[] = [
+                'course_id' => $course->id,
+                'course_name' => $course->name,
+                'course_code' => $course->code,
+                'average_grade' => $grades->isNotEmpty() ? round($grades->avg('grade'), 2) : null,
+                'students_count' => $course->students()->wherePivot('status', 'enrolled')->count(),
+            ];
+        }
+
+        // Get total assignments created
+        $totalAssignments = Assignment::whereIn('course_id', $courseIds)->count();
+        $publishedAssignments = Assignment::whereIn('course_id', $courseIds)
+            ->where('is_published', true)
+            ->count();
+
+        // Get total submissions received
+        $totalSubmissions = AssignmentSubmission::whereHas('assignment', function ($query) use ($courseIds) {
+            $query->whereIn('course_id', $courseIds);
+        })->count();
+
+        return $this->success(new DashboardStatsResource([
+            'role' => 'faculty',
+            'instructor_id' => $instructor->id,
+            'instructor_name' => $instructor->name,
+            'total_courses' => $totalCourses,
+            'active_courses' => $activeCourses,
+            'total_students' => $totalStudents,
+            'assignments_pending_grading' => $assignmentsPendingGrading,
+            'upcoming_classes' => $upcomingClasses,
+            'course_grades' => $courseGrades,
+            'total_assignments' => $totalAssignments,
+            'published_assignments' => $publishedAssignments,
+            'total_submissions' => $totalSubmissions,
+        ]));
+    }
+
+    /**
+     * Get faculty enrollment statistics.
+     * Returns enrollment data grouped by faculty.
+     */
+    public function facultyEnrollment(Request $request): JsonResponse
+    {
+        $faculties = Faculty::with(['courses'])
+            ->withCount('courses')
+            ->get();
+
+        $enrollmentData = $faculties->map(function ($faculty) {
+            $courseIds = $faculty->courses->pluck('id');
+
+            $totalEnrollments = CourseEnrollment::whereIn('course_id', $courseIds)->count();
+            $activeEnrollments = CourseEnrollment::whereIn('course_id', $courseIds)
+                ->where('status', 'enrolled')
+                ->count();
+            $completedEnrollments = CourseEnrollment::whereIn('course_id', $courseIds)
+                ->where('status', 'completed')
+                ->count();
+            $droppedEnrollments = CourseEnrollment::whereIn('course_id', $courseIds)
+                ->where('status', 'dropped')
+                ->count();
+
+            // Get unique students
+            $uniqueStudents = CourseEnrollment::whereIn('course_id', $courseIds)
+                ->distinct('student_id')
+                ->count('student_id');
+
+            return [
+                'faculty_id' => $faculty->id,
+                'faculty_name' => $faculty->name,
+                'faculty_code' => $faculty->code,
+                'total_courses' => $faculty->courses_count,
+                'total_enrollments' => $totalEnrollments,
+                'active_enrollments' => $activeEnrollments,
+                'completed_enrollments' => $completedEnrollments,
+                'dropped_enrollments' => $droppedEnrollments,
+                'unique_students' => $uniqueStudents,
+            ];
+        });
+
+        return $this->success([
+            'data' => $enrollmentData,
+            'total_faculties' => $faculties->count(),
+            'total_enrollments' => $enrollmentData->sum('total_enrollments'),
+            'total_active_enrollments' => $enrollmentData->sum('active_enrollments'),
+        ]);
+    }
 }

@@ -10,7 +10,7 @@ use App\Models\Grade;
 use App\Models\AssignmentSubmission;
 use Illuminate\Http\JsonResponse;
 
-class StudentController extends Controller
+class StudentController extends ApiController
 {
     /**
      * Get courses for the current student.
@@ -35,7 +35,7 @@ class StudentController extends Controller
         // Get courses the student is enrolled in
         $courseIds = $user->enrolledCourses()
             ->wherePivot('status', 'enrolled')
-            ->pluck('id');
+            ->pluck('courses.id');
 
         // Get assignments for those courses
         $assignments = Assignment::whereIn('course_id', $courseIds)

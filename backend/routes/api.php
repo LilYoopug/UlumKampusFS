@@ -30,6 +30,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // Webhook for Midtrans payment notifications (no auth required)
 Route::post('/payment/notification', [PaymentController::class, 'notificationHandler']);
 
+// Public course catalog (no auth required)
+Route::get('/public/courses', 'App\Http\Controllers\Api\CourseController@publicCourses');
+
 // Health check endpoint
 Route::get('/health', function () {
     return response()->json([
@@ -49,9 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Profile & Authentication
     // ------------------------------------------------------------------------
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', 'App\Http\Controllers\Api\UserController@user');
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // ------------------------------------------------------------------------
@@ -150,12 +151,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{id}/drop', 'App\Http\Controllers\Api\CourseController@drop');
         });
 
-        // Admin and Faculty only
+        // Admin and Faculty only - module management nested under courses
         Route::middleware('role:admin,faculty')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\CourseController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\CourseController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\CourseController@destroy');
             Route::post('/{id}/toggle-status', 'App\Http\Controllers\Api\CourseController@toggleStatus');
+
+            // Nested module creation
+            Route::post('/{id}/modules', 'App\Http\Controllers\Api\CourseModuleController@store');
+            Route::post('/{id}/modules/reorder', 'App\Http\Controllers\Api\CourseModuleController@reorder');
         });
     });
 
@@ -408,6 +413,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', 'App\Http\Controllers\Api\NotificationController@destroy');
         Route::delete('/clear-read', 'App\Http\Controllers\Api\NotificationController@clearRead');
 
+        // PATCH routes for frontend compatibility
+        Route::patch('/{id}/read', 'App\Http\Controllers\Api\NotificationController@markRead');
+        Route::patch('/mark-all-read', 'App\Http\Controllers\Api\NotificationController@markAllRead');
+
+        // PUT routes for frontend compatibility
+        Route::put('/{id}/read', 'App\Http\Controllers\Api\NotificationController@markRead');
+        Route::put('/mark-all-read', 'App\Http\Controllers\Api\NotificationController@markAllRead');
+
         // Admin only - create and update notifications
         Route::middleware('role:admin')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\NotificationController@store');
@@ -536,5 +549,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Analytics endpoints
         Route::get('/grade-distribution', 'App\Http\Controllers\Api\DashboardController@gradeDistribution');
         Route::get('/enrollment-trends', 'App\Http\Controllers\Api\DashboardController@enrollmentTrends');
+
+        // Dosen stats by name (for faculty dashboard view)
+        Route::get('/dosen/{instructorName}', 'App\Http\Controllers\Api\DashboardController@dosenStats');
+
+        // Faculty enrollment statistics
+        Route::get('/faculty-enrollment', 'App\Http\Controllers\Api\DashboardController@facultyEnrollment');
     });
 });

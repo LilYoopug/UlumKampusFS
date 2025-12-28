@@ -122,4 +122,28 @@ class CourseModuleController extends ApiController {
             'Module discussions retrieved successfully'
         );
     }
+
+    /**
+     * Reorder modules for a course.
+     */
+    public function reorder(Request $request, string $courseId): JsonResponse
+    {
+        $validated = $request->validate([
+            'module_ids' => 'required|array',
+            'module_ids.*' => 'required|string|exists:course_modules,id',
+        ]);
+
+        $moduleIds = $validated['module_ids'];
+
+        foreach ($moduleIds as $index => $moduleId) {
+            CourseModule::where('id', $moduleId)
+                ->where('course_id', $courseId)
+                ->update(['order' => $index]);
+        }
+
+        return $this->success(
+            null,
+            'Modules reordered successfully'
+        );
+    }
 }

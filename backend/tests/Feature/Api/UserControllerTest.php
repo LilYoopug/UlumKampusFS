@@ -49,12 +49,6 @@ class UserControllerTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [],
-                'pagination' => [
-                    'current_page',
-                    'per_page',
-                    'total',
-                    'last_page',
-                ],
             ])
             ->assertJson(['success' => true]);
     }

@@ -97,11 +97,10 @@ class NotificationController extends ApiController
         // Eager load relationships
         $query->with('user');
 
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $notifications = $query->paginate($perPage);
+        // Get all notifications
+        $notifications = $query->get();
 
-        return $this->paginated($notifications, 'Notifications retrieved successfully');
+        return $this->success($notifications, 'Notifications retrieved successfully');
     }
 
     /**
@@ -254,9 +253,9 @@ class NotificationController extends ApiController
             ->unread()
             ->active()
             ->newest()
-            ->paginate($request->input('per_page', 15));
+            ->get();
 
-        return $this->paginated($notifications, 'Unread notifications retrieved successfully');
+        return $this->success($notifications, 'Unread notifications retrieved successfully');
     }
 
     /**
@@ -270,9 +269,9 @@ class NotificationController extends ApiController
             ->urgent()
             ->active()
             ->newest()
-            ->paginate($request->input('per_page', 15));
+            ->get();
 
-        return $this->paginated($notifications, 'Urgent notifications retrieved successfully');
+        return $this->success($notifications, 'Urgent notifications retrieved successfully');
     }
 
     /**

@@ -81,11 +81,10 @@ class CourseController extends ApiController
         // Eager load relationships
         $query->with(['faculty', 'major', 'instructor']);
 
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $courses = $query->orderBy('code')->paginate($perPage);
+        // Get all courses
+        $courses = $query->orderBy('code')->get();
 
-        return $this->paginated(
+        return $this->success(
             CourseResource::collection($courses),
             'Courses retrieved successfully'
         );
@@ -431,6 +430,57 @@ class CourseController extends ApiController
         return $this->success(
             new CourseResource($course->load(['faculty', 'major', 'instructor'])),
             'Course status updated successfully'
+        );
+    }
+
+    /**
+     * Get public course catalog (no auth required).
+     * Returns active courses that are available for enrollment.
+     */
+    public function publicCourses(Request $request): JsonResponse
+    {
+        $query = Course::query()
+            ->where('is_active', true)
+            ->where('current_enrollment', '>=', 0);
+
+        // Filter by faculty
+        if ($request->has('faculty_id')) {
+            $query->where('faculty_id', $request->input('faculty_id'));
+        }
+
+        // Filter by major
+        if ($request->has('major_id')) {
+            $query->where('major_id', $request->input('major_id'));
+        }
+
+        // Filter by semester
+        if ($request->has('semester')) {
+            $query->where('semester', $request->input('semester'));
+        }
+
+        // Filter by year
+        if ($request->has('year')) {
+            $query->where('year', $request->input('year'));
+        }
+
+        // Search by course code or name
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('code', 'like', "%{$searchTerm}%")
+                    ->orWhere('name', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Eager load relationships
+        $query->with(['faculty', 'major', 'instructor']);
+
+        // Get courses
+        $courses = $query->orderBy('code')->get();
+
+        return $this->success(
+            CourseResource::collection($courses),
+            'Public courses retrieved successfully'
         );
     }
 }

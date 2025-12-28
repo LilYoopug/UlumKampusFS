@@ -76,11 +76,10 @@ class DiscussionPostController extends ApiController
         // Eager load relationships
         $query->with(['user', 'parent', 'replies.user']);
 
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $posts = $query->paginate($perPage);
+        // Get all posts
+        $posts = $query->get();
 
-        return $this->paginated($posts, 'Discussion posts retrieved successfully');
+        return $this->success($posts, 'Discussion posts retrieved successfully');
     }
 
     /**
@@ -404,9 +403,9 @@ class DiscussionPostController extends ApiController
             $query->newest();
         }
 
-        $posts = $query->paginate($request->input('per_page', 15));
+        $posts = $query->get();
 
-        return $this->paginated($posts, 'Your posts retrieved successfully');
+        return $this->success($posts, 'Your posts retrieved successfully');
     }
 
     /**
@@ -417,9 +416,9 @@ class DiscussionPostController extends ApiController
         $posts = DiscussionPost::where('thread_id', $threadId)
             ->with(['user', 'parent', 'replies.user'])
             ->newest()
-            ->paginate($request->input('per_page', 15));
+            ->get();
 
-        return $this->paginated($posts, 'Thread posts retrieved successfully');
+        return $this->success($posts, 'Thread posts retrieved successfully');
     }
 
     /**

@@ -252,11 +252,11 @@ export const notificationAPI = {
   },
 
   markAsRead: (id: string): Promise<AxiosResponse<Notification>> => {
-    return api.patch(`/notifications/${id}/read`);
+    return api.put(`/notifications/${id}/read`);
   },
 
   markAllAsRead: (): Promise<AxiosResponse<{ message: string }>> => {
-    return api.patch('/notifications/mark-all-read');
+    return api.put('/notifications/mark-all-read');
   }
 };
 

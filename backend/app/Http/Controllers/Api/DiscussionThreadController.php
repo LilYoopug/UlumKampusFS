@@ -93,11 +93,10 @@ class DiscussionThreadController extends ApiController
         // Eager load relationships
         $query->with(['course', 'module', 'creator', 'lastPostBy']);
 
-        // Pagination
-        $perPage = $request->input('per_page', 15);
-        $threads = $query->paginate($perPage);
+        // Get all threads
+        $threads = $query->get();
 
-        return $this->paginated($threads, 'Discussion threads retrieved successfully');
+        return $this->success($threads, 'Discussion threads retrieved successfully');
     }
 
     /**
@@ -411,9 +410,9 @@ class DiscussionThreadController extends ApiController
             $query->recent();
         }
 
-        $threads = $query->paginate($request->input('per_page', 15));
+        $threads = $query->get();
 
-        return $this->paginated($threads, 'Your threads retrieved successfully');
+        return $this->success($threads, 'Your threads retrieved successfully');
     }
 
     /**
@@ -424,9 +423,9 @@ class DiscussionThreadController extends ApiController
         $threads = DiscussionThread::where('course_id', $courseId)
             ->with(['course', 'module', 'creator', 'lastPostBy'])
             ->recent()
-            ->paginate($request->input('per_page', 15));
+            ->get();
 
-        return $this->paginated($threads, 'Course threads retrieved successfully');
+        return $this->success($threads, 'Course threads retrieved successfully');
     }
 
     /**
@@ -437,9 +436,9 @@ class DiscussionThreadController extends ApiController
         $threads = DiscussionThread::where('module_id', $moduleId)
             ->with(['course', 'module', 'creator', 'lastPostBy'])
             ->recent()
-            ->paginate($request->input('per_page', 15));
+            ->get();
 
-        return $this->paginated($threads, 'Module threads retrieved successfully');
+        return $this->success($threads, 'Module threads retrieved successfully');
     }
 
     /**
