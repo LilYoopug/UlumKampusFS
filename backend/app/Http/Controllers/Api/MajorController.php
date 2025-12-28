@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\MajorRequest;
+use App\Http\Resources\CourseResource;
 use App\Http\Resources\FacultyResource;
 use App\Http\Resources\MajorResource;
 use App\Models\Course;
 use App\Models\Major;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
-class MajorController extends Controller
+class MajorController extends ApiController
 {
     /**
      * Display a listing of majors.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $majors = Major::active()->with('faculty')->get();
-        return $this->success(MajorResource::collection($majors));
+        $perPage = $request->input('per_page', 15);
+        $majors = Major::active()->with('faculty')->paginate($perPage);
+        return $this->paginated(MajorResource::collection($majors));
     }
 
     /**
@@ -33,18 +35,18 @@ class MajorController extends Controller
     /**
      * Display the specified major.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $code): JsonResponse
     {
-        $major = Major::with('faculty')->findOrFail($id);
+        $major = Major::with('faculty')->findOrFail($code);
         return $this->success(new MajorResource($major));
     }
 
     /**
      * Update the specified major.
      */
-    public function update(MajorRequest $request, string $id): JsonResponse
+    public function update(MajorRequest $request, string $code): JsonResponse
     {
-        $major = Major::findOrFail($id);
+        $major = Major::findOrFail($code);
         $major->update($request->validated());
         return $this->success(new MajorResource($major), 'Major updated successfully');
     }
@@ -52,9 +54,9 @@ class MajorController extends Controller
     /**
      * Remove the specified major.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $code): JsonResponse
     {
-        $major = Major::findOrFail($id);
+        $major = Major::findOrFail($code);
         $major->delete();
         return $this->noContent();
     }
@@ -62,19 +64,19 @@ class MajorController extends Controller
     /**
      * Get the faculty for this major.
      */
-    public function faculty(string $id): JsonResponse
+    public function faculty(string $code): JsonResponse
     {
-        $major = Major::findOrFail($id);
+        $major = Major::findOrFail($code);
         return $this->success(new FacultyResource($major->faculty));
     }
 
     /**
      * Get courses for this major.
      */
-    public function courses(string $id): JsonResponse
+    public function courses(string $code): JsonResponse
     {
-        $major = Major::findOrFail($id);
+        $major = Major::findOrFail($code);
         $courses = $major->courses()->active()->with('instructor')->get();
-        return $this->success($courses);
+        return $this->success(CourseResource::collection($courses));
     }
 }

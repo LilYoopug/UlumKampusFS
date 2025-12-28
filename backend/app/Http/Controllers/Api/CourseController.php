@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseRequest;
+use App\Http\Resources\CourseModuleResource;
 use App\Http\Resources\CourseResource;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
@@ -81,10 +81,14 @@ class CourseController extends ApiController
         // Eager load relationships
         $query->with(['faculty', 'major', 'instructor']);
 
-        // Get all courses
-        $courses = $query->orderBy('code')->get();
+        // Apply ordering
+        $query->orderBy('code');
 
-        return $this->success(
+        // Paginate results
+        $perPage = $request->input('per_page', 15);
+        $courses = $query->paginate($perPage);
+
+        return $this->paginated(
             CourseResource::collection($courses),
             'Courses retrieved successfully'
         );
@@ -176,7 +180,7 @@ class CourseController extends ApiController
         $modules = $course->modules()->orderBy('order')->get();
 
         return $this->success(
-            $modules,
+            CourseModuleResource::collection($modules),
             'Course modules retrieved successfully'
         );
     }
@@ -475,10 +479,12 @@ class CourseController extends ApiController
         // Eager load relationships
         $query->with(['faculty', 'major', 'instructor']);
 
-        // Get courses
-        $courses = $query->orderBy('code')->get();
+        // Apply ordering and paginate
+        $query->orderBy('code');
+        $perPage = $request->input('per_page', 15);
+        $courses = $query->paginate($perPage);
 
-        return $this->success(
+        return $this->paginated(
             CourseResource::collection($courses),
             'Public courses retrieved successfully'
         );

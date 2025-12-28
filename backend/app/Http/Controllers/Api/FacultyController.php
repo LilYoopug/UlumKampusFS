@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\FacultyRequest;
+use App\Http\Resources\CourseResource;
 use App\Http\Resources\FacultyResource;
+use App\Http\Resources\MajorResource;
 use App\Models\Course;
 use App\Models\Faculty;
 use App\Models\Major;
@@ -16,10 +18,11 @@ class FacultyController extends ApiController
     /**
      * Display a listing of faculties.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $faculties = Faculty::active()->get();
-        return $this->success(FacultyResource::collection($faculties));
+        $perPage = $request->input('per_page', 15);
+        $faculties = Faculty::active()->paginate($perPage);
+        return $this->paginated(FacultyResource::collection($faculties));
     }
 
     /**
@@ -77,7 +80,7 @@ class FacultyController extends ApiController
     {
         $faculty = Faculty::findOrFail($id);
         $majors = $faculty->majors()->active()->get();
-        return $this->success($majors);
+        return $this->success(MajorResource::collection($majors));
     }
 
     /**
@@ -87,7 +90,7 @@ class FacultyController extends ApiController
     {
         $faculty = Faculty::findOrFail($id);
         $courses = $faculty->courses()->active()->get();
-        return $this->success($courses);
+        return $this->success(CourseResource::collection($courses));
     }
 
     /**
@@ -100,7 +103,7 @@ class FacultyController extends ApiController
             ->active()
             ->with('faculty', 'major', 'students')
             ->get();
-        return $this->success($courses);
+        return $this->success(CourseResource::collection($courses));
     }
 
     /**
