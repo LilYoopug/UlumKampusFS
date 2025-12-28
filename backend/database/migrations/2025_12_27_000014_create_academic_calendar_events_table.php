@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('academic_calendar_events', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary(); // Changed from auto-increment to string ID to match seeder
             $table->string('title');
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date')->nullable();
             $table->string('category');
             $table->text('description')->nullable();
             $table->timestamps();

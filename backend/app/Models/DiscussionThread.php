@@ -23,6 +23,7 @@ class DiscussionThread extends Model
         'content',
         'type',
         'status',
+        'is_closed',
         'is_pinned',
         'is_locked',
         'locked_by',
@@ -47,6 +48,7 @@ class DiscussionThread extends Model
         return [
             'is_pinned' => 'boolean',
             'is_locked' => 'boolean',
+            'is_closed' => 'boolean',
             'locked_at' => 'datetime',
             'closed_at' => 'datetime',
             'view_count' => 'integer',
@@ -306,19 +308,4 @@ class DiscussionThread extends Model
         $this->attributes['is_pinned'] = $value;
     }
 
-    /**
-     * Get the isClosed value (alias for status='closed' for frontend compatibility).
-     */
-    protected function getIsClosedAttribute(): bool
-    {
-        return $this->attributes['status'] === 'closed';
-    }
-
-    /**
-     * Set the isClosed value (alias for status for frontend compatibility).
-     */
-    protected function setIsClosedAttribute(bool $value): void
-    {
-        $this->attributes['status'] = $value ? 'closed' : 'open';
-    }
 }

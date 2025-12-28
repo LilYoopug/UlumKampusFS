@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiController;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
 use Illuminate\Http\JsonResponse;
 
-class AdminController extends Controller
+class AdminController extends ApiController
 {
     /**
      * Get admin dashboard statistics.

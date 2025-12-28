@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('faculty_id')->nullable()->constrained('faculties')->onDelete('set null')->after('role');
-            $table->foreignId('major_id')->nullable()->constrained('majors')->onDelete('set null')->after('faculty_id');
+            $table->string('faculty_id')->nullable()->after('role');
+            $table->foreign('faculty_id')->references('id')->on('faculties')->onDelete('set null');
+            $table->string('major_id')->nullable()->after('faculty_id');
+            $table->foreign('major_id')->references('code')->on('majors')->onDelete('set null');
             $table->string('student_id')->nullable()->unique()->after('major_id');
             $table->decimal('gpa', 3, 2)->nullable()->after('student_id');
             $table->integer('enrollment_year')->nullable()->after('gpa');
@@ -32,10 +34,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['faculty_id']);
-            $table->dropForeign(['major_id']);
-            $table->dropIndex(['faculty_id']);
-            $table->dropIndex(['major_id']);
+            // For SQLite, we'll drop the columns directly without explicitly dropping foreign keys
+            // Laravel handles this automatically in most cases
             $table->dropColumn([
                 'faculty_id',
                 'major_id',
@@ -44,7 +44,7 @@ return new class extends Migration
                 'enrollment_year',
                 'graduation_year',
                 'phone',
-                'address',
+                'address'
             ]);
         });
     }

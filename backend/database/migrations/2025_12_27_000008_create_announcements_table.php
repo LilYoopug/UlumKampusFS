@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('announcements', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('course_id')->nullable()->constrained('courses')->onDelete('cascade');
-            $table->foreignId('faculty_id')->nullable()->constrained('faculties')->onDelete('cascade');
+            $table->string('id')->primary(); // Changed from auto-increment to string ID to match seeder
+            $table->string('course_id')->nullable();
+            $table->string('faculty_id')->nullable();
+            $table->foreign('faculty_id')->references('id')->on('faculties')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('content');
@@ -42,6 +43,11 @@ return new class extends Migration
             $table->index('published_at');
             $table->index('expires_at');
             $table->index('order');
+        });
+
+        // Add the course_id foreign key constraint separately to avoid SQLite issues with nullable values
+        Schema::table('announcements', function (Blueprint $table) {
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
         });
     }
 

@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('majors', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('faculty_id')->constrained('faculties')->onDelete('cascade');
+            $table->string('code')->primary();
+            $table->string('faculty_id');
+            $table->foreign('faculty_id')->references('id')->on('faculties')->onDelete('cascade');
             $table->string('name');
-            $table->string('code')->unique();
             $table->text('description')->nullable();
             $table->string('head_of_program')->nullable();
             $table->string('email')->nullable();

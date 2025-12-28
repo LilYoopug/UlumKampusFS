@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('discussion_threads', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
+            $table->string('id')->primary(); // Changed from auto-increment to string ID to match seeder
+            $table->string('course_id');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
             $table->foreignId('module_id')->nullable()->constrained('course_modules')->onDelete('set null');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->string('title');
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->enum('type', ['question', 'discussion', 'announcement', 'help'])->default('discussion');
             $table->enum('status', ['open', 'closed', 'archived'])->default('open');
             $table->boolean('is_pinned')->default(false);
+            $table->boolean('is_closed')->default(false); // Added to match seeder
             $table->boolean('is_locked')->default(false);
             $table->foreignId('locked_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('locked_at')->nullable();

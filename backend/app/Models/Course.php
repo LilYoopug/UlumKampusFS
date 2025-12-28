@@ -57,7 +57,6 @@ class Course extends Model
      * @var list<string>
      */
     protected $hidden = [
-        'instructor_avatar_url',
     ];
 
     /**
@@ -285,7 +284,7 @@ class Course extends Model
     {
         // Try to get from loaded instructor relationship
         if ($this->relationLoaded('instructor') && $this->instructor) {
-            return $this->instructor->avatarUrl ?? null;
+            return $this->instructor->avatar_url ?? null;
         }
         return $this->attributes['instructor_avatar_url'] ?? null;
     }

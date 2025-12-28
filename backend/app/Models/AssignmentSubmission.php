@@ -129,11 +129,16 @@ class AssignmentSubmission extends Model
      */
     public function gradePercentage(): ?float
     {
-        if ($this->grade === null || $this->assignment === null) {
+        if ($this->grade === null) {
             return null;
         }
 
-        return ($this->grade / $this->assignment->max_points) * 100;
+        if ($this->relationLoaded('assignment') && $this->assignment) {
+            return ($this->grade / $this->assignment->max_points) * 100;
+        }
+
+        // If assignment is not loaded, we can't calculate percentage
+        return null;
     }
 
     /**

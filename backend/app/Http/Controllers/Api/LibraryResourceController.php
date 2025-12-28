@@ -19,8 +19,8 @@ class LibraryResourceController extends ApiController
         $query = LibraryResource::query();
 
         // Filter by resource type
-        if ($request->has('resource_type') && $request->resource_type) {
-            $query->where('resource_type', $request->resource_type);
+        if ($request->has('type') && $request->type) {
+            $query->where('type', $request->type);
         }
 
         // Filter by access level

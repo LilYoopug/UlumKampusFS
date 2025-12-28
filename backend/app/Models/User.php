@@ -10,7 +10,6 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -265,8 +264,8 @@ class User extends Authenticatable
     /**
      * Set the badges value (for frontend compatibility).
      */
-    protected function setBadgesAttribute(array $value): void
+    protected function setBadgesAttribute($value): void
     {
-        $this->attributes['badges'] = json_encode($value);
+        $this->attributes['badges'] = is_array($value) ? json_encode($value) : $value;
     }
 }

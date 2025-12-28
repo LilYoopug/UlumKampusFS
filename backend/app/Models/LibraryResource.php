@@ -21,12 +21,15 @@ class LibraryResource extends Model
         'created_by',
         'title',
         'description',
-        'resource_type',
+        'type',
         'access_level',
         'file_url',
         'file_type',
         'file_size',
         'external_link',
+        'cover_url',
+        'source_type',
+        'source_url',
         'author',
         'publisher',
         'isbn',
@@ -95,7 +98,7 @@ class LibraryResource extends Model
      */
     public function scopeByType($query, $type)
     {
-        return $query->where('resource_type', $type);
+        return $query->where('type', $type);
     }
 
     /**
@@ -181,17 +184,17 @@ class LibraryResource extends Model
     }
 
     /**
-     * Get the sourceType value (alias for resource_type for frontend compatibility).
+     * Get the sourceType value (alias for type for frontend compatibility).
      */
     protected function getSourceTypeAttribute(): ?string
     {
-        // Map resource_type to sourceType values: 'upload' | 'link' | 'embed'
+        // Map type to sourceType values: 'upload' | 'link' | 'embed'
         if ($this->isFile()) {
             return 'upload';
         } elseif ($this->isExternalLink()) {
             return 'link';
         }
-        return $this->attributes['resource_type'] ?? null;
+        return $this->attributes['type'] ?? null;
     }
 
     /**
