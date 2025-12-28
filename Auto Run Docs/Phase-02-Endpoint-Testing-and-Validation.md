@@ -12,7 +12,13 @@ Backend Server Will Always running on [http://127.0.0.1:8000] so u can use it.
   - Working: Register (valid data), Forgot password
   - Broken: Login, Logout, Register with validation errors - returning 302 redirects to HTML instead of JSON
   - Issue: API routes redirecting to web routes instead of returning JSON error responses
-- [ ] Create Auto Run Docs/test-users.sh with curl tests for all user-related endpoints
+- [x] Create Auto Run Docs/test-users.sh with curl tests for all user-related endpoints
+  - Results: 16/22 tests passed
+  - Working: List all users, Get user by ID, Get current user profile, Update profile, Change password, Get users by role, Get faculty members, Get students, Toggle user status, List with search, List with role filter
+  - Broken: Create user (403 - admin role not being set correctly), Update user (403), Delete user (403), Unauthenticated requests (302 redirect instead of 401)
+  - Issue 1: Role assignment bug - register endpoint is not properly setting the "admin" role, users get "user" role instead
+  - Issue 2: Authentication redirect issue - API routes return 302 redirects to HTML instead of JSON error responses (same as authentication tests)
+  - Skipped: Get users by faculty/major (no test data available), Some tests with student token (token not available due to role bug)
 - [ ] Create Auto Run Docs/test-courses.sh with curl tests for all course-related endpoints
 - [ ] Create Auto Run Docs/test-assignments.sh with curl tests for all assignment-related endpoints
 - [ ] Create Auto Run Docs/test-grades.sh with curl tests for all grade-related endpoints
