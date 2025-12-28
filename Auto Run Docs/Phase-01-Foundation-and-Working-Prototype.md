@@ -1,27 +1,15 @@
 # Phase 01: Foundation and Working Prototype
 
-This phase establishes the core database structure and creates a working API server that can respond to basic requests. By the end of this phase, you will have a Laravel backend with proper database migrations for all core entities, basic API routes configured, and a testable server infrastructure.
+This phase establishes the backend environment, verifies the Laravel application is functional, and creates a working prototype that demonstrates the API is operational. We'll set up the database, run migrations, execute tests, and create a simple test script that validates the core API endpoints are responding correctly.
+
+Backend Server Will Always running on [http://127.0.0.1:8000] so u can use it.
 
 ## Tasks
 
-- [x] Create Faculty and Major migrations with hierarchical structure
-- [x] Create Course, CourseModule, CourseEnrollment migrations
-- [x] Create Assignment, AssignmentSubmission migrations
-- [x] Create Announcement migration with categories
-- [x] Create LibraryResource migration
-- [x] Create DiscussionThread and DiscussionPost migrations
-- [x] Create Notification migration
-- [x] Create Grade and AcademicCalendarEvent migrations
-- [x] Update User model with additional fields (facultyId, majorId, gpa, etc.)
-- [x] Create Faculty and Major models with relationships
-- [x] Create Course model with relationships to Faculty, Major, User
-- [x] Create Assignment, Announcement, LibraryResource models
-- [x] Create DiscussionThread, Notification, Grade models
-- [x] Register RoleMiddleware in bootstrap/app.php
-- [x] Update routes/api.php with all route groups
-- [x] Create API Resource classes for User, Faculty, Major, Course
-- [x] Create base ApiController with common response methods
-- [x] Test server startup with `php artisan serve` - Server starts successfully, health check returns {"status":"ok"}
-- [x] Verify API routes are accessible via `php artisan route:list` - All 80+ API routes successfully registered
-- [x] Create a simple health check endpoint - Already exists at `routes/api.php:34-40`
-- [x] Verify database migrations run successfully - All 8 pending migrations ran successfully after fixing duplicate `graded_at` column in assignment_submissions_table migration
+- [x] Verify Laravel environment configuration and dependencies are properly installed
+- [x] Run `php artisan migrate:fresh --seed` to set up a clean database with seed data
+- [x] Run `php artisan route:list --json` and save output to Auto Run Docs/api-routes.json for route discovery
+- [x] Execute PHPUnit tests with `vendor/bin/phpunit` and save results to Auto Run Docs/test-results-initial.txt
+- [x] Create a simple test script Auto Run Docs/test-prototype.sh that tests the health endpoint and login endpoint using curl
+- [x] Run the prototype test script and verify it produces successful output
+- [x] Document the baseline status in Auto Run Docs/phase-01-summary.md with working endpoint count and test results
