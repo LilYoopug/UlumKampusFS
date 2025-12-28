@@ -9,7 +9,7 @@ use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class AnnouncementController extends Controller
+class AnnouncementController extends ApiController
 {
     /**
      * Display a listing of announcements.

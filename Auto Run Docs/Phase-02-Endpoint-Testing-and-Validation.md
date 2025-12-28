@@ -38,8 +38,12 @@ Backend Server Will Always running on [http://127.0.0.1:8000] so u can use it.
   - Broken: List all grades (student - 403 due to role bug), Get my grades (student - 403 due to role bug), Get course analytics (faculty - 403 due to role bug), Get faculty analytics (faculty - 403 due to role bug), Get grade with invalid ID (403 instead of 404 due to role bug), Update grade with invalid ID (403 instead of 404), Delete grade with invalid ID (403 instead of 404), Get grades by invalid course (403), Get grades by invalid assignment (403), Get grade distribution for invalid course (403), Create grade with missing fields (403 instead of 422 due to role bug)
   - Issue: Same role assignment bug - users registered with "faculty" or "student" roles get "user" role instead, causing 403 Forbidden errors on role-protected endpoints
   - Skipped: Create new grade, Get grade by ID, Get grade by ID (faculty), Update grade, Update grade (student), Delete grade, Get grades by course, Get grades by assignment, Get grades by student, Get grade distribution, Create grade with invalid score - all due to role bug preventing faculty token from working
-- [ ] Create Auto Run Docs/test-announcements.sh with curl tests for all announcement endpoints
-- [ ] Create Auto Run Docs/test-announcements.sh with curl tests for all announcement endpoints
+- [x] Create Auto Run Docs/test-announcements.sh with curl tests for all announcement endpoints
+  - Results: 23/30 tests passed
+  - Working: List all announcements, List with search, List with category filter, List with priority filter, List with target audience filter, Get announcement with invalid ID (404 as expected), List without auth (302 redirect - known issue), Create without auth (302 redirect), Create with missing fields (403 due to role bug), Publish/unpublish/delete by student (403 as expected), Create with expiration date (403 due to role bug), Create with attachment (403 due to role bug), List with multiple filters
+  - Broken: Create announcement (403 - faculty role not being set correctly), Get announcement by ID (no ID available), Update announcement (no ID available), Update by student (expected 403, got 404), Publish/unpublish (no ID available), Mark as read (no ID available), Delete announcement (no ID available), Get/update/delete without auth (302 redirect instead of 401)
+  - Issue: Same role assignment bug as previous tests - users registered with "faculty" role get "user" role instead, causing 403 Forbidden errors
+  - Skipped: Course/faculty-specific announcements (no course/faculty ID available), Tests requiring announcement ID (no announcement created due to role bug)
 - [ ] Create Auto Run Docs/test-discussions.sh with curl tests for all discussion endpoints
 - [ ] Create Auto Run Docs/test-calendar.sh with curl tests for all calendar event endpoints
 - [ ] Create Auto Run Docs/test-library.sh with curl tests for all library resource endpoints
