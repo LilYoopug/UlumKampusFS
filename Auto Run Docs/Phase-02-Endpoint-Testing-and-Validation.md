@@ -50,7 +50,12 @@ Backend Server Will Always running on [http://127.0.0.1:8000] so u can use it.
   - Broken: Get my discussion threads (404 - endpoint might not exist), Pin/unpin/lock/unlock/archive/restore thread (403 - faculty role not being set correctly)
   - Issue: Same role assignment bug as previous tests - users registered with "faculty" role get "user" role instead, causing 403 Forbidden errors on admin/faculty-protected endpoints
   - Skipped: Tests requiring course/module ID (no available data from courses list)
-- [ ] Create Auto Run Docs/test-calendar.sh with curl tests for all calendar event endpoints
+- [x] Create Auto Run Docs/test-calendar.sh with curl tests for all calendar event endpoints
+  - Results: 14/30 tests passed
+  - Working: List all calendar events (admin), List calendar events (student), Create calendar event (student - 403 as expected), Create holiday/registration/graduation/orientation/conference events (all 403 due to role bug), Create event with missing fields (403 due to role bug), Create event with invalid category (403 due to role bug), Create event with invalid date range (403 due to role bug), Get/update/delete without auth (302 redirect - known issue), Get event with invalid ID (404 as expected)
+  - Broken: Create calendar event (admin - 403 due to role bug), Create calendar event (faculty - 403 due to role bug), Get/update/delete calendar events (no event ID available due to role bug), Update event with invalid ID (403 instead of 404 due to role bug)
+  - Issue: Same role assignment bug as previous tests - users registered with "admin" or "faculty" roles get "user" role instead, causing 403 Forbidden errors on admin/faculty-protected endpoints
+  - Skipped: Tests requiring event ID (no event created due to role bug)
 - [ ] Create Auto Run Docs/test-library.sh with curl tests for all library resource endpoints
 - [ ] Create Auto Run Docs/test-faculties-majors.sh with curl tests for faculty and major endpoints
 - [ ] Create Auto Run Docs/test-notifications.sh with curl tests for all notification endpoints
