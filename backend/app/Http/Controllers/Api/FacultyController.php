@@ -2,15 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiController;
+use App\Http\Requests\FacultyRequest;
 use App\Models\Faculty;
-use Illuminate\Http\Request;
+use App\Models\Course;
+use App\Models\Major;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
-class FacultyController extends Controller
+/**
+ * FacultyController
+ *
+ * Handles CRUD operations for faculties.
+ * Admin and Faculty users can create, update, and delete faculties.
+ * All authenticated users can view faculties.
+ */
+class FacultyController extends ApiController
 {
     /**
      * Display a listing of faculties.
+     *
+     * Returns all active faculties. Supports filtering via query parameters.
+     *
+     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -20,25 +34,23 @@ class FacultyController extends Controller
 
     /**
      * Store a newly created faculty.
+     *
+     * Only Admin and Faculty users can create faculties.
+     *
+     * @param FacultyRequest $request
+     * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(FacultyRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:faculties',
-            'description' => 'nullable|string',
-            'dean_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
-        ]);
-
-        $faculty = Faculty::create($validated);
+        $faculty = Faculty::create($request->validated());
         return $this->created($faculty, 'Faculty created successfully');
     }
 
     /**
      * Display the specified faculty.
+     *
+     * @param string $id
+     * @return JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -48,27 +60,27 @@ class FacultyController extends Controller
 
     /**
      * Update the specified faculty.
+     *
+     * Only Admin and Faculty users can update faculties.
+     *
+     * @param FacultyRequest $request
+     * @param string $id
+     * @return JsonResponse
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(FacultyRequest $request, string $id): JsonResponse
     {
         $faculty = Faculty::findOrFail($id);
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50|unique:faculties,code,' . $id,
-            'description' => 'nullable|string',
-            'dean_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
-        ]);
-
-        $faculty->update($validated);
+        $faculty->update($request->validated());
         return $this->success($faculty, 'Faculty updated successfully');
     }
 
     /**
      * Remove the specified faculty.
+     *
+     * Only Admin and Faculty users can delete faculties.
+     *
+     * @param string $id
+     * @return JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {
@@ -79,6 +91,9 @@ class FacultyController extends Controller
 
     /**
      * Get majors for this faculty.
+     *
+     * @param string $id
+     * @return JsonResponse
      */
     public function majors(string $id): JsonResponse
     {
@@ -89,6 +104,9 @@ class FacultyController extends Controller
 
     /**
      * Get courses for this faculty.
+     *
+     * @param string $id
+     * @return JsonResponse
      */
     public function courses(string $id): JsonResponse
     {
@@ -99,6 +117,10 @@ class FacultyController extends Controller
 
     /**
      * Get courses for the current faculty user.
+     *
+     * Only Faculty users can access this endpoint.
+     *
+     * @return JsonResponse
      */
     public function myCourses(): JsonResponse
     {
@@ -111,7 +133,11 @@ class FacultyController extends Controller
     }
 
     /**
-     * Get faculty statistics.
+     * Get faculty statistics for the current faculty user.
+     *
+     * Only Faculty users can access this endpoint.
+     *
+     * @return JsonResponse
      */
     public function stats(): JsonResponse
     {
