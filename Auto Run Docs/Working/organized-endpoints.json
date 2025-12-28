@@ -1,0 +1,5045 @@
+{
+  "total_endpoints": 315,
+  "resources": {
+    "academic-calendar-events": {
+      "GET": [
+        {
+          "uri": "api/academic-calendar-events",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/academic-calendar-events/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/academic-calendar-events",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/academic-calendar-events/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/academic-calendar-events",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/academic-calendar-events/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/academic-calendar-events/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AcademicCalendarEventController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "admin": {
+      "GET": [
+        {
+          "uri": "api/admin/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/admin/stats",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AdminController@stats",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/admin/users",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AdminController@users",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/admin/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/admin/stats",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AdminController@stats",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/admin/users",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AdminController@users",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        }
+      ]
+    },
+    "announcements": {
+      "GET": [
+        {
+          "uri": "api/announcements",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/announcements/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/announcements",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/announcements/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/announcements",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/announcements/{id}/mark-read",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@markRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/announcements/{id}/publish",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@publish",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/announcements/{id}/unpublish",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@unpublish",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/announcements/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/announcements/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AnnouncementController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "assignments": {
+      "GET": [
+        {
+          "uri": "api/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/my-submission",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@mySubmission",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/submissions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@submissions",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/my-submission",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@mySubmission",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/submissions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@submissions",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/assignments",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/publish",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@publish",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/submit",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@submit",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/assignments/{id}/unpublish",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@unpublish",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/assignments/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/assignments/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\AssignmentController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "course-modules": {
+      "GET": [
+        {
+          "uri": "api/course-modules",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/course-modules/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/course-modules/{id}/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@assignments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/course-modules/{id}/discussions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@discussions",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/course-modules",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/course-modules/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/course-modules/{id}/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@assignments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/course-modules/{id}/discussions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@discussions",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/course-modules",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/course-modules/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/course-modules/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "courses": {
+      "GET": [
+        {
+          "uri": "api/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/my-courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@myCourses",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/announcements",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@announcements",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@assignments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/discussion-threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@discussionThreads",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/enrollments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@enrollments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@grades",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/library-resources",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@libraryResources",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/modules",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@modules",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/students",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@students",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/my-courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@myCourses",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/announcements",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@announcements",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@assignments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/discussion-threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@discussionThreads",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/enrollments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@enrollments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@grades",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/library-resources",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@libraryResources",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/modules",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@modules",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/students",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@students",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/courses",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/drop",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@drop",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/enroll",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@enroll",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/modules",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/modules/reorder",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@reorder",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/courses/{id}/toggle-status",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@toggleStatus",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/courses/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/courses/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "dashboard": {
+      "GET": [
+        {
+          "uri": "api/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/dosen/{instructorName}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@dosenStats",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/enrollment-trends",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@enrollmentTrends",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@facultyStats",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/dashboard/faculty-enrollment",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@facultyEnrollment",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/grade-distribution",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@gradeDistribution",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/management",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@managementStats",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/dashboard/prodi",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@prodiStats",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/dashboard/student",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@studentStats",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/dosen/{instructorName}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@dosenStats",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/enrollment-trends",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@enrollmentTrends",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@facultyStats",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/dashboard/faculty-enrollment",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@facultyEnrollment",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/grade-distribution",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@gradeDistribution",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/dashboard/management",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@managementStats",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/dashboard/prodi",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@prodiStats",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/dashboard/student",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DashboardController@studentStats",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ]
+    },
+    "discussion-posts": {
+      "GET": [
+        {
+          "uri": "api/discussion-posts/by-thread/{threadId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@byThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/my-posts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@myPosts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/solution-by-thread/{threadId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@solutionByThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}/replies",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@replies",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/discussion-posts/by-thread/{threadId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@byThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/my-posts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@myPosts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/solution-by-thread/{threadId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@solutionByThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}/replies",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@replies",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/discussion-posts/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@update",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/discussion-posts/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@destroy",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/discussion-posts/{id}/like",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@like",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}/mark-as-solution",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@markAsSolution",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}/reply",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@reply",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}/unlike",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@unlike",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-posts/{id}/unmark-as-solution",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@unmarkAsSolution",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "discussion-threads": {
+      "GET": [
+        {
+          "uri": "api/discussion-threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/by-course/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@byCourse",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/by-module/{moduleId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@byModule",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/my-threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@myThreads",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/posts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@posts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/discussion-threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/by-course/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@byCourse",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/by-module/{moduleId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@byModule",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/my-threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@myThreads",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/posts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@posts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/discussion-threads",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/archive",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@archive",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/close",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@close",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/lock",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@lock",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/pin",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@pin",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/posts",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionPostController@store",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/reopen",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@reopen",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/restore",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@restore",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/unlock",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@unlock",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussion-threads/{id}/unpin",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@unpin",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/discussion-threads/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@update",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/discussion-threads/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionThreadController@destroy",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "discussions": {
+      "GET": [
+        {
+          "uri": "api/discussions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@threads",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@showThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/posts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@posts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/discussions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@threads",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@showThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/posts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@posts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/discussions/posts/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@updatePost",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@updateThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/discussions/posts/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@deletePost",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@deleteThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/discussions/posts/{id}/mark-solution",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@markSolution",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/posts/{id}/unmark-solution",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@unmarkSolution",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@storeThread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/close",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@closeThread",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/like",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@likePost",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/lock",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@lockThread",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/pin",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@pinThread",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/posts",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@storePost",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/reopen",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@reopenThread",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/unlock",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@unlockThread",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/discussions/threads/{id}/unpin",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\DiscussionController@unpinThread",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "enrollments": {
+      "GET": [
+        {
+          "uri": "api/enrollments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@index",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/enrollments/course/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@byCourse",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/enrollments/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@show",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/enrollments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@index",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/enrollments/course/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@byCourse",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/enrollments/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@show",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/enrollments/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/enrollments/{id}/approve",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@approve",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/enrollments/{id}/reject",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\EnrollmentController@reject",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "faculties": {
+      "GET": [
+        {
+          "uri": "api/faculties",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/faculties/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/faculties/{id}/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@courses",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/faculties/{id}/majors",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@majors",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/faculties",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/faculties/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/faculties/{id}/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@courses",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/faculties/{id}/majors",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@majors",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/faculties",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/faculties/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/faculties/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "faculty": {
+      "GET": [
+        {
+          "uri": "api/faculty/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/faculty/my-courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@myCourses",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/faculty/stats",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@stats",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/faculty/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/faculty/my-courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@myCourses",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        },
+        {
+          "uri": "api/faculty/stats",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\FacultyController@stats",
+          "auth_required": true,
+          "roles": [
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:faculty"
+          ]
+        }
+      ]
+    },
+    "forgot-password": {
+      "POST": [
+        {
+          "uri": "api/forgot-password",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\Auth\\AuthController@forgotPassword",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ]
+    },
+    "grades": {
+      "GET": [
+        {
+          "uri": "api/grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@index",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/grades/analytics/course",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@analyticsByCourse",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/analytics/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@analyticsByFaculty",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/assignment/{assignmentId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@byAssignment",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/course/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@byCourse",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/distribution/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@distribution",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/my-grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@myGrades",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/grades/student/{studentId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@byStudent",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@show",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@index",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/grades/analytics/course",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@analyticsByCourse",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/analytics/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@analyticsByFaculty",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/assignment/{assignmentId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@byAssignment",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/course/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@byCourse",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/distribution/{courseId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@distribution",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/my-grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@myGrades",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/grades/student/{studentId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@byStudent",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/grades/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@show",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/grades",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/grades/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/grades/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\GradeController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "health": {
+      "GET": [
+        {
+          "uri": "api/health",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/health",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ]
+    },
+    "library": {
+      "GET": [
+        {
+          "uri": "api/library",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/library/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/library",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/library/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/library",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/library/{id}/download",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@download",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/library/{id}/publish",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@publish",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/library/{id}/unpublish",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@unpublish",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/library/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/library/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\LibraryResourceController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "login": {
+      "POST": [
+        {
+          "uri": "api/login",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\Auth\\AuthController@login",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ]
+    },
+    "logout": {
+      "POST": [
+        {
+          "uri": "api/logout",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\Auth\\AuthController@logout",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "majors": {
+      "GET": [
+        {
+          "uri": "api/majors",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/majors/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/majors/{id}/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@courses",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/majors/{id}/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@faculty",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/majors",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/majors/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/majors/{id}/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@courses",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/majors/{id}/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@faculty",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/majors",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/majors/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/majors/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\MajorController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "modules": {
+      "GET": [
+        {
+          "uri": "api/modules/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/modules/{id}/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@assignments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/modules/{id}/discussions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@discussions",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/modules/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/modules/{id}/assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@assignments",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/modules/{id}/discussions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@discussions",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/modules/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/modules/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseModuleController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "notifications": {
+      "GET": [
+        {
+          "uri": "api/notifications",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/counts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@counts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/unread",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@unread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/urgent",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@urgent",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/notifications",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/counts",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@counts",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/unread",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@unread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/urgent",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@urgent",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/notifications",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@store",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/notifications/mark-all-read",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markAllRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}/mark-read",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}/mark-unread",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markUnread",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/notifications/clear-read",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@clearRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@destroy",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "PATCH": [
+        {
+          "uri": "api/notifications/mark-all-read",
+          "methods": [
+            "PATCH"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markAllRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}/read",
+          "methods": [
+            "PATCH"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/notifications/mark-all-read",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markAllRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@update",
+          "auth_required": true,
+          "roles": [
+            "admin"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin"
+          ]
+        },
+        {
+          "uri": "api/notifications/{id}/read",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\NotificationController@markRead",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "payment": {
+      "POST": [
+        {
+          "uri": "api/payment/create-transaction",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\PaymentController@createTransaction",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/payment/notification",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\PaymentController@notificationHandler",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ],
+      "GET": [
+        {
+          "uri": "api/payment/status/{order_id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\PaymentController@checkTransactionStatus",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/payment/status/{order_id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\PaymentController@checkTransactionStatus",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "products": {
+      "GET": [
+        {
+          "uri": "api/products",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\ProductController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/products/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\ProductController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/products",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\ProductController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/products/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\ProductController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "public": {
+      "GET": [
+        {
+          "uri": "api/public/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@publicCourses",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/public/courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\CourseController@publicCourses",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ]
+    },
+    "register": {
+      "POST": [
+        {
+          "uri": "api/register",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\Auth\\AuthController@register",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ]
+    },
+    "reset-password": {
+      "POST": [
+        {
+          "uri": "api/reset-password",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\Auth\\AuthController@resetPassword",
+          "auth_required": false,
+          "roles": [],
+          "middleware": [
+            "api"
+          ]
+        }
+      ]
+    },
+    "student": {
+      "GET": [
+        {
+          "uri": "api/student/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/student/my-assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\StudentController@myAssignments",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/student/my-courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\StudentController@myCourses",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/student/my-grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\StudentController@myGrades",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/student/dashboard",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "Closure",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/student/my-assignments",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\StudentController@myAssignments",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/student/my-courses",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\StudentController@myCourses",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/student/my-grades",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\StudentController@myGrades",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ]
+    },
+    "submissions": {
+      "GET": [
+        {
+          "uri": "api/submissions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@index",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/submissions/assignment/{assignmentId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@byAssignment",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/submissions/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@show",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/submissions",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@index",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        },
+        {
+          "uri": "api/submissions/assignment/{assignmentId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@byAssignment",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/submissions/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@show",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/submissions/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@update",
+          "auth_required": true,
+          "roles": [
+            "student"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:student"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/submissions/{id}/feedback",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@feedback",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/submissions/{id}/grade",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\SubmissionController@grade",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    },
+    "user": {
+      "GET": [
+        {
+          "uri": "api/user",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@user",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/user",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@user",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ]
+    },
+    "users": {
+      "GET": [
+        {
+          "uri": "api/users",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/faculty/{facultyId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@byFaculty",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/list/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@faculty",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/list/students",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@students",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/major/{majorId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@byMajor",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/me/profile",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@me",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/role/{role}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@byRole",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "HEAD": [
+        {
+          "uri": "api/users",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@index",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/faculty/{facultyId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@byFaculty",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/list/faculty",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@faculty",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/list/students",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@students",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/major/{majorId}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@byMajor",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/me/profile",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@me",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/role/{role}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@byRole",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/{id}",
+          "methods": [
+            "GET",
+            "HEAD"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@show",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        }
+      ],
+      "POST": [
+        {
+          "uri": "api/users",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@store",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        },
+        {
+          "uri": "api/users/me/change-password",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@changePassword",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/{id}/toggle-status",
+          "methods": [
+            "POST"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@toggleStatus",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "PUT": [
+        {
+          "uri": "api/users/me/profile",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@updateProfile",
+          "auth_required": true,
+          "roles": [],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum"
+          ]
+        },
+        {
+          "uri": "api/users/{id}",
+          "methods": [
+            "PUT"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@update",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ],
+      "DELETE": [
+        {
+          "uri": "api/users/{id}",
+          "methods": [
+            "DELETE"
+          ],
+          "action": "App\\Http\\Controllers\\Api\\UserController@destroy",
+          "auth_required": true,
+          "roles": [
+            "admin",
+            "faculty"
+          ],
+          "middleware": [
+            "api",
+            "Illuminate\\Auth\\Middleware\\Authenticate:sanctum",
+            "App\\Http\\Middleware\\RoleMiddleware:admin,faculty"
+          ]
+        }
+      ]
+    }
+  }
+}
