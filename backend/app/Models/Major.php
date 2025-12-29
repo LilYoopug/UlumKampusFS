@@ -67,7 +67,7 @@ class Major extends Model
      */
     public function courses()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Course::class, 'major_id', 'code');
     }
 
     /**

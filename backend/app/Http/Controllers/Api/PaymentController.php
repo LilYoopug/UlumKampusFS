@@ -87,7 +87,9 @@ class PaymentController extends ApiController
     public function notificationHandler(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $notification = new Notification($request->getContent());
+            // Get raw POST data for Midtrans notification
+            $input = file_get_contents('php://input');
+            $notification = new Notification($input);
 
             $transactionStatus = $notification->transaction_status ?? $notification['transaction_status'];
             $orderId = $notification->order_id ?? $notification['order_id'];

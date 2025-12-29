@@ -31,17 +31,6 @@ class LoginRequest extends FormRequest
         return [
            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => env('RECAPTCHA_SECRET_KEY'),
-                    'response' => $value,
-                    'remoteip' => $this->ip(),
-                ]);
-
-                if (!$response->json('success')) {
-                    $fail('Captcha tidak valid.');
-                }
-            }],
         ];
     }
 

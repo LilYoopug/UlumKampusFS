@@ -27,12 +27,12 @@ class AcademicCalendarEventResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'start_date' => $this->start_date->toIso8601String(),
-            'end_date' => $this->end_date->toIso8601String(),
+            'start_date' => $this->start_date ? (is_string($this->start_date) ? $this->start_date : $this->start_date->toIso8601String()) : null,
+            'end_date' => $this->end_date ? (is_string($this->end_date) ? $this->end_date : $this->end_date->toIso8601String()) : null,
             'category' => $this->category,
             'description' => $this->description,
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'created_at' => $this->created_at ? (is_string($this->created_at) ? $this->created_at : $this->created_at->toIso8601String()) : null,
+            'updated_at' => $this->updated_at ? (is_string($this->updated_at) ? $this->updated_at : $this->updated_at->toIso8601String()) : null,
             'is_active' => $this->isActive(),
             'is_upcoming' => $this->isUpcoming(),
             'is_past' => $this->isPast(),
@@ -44,8 +44,14 @@ class AcademicCalendarEventResource extends JsonResource
      */
     public function isActive(): bool
     {
+        if (!$this->start_date || !$this->end_date) {
+            return false;
+        }
+
         $now = now();
-        return $now->between($this->start_date, $this->end_date);
+        $startDate = is_string($this->start_date) ? \Carbon\Carbon::parse($this->start_date) : $this->start_date;
+        $endDate = is_string($this->end_date) ? \Carbon\Carbon::parse($this->end_date) : $this->end_date;
+        return $now->between($startDate, $endDate);
     }
 
     /**
@@ -53,8 +59,13 @@ class AcademicCalendarEventResource extends JsonResource
      */
     public function isUpcoming(): bool
     {
+        if (!$this->start_date) {
+            return false;
+        }
+
         $now = now();
-        return $this->start_date && $this->start_date->isFuture();
+        $startDate = is_string($this->start_date) ? \Carbon\Carbon::parse($this->start_date) : $this->start_date;
+        return $startDate->isFuture();
     }
 
     /**
@@ -62,7 +73,12 @@ class AcademicCalendarEventResource extends JsonResource
      */
     public function isPast(): bool
     {
+        if (!$this->end_date) {
+            return false;
+        }
+
         $now = now();
-        return $this->end_date && $this->end_date->isPast();
+        $endDate = is_string($this->end_date) ? \Carbon\Carbon::parse($this->end_date) : $this->end_date;
+        return $endDate->isPast();
     }
 }

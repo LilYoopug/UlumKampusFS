@@ -6,4 +6,4 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
-require __DIR__.'/auth.php';
+// Removed auth.php routes since we're using API authentication routes instead
