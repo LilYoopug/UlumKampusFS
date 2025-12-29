@@ -327,11 +327,13 @@ export const StudentRegistrationPage: React.FC = () => {
                          </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            registration.paymentStatus === 'completed' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' 
+                            registration.paymentStatus === 'completed'
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
                               : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
                           }`}>
-                            {t(`student_registration_payment_${registration.paymentStatus === 'completed' ? 'completed' : 'pending'}`)}
+                            {registration.paymentStatus === 'completed'
+                              ? t('student_registration_payment_completed')
+                              : t('student_registration_payment_pending')}
                           </span>
                         </td>
                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
@@ -418,11 +420,13 @@ export const StudentRegistrationPage: React.FC = () => {
                             </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                              registration.paymentStatus === 'completed' 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' 
+                              registration.paymentStatus === 'completed'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
                                 : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
                             }`}>
-                              {t(`student_registration_payment_${registration.paymentStatus === 'completed' ? 'completed' : 'pending'}`)}
+                              {registration.paymentStatus === 'completed'
+                                ? t('student_registration_payment_completed')
+                                : t('student_registration_payment_pending')}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
@@ -571,11 +575,17 @@ export const StudentRegistrationPage: React.FC = () => {
                           </td>
                          <td className="px-6 py-4 whitespace-nowrap">
                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                             registration.paymentStatus === 'completed' 
-                               ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' 
-                               : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
+                             registration.paymentStatus === 'completed'
+                               ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
+                               : registration.paymentStatus === 'failed'
+                                 ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
+                                 : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
                            }`}>
-                             {t(`student_registration_payment_${registration.paymentStatus === 'completed' ? 'completed' : 'pending'}`)}
+                             {registration.paymentStatus === 'completed'
+                               ? t('student_registration_payment_completed')
+                               : registration.paymentStatus === 'failed'
+                                 ? t('student_registration_payment_failed')
+                                 : t('student_registration_payment_pending')}
                            </span>
                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
@@ -832,7 +842,11 @@ export const StudentRegistrationPage: React.FC = () => {
                              ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' 
                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
                        }`}>
-                         {t(`student_registration_payment_${selectedStudent.paymentStatus}`)}
+                         {selectedStudent.paymentStatus === 'completed'
+                           ? t('student_registration_payment_completed')
+                           : selectedStudent.paymentStatus === 'failed'
+                             ? t('student_registration_payment_failed')
+                             : t('student_registration_payment_pending')}
                        </span>
                      </div>
                    </div>

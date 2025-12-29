@@ -99,7 +99,7 @@ const BadgeAwardModal: React.FC<{
 
 // --- Main Component ---
 
-export const Gradebook: React.FC<GradebookProps> = ({ courses, assignments, currentUser, users, onUpdateUser, onSelectAssignment }) => {
+export const Gradebook: React.FC<GradebookProps> = ({ courses, assignments, currentUser, users, onUpdateUser, onSelectAssignment, onCreateAssignment, onUpdateAssignment }) => {
     const { t } = useLanguage();
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     const [activeTab, setActiveTab] = useState<'progress' | 'assignments'>('progress');
