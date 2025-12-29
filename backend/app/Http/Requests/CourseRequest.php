@@ -31,7 +31,7 @@ class CourseRequest extends FormRequest
 
         return [
             'faculty_id' => ['required', 'integer', 'exists:faculties,id'],
-            'major_id' => ['required', 'integer', 'exists:majors,id'],
+            'major_id' => ['required', 'string', 'exists:majors,code'],
             'instructor_id' => ['required', 'integer', 'exists:users,id'],
             'code' => [
                 'required',

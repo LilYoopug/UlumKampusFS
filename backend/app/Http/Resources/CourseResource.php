@@ -21,6 +21,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string|null $schedule
  * @property string|null $room
  * @property bool $is_active
+ * @property string|null $image_url
+ * @property string|null $mode
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property string|null $instructor_avatar_url
+ * @property array $learning_objectives
+ * @property array $syllabus_data
+ * @property-read \App\Models\User|null $instructor
  */
 class CourseResource extends JsonResource
 {
@@ -33,25 +41,27 @@ class CourseResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'faculty_id' => $this->faculty_id,
-            'major_id' => $this->major_id,
-            'instructor_id' => $this->instructor_id,
-            'code' => $this->code,
-            'name' => $this->name,
+            'title' => $this->name,
+            'instructor' => $this->instructor?->name ?? '',
+            'instructorId' => $this->instructor_id,
+            'facultyId' => $this->faculty_id,
+            'majorId' => $this->major_id,
+            'sks' => $this->credit_hours,
             'description' => $this->description,
-            'credit_hours' => $this->credit_hours,
-            'capacity' => $this->capacity,
-            'current_enrollment' => $this->current_enrollment,
-            'semester' => $this->semester,
-            'year' => $this->year,
-            'schedule' => $this->schedule,
-            'room' => $this->room,
-            'is_active' => $this->is_active,
-            'faculty' => new FacultyResource($this->whenLoaded('faculty')),
-            'major' => new MajorResource($this->whenLoaded('major')),
-            'instructor' => new UserResource($this->whenLoaded('instructor')),
-            'available_spots' => max(0, $this->capacity - $this->current_enrollment),
-            'has_capacity' => $this->current_enrollment < $this->capacity,
+            'imageUrl' => $this->image_url,
+            'progress' => null, // Will be computed based on user's progress
+            'gradeLetter' => null, // Will be computed based on user's grade
+            'gradeNumeric' => null, // Will be computed based on user's grade
+            'completionDate' => null, // Will be computed based on completion
+            'mode' => $this->mode,
+            'status' => $this->is_active ? 'Published' : 'Draft',
+            'learningObjectives' => $this->learning_objectives ?? [],
+            'syllabus' => $this->syllabus_data ?? [],
+            'modules' => CourseModuleResource::collection($this->whenLoaded('modules')),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
+            'instructorAvatarUrl' => $this->instructor_avatar_url,
+            'instructorBioKey' => $this->instructor_bio_key ?? null,
         ];
     }
 }

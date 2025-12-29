@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property-read \App\Models\Assignment|null $assignment
+ */
 class AssignmentSubmission extends Model
 {
     use HasFactory;

@@ -150,7 +150,7 @@ class ApiController
      * Used for duplicate resources or conflicting states
      *
      * @param string|null $message Custom conflict message
-     * @return mixed|null
+     * @return JsonResponse
      */
     protected function conflict(?string $message = null): JsonResponse
     {

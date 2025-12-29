@@ -26,6 +26,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property \Illuminate\Support\Carbon|null $last_post_at
  * @property string|null $attachment_url
  * @property string|null $attachment_type
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\Course|null $course
+ * @property-read \App\Models\CourseModule|null $module
+ * @property-read \App\Models\User|null $lockedBy
+ * @property-read \App\Models\User|null $closedBy
+ * @property-read \App\Models\User|null $lastPostBy
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DiscussionPost[] $posts
+ * @property-read \App\Models\DiscussionPost|null $solution
+ * @property int|null $solution_id
  */
 class DiscussionThreadResource extends JsonResource
 {
@@ -67,5 +79,21 @@ class DiscussionThreadResource extends JsonResource
             'updated_at' => $this->updated_at->toIso8601String(),
             'deleted_at' => $this->deleted_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Check if the thread has a solution
+     */
+    public function hasSolution(): bool
+    {
+        return $this->solution_id !== null;
+    }
+
+    /**
+     * Check if the thread is open for posting
+     */
+    public function isOpenForPosting(): bool
+    {
+        return $this->status === 'open' && !$this->is_locked;
     }
 }

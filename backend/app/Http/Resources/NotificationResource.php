@@ -20,6 +20,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property \Illuminate\Support\Carbon|null $expires_at
  * @property bool $is_sent
  * @property \Illuminate\Support\Carbon|null $sent_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property-read \App\Models\User|null $user
  */
 class NotificationResource extends JsonResource
 {
@@ -52,5 +56,21 @@ class NotificationResource extends JsonResource
             'updated_at' => $this->updated_at->toIso8601String(),
             'deleted_at' => $this->deleted_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Check if the notification is expired
+     */
+    public function isExpired(): bool
+    {
+        return $this->expires_at && $this->expires_at->isPast();
+    }
+
+    /**
+     * Check if the notification is active (not expired)
+     */
+    public function isActive(): bool
+    {
+        return !$this->isExpired();
     }
 }

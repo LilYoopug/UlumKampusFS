@@ -326,7 +326,7 @@ class UserController extends ApiController
         }
 
         $user->update([
-            'is_active' => !$user->is_active ?? true,
+            'is_active' => !($user->is_active ?? true),
         ]);
 
         return $this->success(
@@ -343,7 +343,7 @@ class UserController extends ApiController
         $user = auth()->user()->load(['faculty', 'major']);
 
         return $this->success(
-            $user,
+            new UserResource($user),
             'Current user retrieved successfully'
         );
     }

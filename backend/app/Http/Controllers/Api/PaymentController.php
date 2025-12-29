@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Transaction;
 use Midtrans\Notification;
 
-class PaymentController extends Controller
+class PaymentController extends ApiController
 {
     public function __construct()
     {
@@ -46,19 +45,16 @@ class PaymentController extends Controller
 
         try {
             $snapToken = Snap::getSnapToken($params);
-            return response()->json(['snap_token' => $snapToken]);
+            return $this->success(['snap_token' => $snapToken]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return $this->error($e->getMessage(), 500);
         }
     }
 
     /**
      * Memeriksa status transaksi dari Midtrans (Polling).
-     *
-     * @param string $order_id
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function checkTransactionStatus(Request $request, $order_id)
+    public function checkTransactionStatus(Request $request, string $order_id): \Illuminate\Http\JsonResponse
     {
         // TODO: Sebaiknya ada validasi untuk memastikan user yang sedang login
         // adalah pemilik dari order_id yang diminta.
@@ -69,43 +65,48 @@ class PaymentController extends Controller
             $status = Transaction::status($order_id);
 
             // Kirimkan status yang relevan ke frontend
-            return response()->json([
-                'order_id' => $status->order_id,
-                'gross_amount' => $status->gross_amount,
-                'transaction_status' => $status->transaction_status,
-                'payment_type' => $status->payment_type ?? null,
-                'transaction_time' => $status->transaction_time,
-                'expiry_time' => $status->expiry_time ?? null,
-            ]);
+            $data = [
+                'order_id' => $status['order_id'] ?? $status->order_id,
+                'gross_amount' => $status['gross_amount'] ?? $status->gross_amount,
+                'transaction_status' => $status['transaction_status'] ?? $status->transaction_status,
+                'payment_type' => $status['payment_type'] ?? $status->payment_type ?? null,
+                'transaction_time' => $status['transaction_time'] ?? $status->transaction_time,
+                'expiry_time' => $status['expiry_time'] ?? $status->expiry_time ?? null,
+            ];
+
+            return $this->success($data);
         } catch (\Exception $e) {
             // Handle jika transaksi tidak ditemukan atau error lainnya
-            return response()->json(['error' => 'Transaction not found or an error occurred.'], 404);
+            return $this->error('Transaction not found or an error occurred.', 404);
         }
     }
 
     /**
      * Menangani notifikasi dari Midtrans (webhook).
      */
-    public function notificationHandler(Request $request)
+    public function notificationHandler(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
             $notification = new Notification($request->getContent());
 
-            $transactionStatus = $notification->transaction_status;
-            $orderId = $notification->order_id;
-            $fraudStatus = $notification->fraud_status;
+            $transactionStatus = $notification->transaction_status ?? $notification['transaction_status'];
+            $orderId = $notification->order_id ?? $notification['order_id'];
+            $fraudStatus = $notification->fraud_status ?? $notification['fraud_status'];
 
             // Logika untuk memproses status transaksi
             // Contoh: Cari order berdasarkan $orderId di database Anda
             // $order = Order::find($orderId);
             // if (!$order) {
-            //     return response()->json(['error' => 'Order not found'], 404);
+            //     return $this->error('Order not found', 404);
             // }
 
             // Lakukan verifikasi signature key untuk keamanan
-            $signatureKey = hash('sha512', $orderId . $notification->status_code . $notification->gross_amount . config('midtrans.server_key'));
-            if ($notification->signature_key != $signatureKey) {
-                return response()->json(['error' => 'Invalid signature'], 403);
+            $statusCode = $notification->status_code ?? $notification['status_code'];
+            $grossAmount = $notification->gross_amount ?? $notification['gross_amount'];
+            $signatureKey = hash('sha512', $orderId . $statusCode . $grossAmount . config('midtrans.server_key'));
+            $notificationSignature = $notification->signature_key ?? $notification['signature_key'];
+            if ($notificationSignature != $signatureKey) {
+                return $this->error('Invalid signature', 403);
             }
 
             // Gunakan switch case untuk penanganan status yang lebih bersih
@@ -132,11 +133,11 @@ class PaymentController extends Controller
             }
 
             // Beri respons OK ke Midtrans agar tidak mengirim notifikasi berulang
-            return response()->json(['status' => 'ok']);
+            return $this->success(['status' => 'ok']);
 
         } catch (\Exception $e) {
             // Tangani jika ada error saat memproses notifikasi
-            return response()->json(['error' => $e->getMessage()], 500);
+            return $this->error($e->getMessage(), 500);
         }
     }
 }

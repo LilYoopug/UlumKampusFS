@@ -34,6 +34,8 @@ class Faculty extends Model
     {
         return [
             'is_active' => 'boolean',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
@@ -85,11 +87,4 @@ class Faculty extends Model
         return $query->where('is_active', true);
     }
 
-    /**
-     * Get the createdAt value (alias for created_at for frontend compatibility).
-     */
-    protected function getCreatedAtAttribute(): ?string
-    {
-        return $this->attributes['created_at'] ?? null;
-    }
 }

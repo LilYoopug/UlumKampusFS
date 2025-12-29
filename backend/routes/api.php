@@ -111,15 +111,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('majors')->group(function () {
         // Public (read-only) access for authenticated users
         Route::get('/', 'App\Http\Controllers\Api\MajorController@index');
-        Route::get('/{id}', 'App\Http\Controllers\Api\MajorController@show');
-        Route::get('/{id}/faculty', 'App\Http\Controllers\Api\MajorController@faculty');
-        Route::get('/{id}/courses', 'App\Http\Controllers\Api\MajorController@courses');
+        Route::get('/{code}', 'App\Http\Controllers\Api\MajorController@show');
+        Route::get('/{code}/faculty', 'App\Http\Controllers\Api\MajorController@faculty');
+        Route::get('/{code}/courses', 'App\Http\Controllers\Api\MajorController@courses');
 
         // Admin and Faculty only
         Route::middleware('role:admin,faculty')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\MajorController@store');
-            Route::put('/{id}', 'App\Http\Controllers\Api\MajorController@update');
-            Route::delete('/{id}', 'App\Http\Controllers\Api\MajorController@destroy');
+            Route::put('/{code}', 'App\Http\Controllers\Api\MajorController@update');
+            Route::delete('/{code}', 'App\Http\Controllers\Api\MajorController@destroy');
         });
     });
 
@@ -288,6 +288,23 @@ Route::middleware('auth:sanctum')->group(function () {
     // ------------------------------------------------------------------------
 
     Route::prefix('library')->group(function () {
+        // Public (read-only) access for authenticated users
+        Route::get('/', 'App\Http\Controllers\Api\LibraryResourceController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@show');
+        Route::post('/{id}/download', 'App\Http\Controllers\Api\LibraryResourceController@download');
+
+        // Admin and Faculty only
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\LibraryResourceController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@destroy');
+            Route::post('/{id}/publish', 'App\Http\Controllers\Api\LibraryResourceController@publish');
+            Route::post('/{id}/unpublish', 'App\Http\Controllers\Api\LibraryResourceController@unpublish');
+        });
+    });
+
+    // Alias route for frontend compatibility (library-resources)
+    Route::prefix('library-resources')->group(function () {
         // Public (read-only) access for authenticated users
         Route::get('/', 'App\Http\Controllers\Api\LibraryResourceController@index');
         Route::get('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@show');
@@ -485,6 +502,20 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    // Alias route for frontend compatibility (calendar-events)
+    Route::prefix('calendar-events')->group(function () {
+        // All authenticated users can view calendar events
+        Route::get('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@show');
+
+        // Admin and Faculty only - create, update, delete
+        Route::middleware('role:admin,faculty')->group(function () {
+            Route::post('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@store');
+            Route::put('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@destroy');
+        });
+    });
+
     // ------------------------------------------------------------------------
     // PAYMENT Routes (existing)
     // ------------------------------------------------------------------------
@@ -492,6 +523,35 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('payment')->group(function () {
         Route::post('/create-transaction', [PaymentController::class, 'createTransaction']);
         Route::get('/status/{order_id}', [PaymentController::class, 'checkTransactionStatus']);
+    });
+
+    // ------------------------------------------------------------------------
+    // PAYMENT ITEM Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('payment-items')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\PaymentItemController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\PaymentItemController@show');
+        Route::post('/', 'App\Http\Controllers\Api\PaymentItemController@store');
+        Route::put('/{id}', 'App\Http\Controllers\Api\PaymentItemController@update');
+        Route::delete('/{id}', 'App\Http\Controllers\Api\PaymentItemController@destroy');
+        Route::get('/user/{userId}', 'App\Http\Controllers\Api\PaymentItemController@byUser');
+        Route::get('/status/{status}', 'App\Http\Controllers\Api\PaymentItemController@byStatus');
+    });
+
+    // ------------------------------------------------------------------------
+    // PAYMENT HISTORY Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('payment-histories')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\PaymentHistoryController@index');
+        Route::get('/{id}', 'App\Http\Controllers\Api\PaymentHistoryController@show');
+        Route::post('/', 'App\Http\Controllers\Api\PaymentHistoryController@store');
+        Route::put('/{id}', 'App\Http\Controllers\Api\PaymentHistoryController@update');
+        Route::delete('/{id}', 'App\Http\Controllers\Api\PaymentHistoryController@destroy');
+        Route::get('/user/{userId}', 'App\Http\Controllers\Api\PaymentHistoryController@byUser');
+        Route::get('/status/{status}', 'App\Http\Controllers\Api\PaymentHistoryController@byStatus');
+        Route::get('/method/{paymentMethodId}', 'App\Http\Controllers\Api\PaymentHistoryController@byPaymentMethod');
     });
 
     // ------------------------------------------------------------------------

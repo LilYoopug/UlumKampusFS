@@ -16,9 +16,18 @@ class PaymentItem extends Model
         'user_id',
     ];
 
-    protected $casts = [
-        'due_date' => 'date',
-    ];
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'due_date' => 'date',
+        ];
+    }
 
     public function user()
     {

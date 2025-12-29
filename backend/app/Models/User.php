@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property-read \App\Models\Faculty|null $faculty
+ * @property-read \App\Models\Major|null $major
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -258,7 +262,11 @@ class User extends Authenticatable
      */
     protected function getBadgesAttribute(): array
     {
-        return $this->attributes['badges'] ?? [];
+        $badges = $this->attributes['badges'] ?? null;
+        if (is_string($badges)) {
+            return json_decode($badges, true) ?: [];
+        }
+        return is_array($badges) ? $badges : [];
     }
 
     /**

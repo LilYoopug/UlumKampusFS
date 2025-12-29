@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\DiscussionThread;
 use App\Models\DiscussionPost;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class DiscussionController extends Controller
+class DiscussionController extends ApiController
 {
     /**
      * Display a listing of discussions.

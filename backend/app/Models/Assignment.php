@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property \Carbon\Carbon|null $due_date
+ * @property-read \App\Models\Course|null $course
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\CourseModule|null $module
+ */
 class Assignment extends Model
 {
     use HasFactory, SoftDeletes;
@@ -132,7 +138,11 @@ class Assignment extends Model
      */
     public function isDueSoon(): bool
     {
-        return $this->due_date && $this->due_date->diffInHours(now()) <= 24 && $this->due_date->isFuture();
+        if (!$this->due_date) {
+            return false;
+        }
+
+        return $this->due_date->diffInHours(now()) <= 24 && $this->due_date->isFuture();
     }
 
     /**

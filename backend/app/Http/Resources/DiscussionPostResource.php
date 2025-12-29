@@ -20,6 +20,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property int $likes_count
  * @property string|null $attachment_url
  * @property string|null $attachment_type
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $user
+ * @property-read \App\Models\User|null $editedBy
+ * @property-read \App\Models\User|null $markedAsSolutionBy
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DiscussionPost[] $replies
  */
 class DiscussionPostResource extends JsonResource
 {

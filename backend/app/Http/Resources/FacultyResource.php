@@ -14,6 +14,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string|null $email
  * @property string|null $phone
  * @property bool $is_active
+ * @property \Carbon\Carbon|null $created_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Major[] $majors
  */
 class FacultyResource extends JsonResource
 {
@@ -29,12 +31,8 @@ class FacultyResource extends JsonResource
             'name' => $this->name,
             'code' => $this->code,
             'description' => $this->description,
-            'dean_name' => $this->dean_name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'is_active' => $this->is_active,
             'majors' => MajorResource::collection($this->whenLoaded('majors')),
-            'courses' => CourseResource::collection($this->whenLoaded('courses')),
+            'createdAt' => $this->created_at?->toIso8601String(),
         ];
     }
 }

@@ -16,9 +16,18 @@ class PaymentHistory extends Model
         'user_id',
     ];
 
-    protected $casts = [
-        'payment_date' => 'datetime',
-    ];
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'payment_date' => 'datetime',
+        ];
+    }
 
     public function user()
     {

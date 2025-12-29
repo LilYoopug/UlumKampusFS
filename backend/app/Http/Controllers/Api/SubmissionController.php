@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\AssignmentSubmissionResource;
 use App\Models\AssignmentSubmission;
 use App\Models\Grade;

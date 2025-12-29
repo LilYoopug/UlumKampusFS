@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property int $id
+ * @property string $code
  * @property int $faculty_id
  * @property string $name
- * @property string $code
  * @property string|null $description
  * @property string|null $head_of_program
  * @property string|null $email
@@ -28,19 +27,8 @@ class MajorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'faculty_id' => $this->faculty_id,
+            'id' => $this->code,
             'name' => $this->name,
-            'code' => $this->code,
-            'description' => $this->description,
-            'head_of_program' => $this->head_of_program,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'duration_years' => $this->duration_years,
-            'credit_hours' => $this->credit_hours,
-            'is_active' => $this->is_active,
-            'faculty' => new FacultyResource($this->whenLoaded('faculty')),
-            'courses' => CourseResource::collection($this->whenLoaded('courses')),
         ];
     }
 }

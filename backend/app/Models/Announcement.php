@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property \Carbon\Carbon|null $expires_at
+ * @property-read \App\Models\Course|null $course
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\Faculty|null $faculty
+ */
 class Announcement extends Model
 {
     use HasFactory, SoftDeletes;
@@ -158,7 +164,14 @@ class Announcement extends Model
         if ($this->relationLoaded('creator') && $this->creator) {
             return $this->creator->name ?? null;
         }
-        return $this->attributes['author_name'] ?? null;
+
+        // Load the relationship if not already loaded
+        if ($this->created_by) {
+            $creator = $this->creator()->first();
+            return $creator ? $creator->name : null;
+        }
+
+        return null;
     }
 
     /**

@@ -15,6 +15,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string|null $comments
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read \App\Models\User|null $user
+ * @property-read \App\Models\Course|null $course
+ * @property-read \App\Models\Assignment|null $assignment
  */
 class GradeResource extends JsonResource
 {
@@ -33,13 +36,29 @@ class GradeResource extends JsonResource
             'grade' => (float) $this->grade,
             'grade_letter' => $this->grade_letter,
             'comments' => $this->comments,
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
             'student' => new UserResource($this->whenLoaded('user')),
             'course' => new CourseResource($this->whenLoaded('course')),
             'assignment' => new AssignmentResource($this->whenLoaded('assignment')),
             'is_passing' => $this->isPassing(),
             'is_failing' => $this->isFailing(),
         ];
+    }
+
+    /**
+     * Check if the grade is passing
+     */
+    public function isPassing(): bool
+    {
+        return $this->grade >= 60;
+    }
+
+    /**
+     * Check if the grade is failing
+     */
+    public function isFailing(): bool
+    {
+        return $this->grade < 60;
     }
 }

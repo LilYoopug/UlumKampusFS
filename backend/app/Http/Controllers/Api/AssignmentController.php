@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\AssignmentRequest;
 use App\Http\Resources\AssignmentResource;
 use App\Http\Resources\AssignmentSubmissionResource;
@@ -16,13 +15,14 @@ class AssignmentController extends ApiController
     /**
      * Display a listing of assignments.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $perPage = $request->input('per_page', 15);
         $assignments = Assignment::published()
             ->with(['course', 'module', 'creator'])
             ->ordered()
-            ->get();
-        return $this->success(
+            ->paginate($perPage);
+        return $this->paginated(
             AssignmentResource::collection($assignments),
             'Assignments retrieved successfully'
         );

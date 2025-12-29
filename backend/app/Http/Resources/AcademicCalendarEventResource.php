@@ -27,15 +27,42 @@ class AcademicCalendarEventResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'start_date' => $this->start_date?->toIso8601String(),
-            'end_date' => $this->end_date?->toIso8601String(),
+            'start_date' => $this->start_date->toIso8601String(),
+            'end_date' => $this->end_date->toIso8601String(),
             'category' => $this->category,
             'description' => $this->description,
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
             'is_active' => $this->isActive(),
             'is_upcoming' => $this->isUpcoming(),
             'is_past' => $this->isPast(),
         ];
+    }
+
+    /**
+     * Check if the event is active (currently happening)
+     */
+    public function isActive(): bool
+    {
+        $now = now();
+        return $now->between($this->start_date, $this->end_date);
+    }
+
+    /**
+     * Check if the event is upcoming
+     */
+    public function isUpcoming(): bool
+    {
+        $now = now();
+        return $this->start_date && $this->start_date->isFuture();
+    }
+
+    /**
+     * Check if the event is in the past
+     */
+    public function isPast(): bool
+    {
+        $now = now();
+        return $this->end_date && $this->end_date->isPast();
     }
 }

@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property \Carbon\Carbon|null $expires_at
+ */
 class Notification extends Model
 {
     use HasFactory, SoftDeletes;
@@ -144,7 +147,11 @@ class Notification extends Model
      */
     public function isExpired(): bool
     {
-        return $this->expires_at && $this->expires_at->isPast();
+        if (!$this->expires_at) {
+            return false;
+        }
+
+        return $this->expires_at->isPast();
     }
 
     /**

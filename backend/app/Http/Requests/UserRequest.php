@@ -42,7 +42,7 @@ class UserRequest extends FormRequest
             'password' => $isUpdate ? ['nullable', 'string', 'min:8', 'confirmed'] : ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'string', 'in:admin,faculty,student'],
             'faculty_id' => ['nullable', 'integer', 'exists:faculties,id'],
-            'major_id' => ['nullable', 'integer', 'exists:majors,id'],
+            'major_id' => ['nullable', 'string', 'exists:majors,code'],
             'student_id' => [
                 'nullable',
                 'string',

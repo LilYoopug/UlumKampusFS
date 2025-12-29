@@ -82,6 +82,41 @@ class LibraryResourceResource extends JsonResource
     }
 
     /**
+     * Get tags as an array
+     */
+    public function getTagsArray(): array
+    {
+        if (!$this->tags) {
+            return [];
+        }
+
+        // Assuming tags are stored as JSON or comma-separated string
+        $decoded = json_decode($this->tags, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        // If it's a comma-separated string, split it
+        return array_map('trim', explode(',', $this->tags));
+    }
+
+    /**
+     * Check if this is a file resource
+     */
+    public function isFile(): bool
+    {
+        return !empty($this->file_url) && empty($this->external_link);
+    }
+
+    /**
+     * Check if this is an external link resource
+     */
+    public function isExternalLink(): bool
+    {
+        return !empty($this->external_link);
+    }
+
+    /**
      * Format file size to human-readable format.
      */
     private function formatFileSize(?int $bytes): ?string

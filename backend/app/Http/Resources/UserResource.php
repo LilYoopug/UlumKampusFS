@@ -18,6 +18,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property int|null $graduation_year
  * @property string|null $phone
  * @property string|null $address
+ * @property string|null $avatar_url
+ * @property \Carbon\Carbon|null $created_at
+ * @property string|null $bio
+ * @property string|null $student_status
+ * @property int $total_sks
+ * @property array $badges
+ * @property \Carbon\Carbon|null $email_verified_at
+ * @property \Carbon\Carbon|null $updated_at
  */
 class UserResource extends JsonResource
 {
@@ -32,17 +40,23 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'password' => null, // Don't expose password in response
+            'avatarUrl' => $this->avatar_url,
             'role' => $this->role,
-            'faculty_id' => $this->faculty_id,
-            'major_id' => $this->major_id,
-            'student_id' => $this->student_id,
+            'studentId' => $this->student_id,
+            'joinDate' => $this->created_at?->toIso8601String(),
+            'bio' => $this->bio,
+            'studentStatus' => $this->student_status,
             'gpa' => $this->gpa,
-            'enrollment_year' => $this->enrollment_year,
-            'graduation_year' => $this->graduation_year,
-            'phone' => $this->phone,
-            'address' => $this->address,
-            'faculty' => new FacultyResource($this->whenLoaded('faculty')),
-            'major' => new MajorResource($this->whenLoaded('major')),
+            'totalSks' => $this->total_sks,
+            'facultyId' => $this->faculty_id,
+            'majorId' => $this->major_id,
+            'badges' => $this->badges,
+            'email_verified_at' => $this->email_verified_at,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
+            'remember_token' => null, // Don't expose remember token
+            'phoneNumber' => $this->phone,
         ];
     }
 }

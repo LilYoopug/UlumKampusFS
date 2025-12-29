@@ -10,6 +10,10 @@ class Major extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $primaryKey = 'code';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *

@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Model;
  * - Registration periods
  * - Orientation
  * - Graduation
+ *
+ * @property \Carbon\Carbon|null $start_date
+ * @property \Carbon\Carbon|null $end_date
  */
 class AcademicCalendarEvent extends Model
 {
@@ -40,8 +43,8 @@ class AcademicCalendarEvent extends Model
     protected function casts(): array
     {
         return [
-            'start_date' => 'date',
-            'end_date' => 'date',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
         ];
     }
 
@@ -71,8 +74,13 @@ class AcademicCalendarEvent extends Model
      */
     public function isActive(): bool
     {
+        if (!$this->start_date || !$this->end_date) {
+            return false;
+        }
+
         $now = now();
-        return $now->between($this->start_date, $this->end_date->endOfDay());
+        $endDateTime = $this->end_date->endOfDay();
+        return $now->between($this->start_date, $endDateTime);
     }
 
     /**
@@ -82,7 +90,7 @@ class AcademicCalendarEvent extends Model
      */
     public function isUpcoming(): bool
     {
-        return now()->lt($this->start_date);
+        return $this->start_date && now()->lt($this->start_date);
     }
 
     /**
@@ -92,7 +100,12 @@ class AcademicCalendarEvent extends Model
      */
     public function isPast(): bool
     {
-        return now()->gt($this->end_date->endOfDay());
+        if (!$this->end_date) {
+            return false;
+        }
+
+        $endDate = $this->end_date->endOfDay();
+        return now()->gt($endDate);
     }
 
     /**

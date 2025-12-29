@@ -24,6 +24,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property bool $allow_late_submission
  * @property float|null $late_penalty
  * @property int $order
+ * @property string|null $category
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AssignmentSubmission[] $submissions
  */
 class AssignmentResource extends JsonResource
 {
@@ -36,34 +40,19 @@ class AssignmentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'course_id' => $this->course_id,
-            'module_id' => $this->module_id,
-            'created_by' => $this->created_by,
+            'courseId' => $this->course_id,
             'title' => $this->title,
             'description' => $this->description,
+            'dueDate' => $this->due_date?->toIso8601String(),
+            'files' => [], // This would need to be populated based on attachments
+            'submissions' => AssignmentSubmissionResource::collection($this->whenLoaded('submissions')),
+            'type' => $this->submission_type,
+            'category' => $this->category ?? 'Tugas',
+            'maxScore' => $this->max_points,
             'instructions' => $this->instructions,
-            'due_date' => $this->due_date?->toIso8601String(),
-            'max_points' => $this->max_points,
-            'submission_type' => $this->submission_type,
-            'allowed_file_types' => $this->allowed_file_types,
-            'max_file_size' => $this->max_file_size,
-            'attempts_allowed' => $this->attempts_allowed,
-            'is_published' => $this->is_published,
-            'published_at' => $this->published_at?->toIso8601String(),
-            'allow_late_submission' => $this->allow_late_submission,
-            'late_penalty' => $this->late_penalty,
-            'order' => $this->order,
-            'course' => new CourseResource($this->whenLoaded('course')),
-            'module' => $this->whenLoaded('module'),
-            'creator' => new UserResource($this->whenLoaded('creator')),
-            'submissions_count' => $this->whenCounted('submissions'),
-            'is_due_soon' => $this->when(isset($this->due_date), $this->isDueSoon()),
-            'is_overdue' => $this->when(isset($this->due_date), $this->isOverdue()),
-            'days_until_due' => $this->when(isset($this->due_date), function () {
-                if (!$this->due_date) return null;
-                $days = now()->diffInDays($this->due_date, false);
-                return $this->due_date->isFuture() ? $days : -$days;
-            }),
+            'attachments' => [], // This would need to be populated based on actual attachments
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

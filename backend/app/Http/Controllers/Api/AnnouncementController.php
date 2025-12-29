@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\AnnouncementRequest;
 use App\Http\Resources\AnnouncementResource;
 use App\Models\Announcement;
@@ -19,35 +18,35 @@ class AnnouncementController extends ApiController
         $query = Announcement::query();
 
         // Filter by category
-        if ($request->has('category') && $request->category) {
-            $query->where('category', $request->category);
+        if ($request->has('category') && $request->input('category')) {
+            $query->where('category', $request->input('category'));
         }
 
         // Filter by priority
-        if ($request->has('priority') && $request->priority) {
-            $query->where('priority', $request->priority);
+        if ($request->has('priority') && $request->input('priority')) {
+            $query->where('priority', $request->input('priority'));
         }
 
         // Filter by target audience
-        if ($request->has('target_audience') && $request->target_audience) {
-            $query->where('target_audience', $request->target_audience);
+        if ($request->has('target_audience') && $request->input('target_audience')) {
+            $query->where('target_audience', $request->input('target_audience'));
         }
 
         // Filter by course
-        if ($request->has('course_id') && $request->course_id) {
-            $query->where('course_id', $request->course_id);
+        if ($request->has('course_id') && $request->input('course_id')) {
+            $query->where('course_id', $request->input('course_id'));
         }
 
         // Filter by faculty
-        if ($request->has('faculty_id') && $request->faculty_id) {
-            $query->where('faculty_id', $request->faculty_id);
+        if ($request->has('faculty_id') && $request->input('faculty_id')) {
+            $query->where('faculty_id', $request->input('faculty_id'));
         }
 
         // Search in title and content
-        if ($request->has('search') && $request->search) {
+        if ($request->has('search') && $request->input('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('content', 'like', '%' . $request->search . '%');
+                $q->where('title', 'like', '%' . $request->input('search') . '%')
+                  ->orWhere('content', 'like', '%' . $request->input('search') . '%');
             });
         }
 
@@ -57,12 +56,13 @@ class AnnouncementController extends ApiController
             $query->published()->active();
         }
 
+        $perPage = $request->input('per_page', 15);
         $announcements = $query->with(['course', 'faculty', 'creator'])
             ->ordered()
             ->latest('created_at')
-            ->get();
+            ->paginate($perPage);
 
-        return $this->success($announcements);
+        return $this->paginated(AnnouncementResource::collection($announcements));
     }
 
     /**

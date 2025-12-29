@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property-read \App\Models\Faculty|null $faculty
+ * @property-read \App\Models\Major|null $major
+ * @property-read \App\Models\User|null $instructor
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CourseModule[] $modules
+ */
 class Course extends Model
 {
     use HasFactory, SoftDeletes;
@@ -33,6 +39,7 @@ class Course extends Model
         'mode',
         'status',
         'image_url',
+        'instructor_avatar_url',
     ];
 
     /**
@@ -286,6 +293,13 @@ class Course extends Model
         if ($this->relationLoaded('instructor') && $this->instructor) {
             return $this->instructor->avatar_url ?? null;
         }
+
+        // Load the relationship if not already loaded
+        if ($this->instructor_id) {
+            $instructor = $this->instructor()->first();
+            return $instructor ? $instructor->avatar_url : null;
+        }
+
         return $this->attributes['instructor_avatar_url'] ?? null;
     }
 
