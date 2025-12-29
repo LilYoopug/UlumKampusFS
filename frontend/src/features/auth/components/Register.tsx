@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { LandingLayout } from './LandingLayout';
-import { useLanguage } from '../contexts/LanguageContext';
+import { LandingLayout } from '@/src/features/landing/components/LandingLayout';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RegisterProps {
     onRegister: (data: { name: string; email: string; phone_number: string; password: string; password_confirmation: string; role?: string }) => void;

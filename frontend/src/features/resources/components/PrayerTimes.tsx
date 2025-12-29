@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
 
 interface Location {
     id: string;

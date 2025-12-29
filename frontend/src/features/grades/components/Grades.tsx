@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { Course, User } from '../types';
-import { courseAPI } from '../services/apiService';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { Course, User } from '@/types';
 
 const CertificateModal: React.FC<{ course: Course; onClose: () => void; currentUser: User; }> = ({ course, onClose, currentUser }) => {
     const { t } = useLanguage();

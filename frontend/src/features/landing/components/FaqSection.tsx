@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { AnimatedSection } from './AnimatedSection';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
+import { AnimatedSection } from '@/src/ui/components/AnimatedSection';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
 
 const AccordionItem: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => {
     const [isOpen, setIsOpen] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Page, User, UserRole } from '../types';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Page, User, UserRole } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SidebarProps {
   currentPage: Page;

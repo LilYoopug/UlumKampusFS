@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { handleNavClick } from '../App';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageSwitcher } from '@/src/features/shared/components/LanguageSwitcher';
+import { handleNavClick } from '@/App';
 
 interface LandingHeaderProps {
   onNavigateToLogin: () => void;

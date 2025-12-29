@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { Assignment } from '../../types';
-import { Icon } from '../../src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Assignment } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
 
 interface AssignmentFormProps {
     courseId: string;

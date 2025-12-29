@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
 // FIX: Imported TranslationKey and User to fix type errors and use correct props.
-import { TranslationKey, User } from '../types';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { TranslationKey, User } from '@/types';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 type SettingsSection = 'profile' | 'appearance' | 'notifications' | 'account';
 

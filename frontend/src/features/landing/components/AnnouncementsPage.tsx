@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, FormEvent } from 'react';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Announcement, AnnouncementCategory, TranslationKey, User, UserRole } from '../types';
-import { timeAgo } from '../utils/time';
-import { ANNOUNCEMENTS_DATA } from '../constants';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Announcement, AnnouncementCategory, TranslationKey, User, UserRole } from '@/types';
+import { timeAgo } from '@/utils/time';
+import { ANNOUNCEMENTS_DATA } from '@/constants';
 
 interface AnnouncementsPageProps {
     initialAnnouncementId?: string;

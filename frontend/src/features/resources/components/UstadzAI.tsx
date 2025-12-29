@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Icon } from './Icon';
-import { askUstadzAI } from '../services/geminiService';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { askUstadzAI } from '@/services/geminiService';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Message {
   sender: 'user' | 'ai';

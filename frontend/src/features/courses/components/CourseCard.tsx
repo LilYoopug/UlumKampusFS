@@ -1,8 +1,8 @@
 import React from 'react';
-import { Course, CourseStatus } from '../types';
-import { Faculty } from '../types';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Course, CourseStatus } from '@/types';
+import { Faculty } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CourseCardProps {
   course: Course;

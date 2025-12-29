@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { ASSIGNMENTS } from '../../constants';
-import { Assignment, Course, User } from '../../types';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { ASSIGNMENTS } from '@/constants';
+import { Assignment, Course, User } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { AssignmentCard } from './AssignmentCard';
 
 // Helper to find course by ID

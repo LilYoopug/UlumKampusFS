@@ -1,6 +1,6 @@
 import React from 'react';
-import { Faculty, Course, User, Badge, LibraryResource, Assignment, Submission, AcademicCalendarEvent, DiscussionThread, Notification, Announcement } from './types';
-import { Icon } from './src/ui/components/Icon';
+import { Faculty, Course, User, Badge, LibraryResource, Assignment, Submission, AcademicCalendarEvent, DiscussionThread, Notification, Announcement } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
 
 export const MAHASISWA_USER: User = {
   name: 'Ahmad Faris',

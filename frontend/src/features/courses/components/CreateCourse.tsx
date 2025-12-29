@@ -1,7 +1,7 @@
 import React from 'react';
 import { CourseForm } from './CourseForm';
-import { Course } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Course } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CreateCourseProps {
     onSave: (courseData: Course) => void;

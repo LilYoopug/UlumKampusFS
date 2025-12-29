@@ -1,8 +1,8 @@
 import React from 'react';
-import { Course } from '../types';
-import { LandingLayout } from './LandingLayout';
-import { CourseCard } from './CourseCard';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Course } from '@/types';
+import { LandingLayout } from '@/src/features/landing/components/LandingLayout';
+import { CourseCard } from '@/src/features/courses/components/CourseCard';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PublicCourseCatalogProps {
   courses: Course[];

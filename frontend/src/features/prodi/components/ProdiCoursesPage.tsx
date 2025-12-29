@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Course } from '../types';
-import { Icon } from './Icon';
-import { ProdiCourseForm } from './ProdiCourseForm';
-import { FACULTIES } from '../constants';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Course } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { ProdiCourseForm } from '@/src/features/prodi/components/ProdiCourseForm';
+import { FACULTIES } from '@/constants';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { FaqContent } from './FaqContent';
-import { UserGuideContent } from './UserGuideContent';
-import { ReportBugForm } from './ReportBugForm';
-import { User } from '../types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { FaqContent } from '@/src/features/landing/components/FaqContent';
+import { UserGuideContent } from '@/src/ui/components/UserGuideContent';
+import { ReportBugForm } from '@/src/ui/components/ReportBugForm';
+import { User } from '@/types';
 
 type HelpTab = 'faq' | 'guide' | 'report';
 

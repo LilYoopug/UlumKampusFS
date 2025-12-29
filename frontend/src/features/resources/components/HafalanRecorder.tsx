@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Assignment, HafalanSubmissionStatus, Submission, TajwidFeedback, User } from '../types';
-import { checkTajwid } from '../services/geminiService';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Assignment, HafalanSubmissionStatus, Submission, TajwidFeedback, User } from '@/types';
+import { checkTajwid } from '@/services/geminiService';
+import { Icon } from '@/src/ui/components/Icon';
 
 interface HafalanRecorderProps {
     assignment: Assignment;

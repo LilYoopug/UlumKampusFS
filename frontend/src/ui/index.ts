@@ -7,6 +7,5 @@ export { Help } from './components/Help';
 export { ReportBugForm } from './components/ReportBugForm';
 export { UserGuideContent } from './components/UserGuideContent';
 export { PageNotFound } from './components/PageNotFound';
-export { RoleDashboardNotAvailable } from './components/RoleDashboardNotAvailable';
 export { RolePageNotAvailable } from './components/RolePageNotAvailable';
 export { RoleSwitcher } from './components/RoleSwitcher';

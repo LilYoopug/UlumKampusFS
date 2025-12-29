@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { CourseCard } from './CourseCard';
-import { Course, Major, Page, User, Faculty } from '../types';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
-import { FACULTIES } from '../constants';
+import { Course, Major, Page, User, Faculty } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { FACULTIES } from '@/constants';
 
 interface CourseCatalogProps {
   onSelectCourse: (course: Course) => void;

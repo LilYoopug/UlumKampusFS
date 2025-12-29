@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { BADGES } from '../../constants';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { Icon } from '../../src/ui/components/Icon';
-import { Course, User } from '../../types';
+import { BADGES } from '@/constants';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { Course, User } from '@/types';
 
 const StatCard: React.FC<{value: string, label: string, icon: React.ReactNode}> = ({ value, label, icon }) => (
     <div className="bg-white dark:bg-slate-800/50 p-5 rounded-2xl shadow-md flex flex-col items-center text-center min-w-0 max-w-full">

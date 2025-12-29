@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { LibraryResource } from '../types';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LibraryResource } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
 
 interface ResourceFormProps {
     onSave: (data: LibraryResource | Omit<LibraryResource, 'id'>) => void;

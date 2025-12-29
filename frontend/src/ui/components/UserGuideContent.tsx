@@ -1,6 +1,6 @@
 import React from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { GuideSection, UserRole } from '../types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { GuideSection, UserRole } from '@/types';
 
 const ALL_GUIDES: GuideSection[] = [
     {

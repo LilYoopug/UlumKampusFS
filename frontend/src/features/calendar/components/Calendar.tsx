@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { ACADEMIC_CALENDAR_EVENTS } from '../constants';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { AcademicCalendarEvent, Assignment, Course, TranslationKey, User } from '../types';
+import { ACADEMIC_CALENDAR_EVENTS } from '@/constants';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { AcademicCalendarEvent, Assignment, Course, TranslationKey, User } from '@/types';
 
 type CalendarEvent = {
     type: 'assignment' | 'live-class' | 'academic';

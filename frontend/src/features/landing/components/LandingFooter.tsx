@@ -1,7 +1,7 @@
 import React from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { handleNavClick } from '../App';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { handleNavClick } from '@/App';
 
 export const LandingFooter: React.FC = () => {
     const { t } = useLanguage();

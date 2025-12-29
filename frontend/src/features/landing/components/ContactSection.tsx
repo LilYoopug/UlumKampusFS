@@ -1,7 +1,7 @@
 import React from 'react';
-import { AnimatedSection } from './AnimatedSection';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
+import { AnimatedSection } from '@/src/ui/components/AnimatedSection';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
 
 export const ContactSection: React.FC = () => {
     const { t } = useLanguage();

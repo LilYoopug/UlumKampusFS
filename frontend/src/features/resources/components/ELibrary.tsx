@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { LibraryResource } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { TranslationKey } from '../translations';
+import { LibraryResource } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { TranslationKey } from '@/translations';
 
 interface ResourceCardProps {
     resource: LibraryResource;

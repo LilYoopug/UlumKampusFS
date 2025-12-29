@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { DISCUSSION_THREADS, ALL_USERS } from '../constants';
-import { DiscussionThread, DiscussionPost, User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { timeAgo } from '../utils/time';
+import { DISCUSSION_THREADS, ALL_USERS } from '@/constants';
+import { DiscussionThread, DiscussionPost, User } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { timeAgo } from '@/utils/time';
 
 interface DiscussionForumProps {
     courseId: string;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Icon } from './Icon';
-import { User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { UserForm } from './UserForm';
+import { Icon } from '@/src/ui/components/Icon';
+import { User } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { UserForm } from '@/src/features/shared/components/UserForm';
 
 const ConfirmationModal: React.FC<{
     isOpen: boolean;

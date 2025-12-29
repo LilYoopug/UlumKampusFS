@@ -1,8 +1,8 @@
 import React, { useState, Suspense } from 'react';
-import { Icon } from './Icon';
-import { QuranReader } from './QuranReader';
-import { HadithReader } from './HadithReader';
-import { DoaReader } from './DoaReader';
+import { Icon } from '@/src/ui/components/Icon';
+import { QuranReader } from '@/src/features/resources/components/QuranReader';
+import { HadithReader } from '@/src/features/resources/components/HadithReader';
+import { DoaReader } from '@/src/features/resources/components/DoaReader';
 
 type Tab = 'quran' | 'hadith' | 'doa';
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Icon } from './Icon';
-import { Doa } from '../types';
+import { Icon } from '@/src/ui/components/Icon';
+import { Doa } from '@/types';
 
 const LoadingSpinner: React.FC = () => (
     <div className="flex justify-center items-center h-64">

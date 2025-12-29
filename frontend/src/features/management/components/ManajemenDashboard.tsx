@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Icon } from './Icon';
-import { User, Faculty } from '../types';
-import { FACULTIES, ANNOUNCEMENTS_DATA } from '../constants';
+import { Icon } from '@/src/ui/components/Icon';
+import { User, Faculty } from '@/types';
+import { FACULTIES, ANNOUNCEMENTS_DATA } from '@/constants';
 
 interface ManajemenDashboardProps {
     currentUser: User;

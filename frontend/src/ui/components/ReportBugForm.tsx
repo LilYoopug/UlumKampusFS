@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
 
 export const ReportBugForm: React.FC = () => {
     const { t } = useLanguage();

@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Icon } from './Icon';
-import { CourseCard } from './CourseCard';
-import { Badge, Faculty } from '../types';
-import { Course, Page, Announcement, User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { timeAgo } from '../utils/time';
-import { ANNOUNCEMENTS_DATA, FACULTIES } from '../constants';
+import { Icon } from '@/src/ui/components/Icon';
+import { CourseCard } from '@/src/features/courses/components/CourseCard';
+import { Badge, Faculty } from '@/types';
+import { Course, Page, Announcement, User } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { timeAgo } from '@/utils/time';
+import { ANNOUNCEMENTS_DATA, FACULTIES } from '@/constants';
 
 const gradeToPoint: Record<string, number> = {
   'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7,

@@ -1,6 +1,6 @@
 import React from 'react';
-import { AnimatedSection } from './AnimatedSection';
-import { useLanguage } from '../contexts/LanguageContext';
+import { AnimatedSection } from '@/src/ui/components/AnimatedSection';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const AboutSection: React.FC = () => {
     const { t } = useLanguage();

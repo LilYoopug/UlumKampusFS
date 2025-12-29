@@ -1,8 +1,8 @@
 import React from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { PrayerTimes } from './PrayerTimes';
-import { IslamicResources } from './IslamicResources';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { PrayerTimes } from '@/src/features/resources/components/PrayerTimes';
+import { IslamicResources } from '@/src/features/resources/components/IslamicResources';
 
 export const Worship: React.FC = () => {
   const { t } = useLanguage();

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Language } from '../types';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Language } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
 
 const languages: { code: Language; name: string; flag: string }[] = [
   { code: 'id', name: 'Indonesia', flag: '🇮🇩' },

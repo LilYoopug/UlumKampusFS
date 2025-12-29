@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { RoleSwitcher } from './RoleSwitcher';
-import { User, Notification, NotificationLink, Page } from '../types';
-import { timeAgo } from '../utils/time';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageSwitcher } from '@/src/features/shared/components/LanguageSwitcher';
+import { RoleSwitcher } from '@/src/ui/components/RoleSwitcher';
+import { User, Notification, NotificationLink, Page } from '@/types';
+import { timeAgo } from '@/utils/time';
 
 interface HeaderProps {
     toggleDarkMode: () => void;

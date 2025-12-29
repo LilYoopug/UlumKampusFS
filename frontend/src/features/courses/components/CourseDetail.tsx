@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Course, CourseModule, User, Assignment } from '../types';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
-import { VideoPlayer } from './VideoPlayer';
-import { ModuleManagement } from './ModuleManagement';
-import { CourseAssignmentsTab } from './CourseAssignmentsTab';
-import { DiscussionForum } from './DiscussionForum';
+import { Course, CourseModule, User, Assignment } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { VideoPlayer } from '@/src/ui/components/VideoPlayer';
+import { ModuleManagement } from '@/src/features/management/components/ModuleManagement';
+import { CourseAssignmentsTab } from '@/src/features/assignments/components/CourseAssignmentsTab';
+import { DiscussionForum } from '@/src/features/landing/components/DiscussionForum';
 
 interface CourseDetailProps {
   course: Course;

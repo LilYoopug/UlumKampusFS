@@ -1,14 +1,14 @@
 import React from 'react';
-import { LandingLayout } from './LandingLayout';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { FACULTIES } from '../constants';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-import { AnimatedSection } from './AnimatedSection';
-import { AboutSection } from './AboutSection';
-import { FaqSection } from './FaqSection';
-import { ContactSection } from './ContactSection';
-import { handleNavClick } from '../App';
+import { LandingLayout } from '@/src/features/landing/components/LandingLayout';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { FACULTIES } from '@/constants';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { AnimatedSection } from '@/src/ui/components/AnimatedSection';
+import { AboutSection } from '@/src/features/landing/components/AboutSection';
+import { FaqSection } from '@/src/features/landing/components/FaqSection';
+import { ContactSection } from '@/src/features/landing/components/ContactSection';
+import { handleNavClick } from '@/App';
 
 interface HomepageProps {
   onNavigateToLogin: () => void;

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Course, CourseModule, User } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { VideoPlayer } from './VideoPlayer';
+import { Course, CourseModule, User } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { VideoPlayer } from '@/src/ui/components/VideoPlayer';
 
 interface VideoLecture {
     module: CourseModule;

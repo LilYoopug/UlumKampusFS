@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Course, CourseStatus, Faculty, User } from '../types';
-import { Icon } from './Icon';
-import { FACULTIES, ALL_USERS } from '../constants';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Course, CourseStatus, Faculty, User } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { FACULTIES, ALL_USERS } from '@/constants';
 
 interface ProdiCourseFormProps {
     onSave: (courseData: Course) => void;

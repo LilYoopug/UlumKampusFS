@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { User } from '../types';
-import { Icon } from './Icon';
-import { ALL_USERS } from '../constants';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { User } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { ALL_USERS } from '@/constants';
 
 interface RoleSwitcherProps {
     currentUser: User;

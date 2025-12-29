@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Icon } from './Icon';
-import { EQuranSurah, EQuranAyah, MyQuranRandomAyahData, EQuranSurahDetail, TafsirAyah } from '../types';
+import { Icon } from '@/src/ui/components/Icon';
+import { EQuranSurah, EQuranAyah, MyQuranRandomAyahData, EQuranSurahDetail, TafsirAyah } from '@/types';
 
 const LoadingSpinner: React.FC = () => (
     <div className="flex justify-center items-center h-64">

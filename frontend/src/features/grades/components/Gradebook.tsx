@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Course, Assignment, User, Badge } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { ALL_USERS, BADGES } from '../constants';
-import { numericToLetter } from '../utils/gradeConverter';
-import { AssignmentForm } from './AssignmentForm';
+import { Course, Assignment, User, Badge } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { ALL_USERS, BADGES } from '@/constants';
+import { numericToLetter } from '@/utils/gradeConverter';
+import { AssignmentForm } from '@/src/features/assignments/components/AssignmentForm';
 
 interface GradebookProps {
     courses: Course[];

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Course } from '../types';
-import { Icon } from './Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Course } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {

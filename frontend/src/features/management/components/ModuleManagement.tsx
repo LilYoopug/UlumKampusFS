@@ -1,7 +1,7 @@
 import React, { useState, DragEvent, ChangeEvent } from 'react';
-import { Course, CourseModule } from '../types';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Course, CourseModule } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DraggableList: React.FC<{ items: any[], renderItem: (item: any, index: number) => React.ReactNode, onReorder: (items: any[]) => void }> = ({ items, renderItem, onReorder }) => {
     const [draggingItem, setDraggingItem] = useState<number | null>(null);

@@ -1,10 +1,10 @@
 import React, { useState, FormEvent, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Icon } from './Icon';
-import { CourseCard } from './CourseCard';
-import { Course, AnnouncementCategory, User, Assignment } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { ASSIGNMENTS, ANNOUNCEMENTS_DATA } from '../constants';
+import { Icon } from '@/src/ui/components/Icon';
+import { CourseCard } from '@/src/features/courses/components/CourseCard';
+import { Course, AnnouncementCategory, User, Assignment } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { ASSIGNMENTS, ANNOUNCEMENTS_DATA } from '@/constants';
 
 const StatCard: React.FC<{value: string, label: string, icon: React.ReactNode}> = ({ value, label, icon }) => (
     <div className="bg-white dark:bg-slate-800/50 p-5 rounded-2xl shadow-md flex items-center space-x-4 rtl:space-x-reverse">

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, ChangeEvent, DragEvent } from 'react';
-import { Course, CourseModule, CourseStatus, SyllabusWeek } from '../types';
-import { FACULTIES } from '../constants';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Course, CourseModule, CourseStatus, SyllabusWeek } from '@/types';
+import { FACULTIES } from '@/constants';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CourseFormProps {
     onSave: (courseData: Course) => void;

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { User, Course } from '../types';
-import { Icon } from './Icon';
-import { Dropdown } from './Dropdown';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { User, Course } from '@/types';
+import { Icon } from '@/src/ui/components/Icon';
+import { Dropdown } from '@/src/features/shared/components/Dropdown';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Icon } from './Icon';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Notification, NotificationLink } from '../types';
-import { timeAgo } from '../utils/time';
+import { Icon } from '@/src/ui/components/Icon';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Notification, NotificationLink } from '@/types';
+import { timeAgo } from '@/utils/time';
 
 interface NotificationsProps {
     onNotificationClick: (link: NotificationLink) => void;

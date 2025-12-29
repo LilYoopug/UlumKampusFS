@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { LibraryResource } from '../types';
-import { useLanguage } from '../contexts/LanguageContext';
-import { Icon } from './Icon';
-import { ResourceForm } from './ResourceForm';
+import { LibraryResource } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Icon } from '@/src/ui/components/Icon';
+import { ResourceForm } from '@/src/features/shared/components/ResourceForm';
 
 interface ManageELibraryProps {
     resources: LibraryResource[];

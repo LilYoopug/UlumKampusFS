@@ -1,7 +1,7 @@
  import React from 'react';
- import { Icon } from './Icon';
- import { User, Page } from '../types';
- import { useLanguage } from '../contexts/LanguageContext';
+ import { Icon } from '@/src/ui/components/Icon';
+ import { User, Page } from '@/types';
+ import { useLanguage } from '@/contexts/LanguageContext';
  
  // Add declarations for CDN-loaded libraries to the global window object
  declare global {

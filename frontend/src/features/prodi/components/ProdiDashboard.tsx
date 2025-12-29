@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Icon } from './Icon';
-import { FACULTIES } from '../constants';
-import { Course, User } from '../types';
+import { Icon } from '@/src/ui/components/Icon';
+import { FACULTIES } from '@/constants';
+import { Course, User } from '@/types';
 
 const StatCard: React.FC<{value: string, label: string, icon: React.ReactNode}> = ({ value, label, icon }) => (
     <div className="bg-white dark:bg-slate-800/50 p-5 rounded-2xl shadow-md flex items-center space-x-4 rtl:space-x-reverse">
