@@ -576,6 +576,49 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ------------------------------------------------------------------------
+    // SUPER ADMIN SYSTEM Routes
+    // ------------------------------------------------------------------------
+
+    Route::middleware('role:admin')->prefix('system')->group(function () {
+        Route::get('/health', 'App\Http\Controllers\Api\SystemController@health');
+        Route::get('/config', 'App\Http\Controllers\Api\SystemController@config');
+        Route::get('/logs', 'App\Http\Controllers\Api\SystemController@logs');
+        Route::get('/stats', 'App\Http\Controllers\Api\SystemController@stats');
+        Route::post('/clear-cache', 'App\Http\Controllers\Api\SystemController@clearCache');
+        Route::post('/backup', 'App\Http\Controllers\Api\SystemController@createBackup');
+    });
+
+    // ------------------------------------------------------------------------
+    // MANAGEMENT Routes
+    // ------------------------------------------------------------------------
+
+    Route::middleware('role:admin,faculty')->prefix('management')->group(function () {
+        Route::get('/dashboard', 'App\Http\Controllers\Api\ManagementController@dashboard');
+        Route::get('/users', 'App\Http\Controllers\Api\ManagementController@users');
+        Route::get('/courses', 'App\Http\Controllers\Api\ManagementController@courses');
+        Route::get('/enrollments', 'App\Http\Controllers\Api\ManagementController@enrollments');
+        Route::get('/analytics', 'App\Http\Controllers\Api\ManagementController@analytics');
+        Route::get('/export', 'App\Http\Controllers\Api\ManagementController@export');
+        Route::post('/users/bulk', 'App\Http\Controllers\Api\ManagementController@bulkUserOperation');
+        Route::post('/courses/bulk', 'App\Http\Controllers\Api\ManagementController@bulkCourseOperation');
+    });
+
+    // ------------------------------------------------------------------------
+    // PRODI (Program Study) Routes
+    // ------------------------------------------------------------------------
+
+    Route::middleware('role:admin,faculty')->prefix('prodi')->group(function () {
+        Route::get('/dashboard', 'App\Http\Controllers\Api\ProdiController@dashboard');
+        Route::get('/courses', 'App\Http\Controllers\Api\ProdiController@courses');
+        Route::post('/courses', 'App\Http\Controllers\Api\ProdiController@createCourse');
+        Route::get('/lecturers', 'App\Http\Controllers\Api\ProdiController@lecturers');
+        Route::get('/students', 'App\Http\Controllers\Api\ProdiController@students');
+        Route::get('/enrollments', 'App\Http\Controllers\Api\ProdiController@enrollments');
+        Route::get('/analytics', 'App\Http\Controllers\Api\ProdiController@analytics');
+        Route::post('/bulk', 'App\Http\Controllers\Api\ProdiController@bulkOperation');
+    });
+
+    // ------------------------------------------------------------------------
     // FACULTY DASHBOARD Routes
     // ------------------------------------------------------------------------
 

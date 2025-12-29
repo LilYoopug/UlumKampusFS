@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('module_id')->nullable()->constrained('course_modules')->onDelete('set null');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->string('title');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->enum('type', ['question', 'discussion', 'announcement', 'help'])->default('discussion');
             $table->enum('status', ['open', 'closed', 'archived'])->default('open');
             $table->boolean('is_pinned')->default(false);

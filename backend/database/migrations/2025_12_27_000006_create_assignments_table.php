@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('instructions')->nullable();
             $table->timestamp('due_date')->nullable();
             $table->decimal('max_points', 8, 2)->default(100.00);
-            $table->enum('submission_type', ['text', 'file', 'link', 'mixed'])->default('text');
+            $table->enum('submission_type', ['text', 'file', 'link', 'mixed', 'hafalan'])->default('text');
             $table->string('allowed_file_types')->nullable();
             $table->integer('max_file_size')->nullable()->comment('in KB');
             $table->integer('attempts_allowed')->default(1);
