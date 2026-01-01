@@ -40,13 +40,17 @@ class AssignmentSubmissionResource extends JsonResource
     public function toArray(Request $request): array
     {
         // Check if this resource is being used in the context of an assignment (for frontend compatibility)
-        $forAssignment = $request->route() && strpos($request->route()->getName() ?? '', 'assignments') !== false;
+        // We check if it's part of a collection or if the route contains 'assignments'
+        $forAssignment = $request->route() && 
+            (strpos($request->route()->getName() ?? '', 'assignments') !== false ||
+             strpos($request->path() ?? '', 'assignments') !== false);
 
-        if ($forAssignment) {
+        if ($forAssignment || !$request->route()) {
             // Format for assignment submissions array (frontend compatibility)
             return [
                 'studentId' => $this->student_id,
-                'submittedAt' => $this->submitted_at->toIso8601String(),
+                'studentName' => $this->whenLoaded('student') ? $this->student->name : null,
+                'submittedAt' => $this->formatDateTime($this->submitted_at),
                 'file' => [
                     'name' => $this->file_name ?? '',
                     'url' => $this->file_url ?? ''
@@ -54,6 +58,9 @@ class AssignmentSubmissionResource extends JsonResource
                 'gradeLetter' => $this->grade_letter ?? $this->getGradeLetterFromNumeric($this->grade),
                 'gradeNumeric' => $this->grade,
                 'feedback' => $this->feedback,
+                'grade' => $this->grade,
+                'status' => $this->status,
+                'isLate' => $this->is_late,
             ];
         }
 
@@ -129,5 +136,31 @@ class AssignmentSubmissionResource extends JsonResource
         if ($grade >= 55) return 'C';
         if ($grade >= 40) return 'D';
         return 'E';
+    }
+
+    /**
+     * Format datetime to ISO8601 string, handling both Carbon objects and strings
+     */
+    private function formatDateTime($dateTime): ?string
+    {
+        if ($dateTime === null) {
+            return null;
+        }
+
+        // If it's already a Carbon object, format it
+        if (is_object($dateTime) && method_exists($dateTime, 'toIso8601String')) {
+            return $dateTime->toIso8601String();
+        }
+
+        // If it's a string, try to convert it to Carbon and format
+        if (is_string($dateTime)) {
+            try {
+                return \Carbon\Carbon::parse($dateTime)->toIso8601String();
+            } catch (\Exception $e) {
+                return $dateTime;
+            }
+        }
+
+        return null;
     }
 }

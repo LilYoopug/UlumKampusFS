@@ -34,7 +34,7 @@ export const ProdiDashboard: React.FC<ProdiDashboardProps> = ({ courses, users, 
     const myFaculty = useMemo(() => FACULTIES.find(f => f.id === myFacultyId), [myFacultyId]);
     
     const prodiStats = useMemo(() => {
-        const prodiStudents = users.filter(u => u.role === 'Mahasiswa' && u.facultyId === myFacultyId);
+        const prodiStudents = users.filter(u => (u.role === 'Mahasiswa' || u.role === 'student') && u.facultyId === myFacultyId);
         const totalStudents = prodiStudents.length;
         const totalCourses = courses.length;
 

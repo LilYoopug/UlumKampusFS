@@ -10,10 +10,12 @@ class PaymentItem extends Model
         'item_id',
         'title_key',
         'description_key',
+        'title',
+        'description',
         'amount',
         'status',
-        'due_date',
         'user_id',
+        'due_date',
     ];
 
     /**
@@ -25,12 +27,11 @@ class PaymentItem extends Model
     {
         return [
             'amount' => 'decimal:2',
-            'due_date' => 'date',
         ];
     }
 
-    public function user()
+    public function userPaymentStatuses()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->hasMany(UserPaymentStatus::class);
     }
 }

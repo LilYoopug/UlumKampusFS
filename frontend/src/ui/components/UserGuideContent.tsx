@@ -4,6 +4,31 @@ import { GuideSection, UserRole } from '@/types';
 
 const ALL_GUIDES: GuideSection[] = [
     {
+        title: 'guide_title_maba_start',
+        content: 'guide_content_maba_start',
+        roles: ['MABA'],
+    },
+    {
+        title: 'guide_title_maba_registrasi',
+        content: 'guide_content_maba_registrasi',
+        roles: ['MABA'],
+    },
+    {
+        title: 'guide_title_maba_administrasi',
+        content: 'guide_content_maba_administrasi',
+        roles: ['MABA'],
+    },
+    {
+        title: 'guide_title_maba_pengaturan',
+        content: 'guide_content_maba_pengaturan',
+        roles: ['MABA'],
+    },
+    {
+        title: 'guide_title_maba_bantuan',
+        content: 'guide_content_maba_bantuan',
+        roles: ['MABA'],
+    },
+    {
         title: 'guide_title_start',
         content: 'guide_content_start',
         roles: ['Mahasiswa', 'Dosen', 'Prodi Admin', 'Manajemen Kampus', 'Super Admin'],

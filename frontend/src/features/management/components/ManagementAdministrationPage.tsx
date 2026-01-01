@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { User } from '@/types';
+import { LoadingSpinner } from '@/src/components/shared/LoadingSpinner';
+import { managementAPI } from '@/services/apiService';
 
 interface ManagementAdministrationPageProps {
   currentUser: User;
@@ -13,11 +15,7 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
-  const [paymentTypeList, setPaymentTypeList] = useState<any[]>([
-    { id: 1, name: t('administrasi_registration_title'), description: t('administrasi_registration_desc'), amount: 5000000 },
-    { id: 2, name: t('administrasi_semester_title'), description: t('administrasi_semester_desc'), amount: 3500000 },
-    { id: 3, name: t('administrasi_exam_title'), description: t('administrasi_exam_desc'), amount: 250000 },
-  ]);
+  const [paymentTypeList, setPaymentTypeList] = useState<any[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState<any>(null);
@@ -25,103 +23,379 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
   const [isEditingPayments, setIsEditingPayments] = useState(false);
   const [originalPaymentList, setOriginalPaymentList] = useState<any[]>([]);
   
-  // Mock data for demonstration
-  const [paymentStats] = useState({
-    totalStudents: 1245,
-    totalPayments: 2500000000, // in rupiah
-    totalPaid: 2300000000,
-    totalUnpaid: 200000000,
-    pendingPayments: 42,
-  });
+  // Loading states
+  const [loading, setLoading] = useState(false);
+  const [loadingOverview, setLoadingOverview] = useState(false);
+  const [loadingRecentPayments, setLoadingRecentPayments] = useState(false);
+  const [loadingPaymentTypes, setLoadingPaymentTypes] = useState(false);
+  const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(false);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+  const [loadingFeeTypes, setLoadingFeeTypes] = useState(false);
+  
+  // Data states
+  const [paymentStats, setPaymentStats] = useState<any>(null);
+  const [recentPayments, setRecentPayments] = useState<any[]>([]);
+  const [paymentTypes, setPaymentTypes] = useState<any[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+  
+  // Error state
+  const [error, setError] = useState<string | null>(null);
 
-  const [recentPayments] = useState([
-    { id: 1, student: 'Ahmad Faris', type: 'Registration Payment', amount: 5000000, date: '2024-08-15', status: 'completed' },
-    { id: 2, student: 'Siti Maryam', type: 'Semester Payment', amount: 3500000, date: '2024-08-14', status: 'completed' },
-    { id: 3, student: 'Abdullah', type: 'Exam Payment', amount: 250000, date: '2024-08-13', status: 'completed' },
-    { id: 4, student: 'Fatimah Az-Zahra', type: 'Registration Payment', amount: 5000000, date: '2024-08-12', status: 'pending' },
-    { id: 5, student: 'Umar bin Khattab', type: 'Semester Payment', amount: 3500000, date: '2024-08-11', status: 'failed' },
-  ]);
+  // Fetch overview data
+  useEffect(() => {
+    const fetchOverview = async () => {
+      setLoadingOverview(true);
+      try {
+        const response = await managementAPI.getAdministrationOverview();
+        setPaymentStats(response.data.data);
+      } catch (err) {
+        console.error('Error fetching overview:', err);
+        setError('Failed to load overview data');
+      } finally {
+        setLoadingOverview(false);
+      }
+    };
 
-  const [paymentTypes] = useState([
-    { id: 1, title: t('administrasi_registration_title'), total: 500000000, paid: 480000000, unpaid: 20000000 },
-    { id: 2, title: t('administrasi_semester_title'), total: 1500000000, paid: 1450000000, unpaid: 50000000 },
-    { id: 3, title: t('administrasi_exam_title'), total: 100000000, paid: 95000000, unpaid: 5000000 },
-    { id: 4, title: 'Other Fees', total: 400000000, paid: 375000000, unpaid: 25000000 },
-  ]);
+    if (activeTab === 'overview') {
+      fetchOverview();
+    }
+  }, [activeTab]);
 
-   const [paymentMethods] = useState([
-     { 
-       id: 'bank_transfer', 
-       name: t('administrasi_payment_method_bank_transfer'), 
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M3 10h18M12 3l9 7-9 7-9-7 9-7M6 10v11M9 10v11M12 10v11M15 10v11M18 10v11" />
-          </svg>
-        ),
-       count: 245 
-     },
-     { 
-       id: 'credit_card', 
-       name: t('administrasi_payment_method_credit_card'), 
-       icon: (
-         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-           <rect x="3" y="6" width="18" height="12" rx="2" ry="2" />
-           <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18" />
-         </svg>
-       ), 
-       count: 120 
-     },
-     { 
-       id: 'e_wallet', 
-       name: t('administrasi_payment_method_e_wallet'), 
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01" />
-          </svg>
-        ),
-       count: 180 
-     },
-     { 
-       id: 'virtual_account', 
-       name: t('administrasi_payment_method_virtual_account'), 
-       icon: (
-         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-         </svg>
-       ), 
-       count: 98 
-     },
-   ]);
+  // Fetch recent payments
+  useEffect(() => {
+    const fetchRecentPayments = async () => {
+      setLoadingRecentPayments(true);
+      try {
+        const response = await managementAPI.getRecentPayments(10);
+        setRecentPayments(response.data.data);
+      } catch (err) {
+        console.error('Error fetching recent payments:', err);
+        setError('Failed to load recent payments');
+      } finally {
+        setLoadingRecentPayments(false);
+      }
+    };
+
+    if (activeTab === 'overview') {
+      fetchRecentPayments();
+    }
+  }, [activeTab]);
+
+  // Fetch payment types
+  useEffect(() => {
+    const fetchPaymentTypes = async () => {
+      setLoadingPaymentTypes(true);
+      try {
+        const response = await managementAPI.getPaymentTypes();
+        setPaymentTypes(response.data.data);
+      } catch (err) {
+        console.error('Error fetching payment types:', err);
+        setError('Failed to load payment types');
+      } finally {
+        setLoadingPaymentTypes(false);
+      }
+    };
+
+    if (activeTab === 'overview') {
+      fetchPaymentTypes();
+    }
+  }, [activeTab]);
+
+  // Fetch payment methods
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      setLoadingPaymentMethods(true);
+      try {
+        const response = await managementAPI.getPaymentMethods();
+        setPaymentMethods(response.data.data);
+      } catch (err) {
+        console.error('Error fetching payment methods:', err);
+        setError('Failed to load payment methods');
+      } finally {
+        setLoadingPaymentMethods(false);
+      }
+    };
+
+    if (activeTab === 'overview') {
+      fetchPaymentMethods();
+    }
+  }, [activeTab]);
+
+  // Fetch students for payment management
+  useEffect(() => {
+    const fetchStudents = async () => {
+      setLoadingStudents(true);
+      try {
+        const response = await managementAPI.getStudentsPaymentStatus();
+        setStudents(response.data.data);
+      } catch (err) {
+        console.error('Error fetching students:', err);
+        setError('Failed to load students');
+      } finally {
+        setLoadingStudents(false);
+      }
+    };
+
+    if (activeTab === 'payment-management') {
+      fetchStudents();
+    }
+  }, [activeTab]);
+
+  // Fetch fee types
+  useEffect(() => {
+    const fetchFeeTypes = async () => {
+      setLoadingFeeTypes(true);
+      try {
+        const response = await managementAPI.getFeeTypes();
+        setPaymentTypeList(response.data.data);
+      } catch (err) {
+        console.error('Error fetching fee types:', err);
+        setError('Failed to load fee types');
+      } finally {
+        setLoadingFeeTypes(false);
+      }
+    };
+
+    if (activeTab === 'payment-types') {
+      fetchFeeTypes();
+    }
+  }, [activeTab]);
+
+  // Handle view student details
+  const handleViewClick = async (studentId: string) => {
+    setLoading(true);
+    try {
+      const response = await managementAPI.getStudentPaymentDetails(studentId);
+      // Transform payment_list to paymentList for frontend compatibility
+      const studentData = {
+        ...response.data.data,
+        paymentList: response.data.data.payment_list || []
+      };
+      setSelectedStudent(studentData);
+      setShowModal(true);
+    } catch (err) {
+      console.error('Error fetching student details:', err);
+      setError('Failed to load student details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle update payment status
+  const handleUpdatePaymentStatus = async (studentId: string, paymentItemId: number, status: string) => {
+    try {
+      await managementAPI.updatePaymentStatus(studentId, paymentItemId, status);
+      // Refresh student details
+      const response = await managementAPI.getStudentPaymentDetails(studentId);
+      setSelectedStudent(response.data.data);
+    } catch (err) {
+      console.error('Error updating payment status:', err);
+      setError('Failed to update payment status');
+    }
+  };
+
+  // Handle save payment changes
+  const handleSavePaymentChanges = async () => {
+    if (!selectedStudent || !originalPaymentList.length) {
+      setIsEditingPayments(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Find payments that have changed status
+      const changedPayments = selectedStudent.paymentList.filter((payment: any) => {
+        const original = originalPaymentList.find((p: any) => p.id === payment.id);
+        return original && original.status !== payment.status;
+      });
+
+      // Update each changed payment
+      for (const payment of changedPayments) {
+        await managementAPI.updatePaymentStatus(
+          selectedStudent.id,
+          payment.id,
+          payment.status
+        );
+      }
+
+      // Refresh student details after all updates
+      const response = await managementAPI.getStudentPaymentDetails(selectedStudent.id);
+      const studentData = {
+        ...response.data.data,
+        paymentList: response.data.data.payment_list || []
+      };
+      setSelectedStudent(studentData);
+
+      // Refresh students list to update the main table
+      const studentsResponse = await managementAPI.getStudentsPaymentStatus();
+      setStudents(studentsResponse.data.data);
+
+      setIsEditingPayments(false);
+      setOriginalPaymentList([]);
+    } catch (err) {
+      console.error('Error saving payment changes:', err);
+      setError('Failed to save payment changes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle create fee type
+  const handleCreateFeeType = async () => {
+    if (newPayment.name && newPayment.description && newPayment.amount) {
+      try {
+        await managementAPI.createFeeType({
+          item_id: newPayment.name.toLowerCase().replace(/\s+/g, '_'),
+          title: newPayment.name,
+          description: newPayment.description,
+          amount: parseInt(newPayment.amount)
+        });
+        setNewPayment({ name: '', description: '', amount: '' });
+        setShowAddForm(false);
+        // Refresh fee types
+        const response = await managementAPI.getFeeTypes();
+        setPaymentTypeList(response.data.data);
+      } catch (err) {
+        console.error('Error creating fee type:', err);
+        setError('Failed to create fee type');
+      }
+    }
+  };
+
+  // Handle update fee type
+  const handleUpdateFeeType = async () => {
+    if (editingPayment && newPayment.name && newPayment.amount) {
+      try {
+        await managementAPI.updateFeeType(editingPayment.id, {
+          title: newPayment.name,
+          description: newPayment.description,
+          amount: parseInt(newPayment.amount)
+        });
+        setShowEditForm(false);
+        setEditingPayment(null);
+        setNewPayment({ name: '', description: '', amount: '' });
+        // Refresh fee types
+        const response = await managementAPI.getFeeTypes();
+        setPaymentTypeList(response.data.data);
+      } catch (err) {
+        console.error('Error updating fee type:', err);
+        setError('Failed to update fee type');
+      }
+    }
+  };
+
+  // Handle delete fee type
+  const handleDeleteFeeType = async (itemId: string) => {
+    try {
+      await managementAPI.deleteFeeType(itemId);
+      // Refresh fee types
+      const response = await managementAPI.getFeeTypes();
+      setPaymentTypeList(response.data.data);
+    } catch (err) {
+      console.error('Error deleting fee type:', err);
+      setError('Failed to delete fee type');
+    }
+  };
+
+  // Handle view receipt
+  const handleViewReceipt = async (historyId: string) => {
+    setLoading(true);
+    try {
+      const response = await managementAPI.getReceipt(historyId);
+      setReceiptData(response.data.data);
+      setShowReceipt(true);
+    } catch (err) {
+      console.error('Error fetching receipt:', err);
+      setError('Failed to load receipt');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial payment methods with icons (fallback if API fails)
+  const defaultPaymentMethods = [
+    { 
+      id: 'bank_transfer', 
+      name: 'Transfer Bank', 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M3 10h18M12 3l9 7-9 7-9-7 9-7M6 10v11M9 10v11M12 10v11M15 10v11M18 10v11" />
+        </svg>
+      ),
+      count: 245 
+    },
+    { 
+      id: 'credit_card', 
+      name: 'Kartu Kredit', 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="6" width="18" height="12" rx="2" ry="2" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18" />
+        </svg>
+      ), 
+      count: 120 
+    },
+    { 
+      id: 'e_wallet', 
+      name: 'E-Wallet', 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01" />
+        </svg>
+      ),
+      count: 180 
+    },
+    { 
+      id: 'virtual_account', 
+      name: 'Virtual Account', 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      ), 
+      count: 98 
+    },
+  ];
 
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
+        if (loadingOverview) {
+          return <LoadingSpinner />;
+        }
+
+        if (!paymentStats) {
+          return (
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+              <p className="text-slate-600 dark:text-slate-300 text-center">No data available</p>
+            </div>
+          );
+        }
+
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
-                <div className="text-3xl font-bold text-brand-emerald-600 dark:text-brand-emerald-400">Rp {paymentStats.totalPayments.toLocaleString('id-ID')}</div>
+                <div className="text-3xl font-bold text-brand-emerald-600 dark:text-brand-emerald-400">Rp {(paymentStats.total_payments || 0).toLocaleString('id-ID')}</div>
                 <div className="text-slate-600 dark:text-slate-300 mt-1">{t('management_admin_total_payments')}</div>
               </div>
               <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">Rp {paymentStats.totalPaid.toLocaleString('id-ID')}</div>
+                <div className="text-3xl font-bold text-green-600 dark:text-green-400">Rp {(paymentStats.total_paid || 0).toLocaleString('id-ID')}</div>
                 <div className="text-slate-600 dark:text-slate-300 mt-1">{t('management_admin_total_paid')}</div>
               </div>
               <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
-                <div className="text-3xl font-bold text-red-600 dark:text-red-400">Rp {paymentStats.totalUnpaid.toLocaleString('id-ID')}</div>
+                <div className="text-3xl font-bold text-red-600 dark:text-red-400">Rp {(paymentStats.total_unpaid || 0).toLocaleString('id-ID')}</div>
                 <div className="text-slate-600 dark:text-slate-300 mt-1">{t('management_admin_total_unpaid')}</div>
-              </div>
-              <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
-                <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{paymentStats.pendingPayments}</div>
-                <div className="text-slate-600 dark:text-slate-300 mt-1">{t('management_admin_pending_payments')}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">{t('management_admin_recent_payments')}</h3>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
                   <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                     <thead className="bg-slate-50 dark:bg-slate-700/50">
                       <tr>
@@ -143,8 +417,8 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                      {recentPayments.map(payment => (
-                        <tr key={payment.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                      {recentPayments.map((payment, index) => (
+                        <tr key={payment.id || `payment-${index}`} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800 dark:text-white">
                             {payment.student}
                           </td>
@@ -176,11 +450,11 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
 
               <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">{t('management_admin_payment_types')}</h3>
-                <div className="space-y-4">
-                  {paymentTypes.map(payment => (
-                    <div key={payment.id} className="border-b border-slate-200 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
+                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                  {paymentTypes.map((payment, index) => (
+                    <div key={payment.id || `type-${index}`} className="border-b border-slate-200 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                    <div className="flex justify-between items-center mb-2">
-                     <div className="text-slate-800 dark:text-white font-medium">{payment.title}</div>
+                     <div className="text-slate-800 dark:text-white font-medium">{payment.title || payment.title_key}</div>
                      <div className="text-slate-600 dark:text-slate-300">Rp {payment.total.toLocaleString('id-ID')}</div>
                    </div>
                    <div className="flex justify-between text-sm">
@@ -202,15 +476,16 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
             <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">{t('management_admin_payment_methods')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {paymentMethods.map(method => (
-                  <div key={method.id} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                {paymentMethods.map((method, index) => (
+                  <div key={method.id || `method-${index}`} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
                     <div className="p-3 rounded-full bg-white dark:bg-slate-600 text-brand-emerald-500 flex items-center justify-center w-12 h-12">
-                      <div className="w-6 h-6 flex items-center justify-center">
-                        {method.icon}
-                      </div>
+                      <div 
+                        className="w-6 h-6 text-brand-emerald-500"
+                        dangerouslySetInnerHTML={{ __html: method.icon }}
+                      />
                     </div>
                     <div>
-                      <div className="text-lg font-medium text-slate-800 dark:text-white">{method.name}</div>
+                      <div className="text-lg font-medium text-slate-800 dark:text-white">{method.name_key || method.name}</div>
                       <div className="text-slate-600 dark:text-slate-300 text-sm">{method.count} {t('management_admin_transactions')}</div>
                     </div>
                   </div>
@@ -220,89 +495,74 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
           </div>
         );
        case 'payment-management':
-         // Function to handle view button click
-         const handleViewClick = (i: number) => {
-           const studentData = {
-             id: `UC202400${i+1}`,
-             name: ['Ahmad Faris', 'Siti Maryam', 'Abdullah', 'Fatimah Az-Zahra', 'Umar bin Khattab'][i % 5],
-             totalAmount: Math.floor(Math.random() * 5000000 + 250000),
-             latestTransaction: ['2024-12-10', '2024-12-08', '2024-12-05', '2024-12-01', '2024-11-28'][i % 5],
-             status: i % 3 === 0 ? 'paid' : 'unpaid',
-             paymentList: [
-               { id: 1, type: t('administrasi_registration_title'), amount: 5000000, status: i % 2 === 0 ? 'paid' : 'unpaid', date: '2024-09-15' },
-               { id: 2, type: t('administrasi_semester_title'), amount: 3500000, status: i % 2 === 0 ? 'paid' : 'unpaid', date: '2024-09-30' },
-               { id: 3, type: t('administrasi_exam_title'), amount: 250000, status: 'paid', date: '2024-10-10' },
-               { id: 4, type: t('management_admin_other_fees'), amount: 1000000, status: i % 2 === 0 ? 'paid' : 'unpaid', date: '2024-10-15' },
-             ]
-           };
-           setSelectedStudent(studentData);
-           setShowModal(true);
-         };
-
          return (
            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
              <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">{t('management_admin_payment_management')}</h3>
-             <div className="overflow-x-auto">
-               <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                 <thead className="bg-slate-50 dark:bg-slate-700/50">
-                   <tr>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                       {t('management_admin_student_id')}
-                     </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                       {t('management_admin_student_name')}
-                     </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                       {t('management_admin_amount')}
-                     </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                       {t('management_admin_latest_transaction')}
-                     </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                       {t('management_admin_status')}
-                     </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
-                       {t('management_admin_actions')}
-                     </th>
-                   </tr>
-                 </thead>
-                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                   {Array.from({ length: 10 }, (_, i) => (
-                     <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800 dark:text-white">
-                         UC202400{i+1}
-                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                         {['Ahmad Faris', 'Siti Maryam', 'Abdullah', 'Fatimah Az-Zahra', 'Umar bin Khattab'][i % 5]}
-                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800 dark:text-white">
-                         Rp {Math.floor(Math.random() * 5000000 + 250000).toLocaleString('id-ID')}
-                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                         {['2024-12-10', '2024-12-08', '2024-12-05', '2024-12-01', '2024-11-28'][i % 5]}
-                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            i % 2 === 0
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                          }`}>
-                            {i % 2 === 0 ? t('administrasi_lunas') : t('administrasi_belum_lunas')}
-                          </span>
-                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                         <button 
-                           onClick={() => handleViewClick(i)}
-                           className="text-brand-emerald-600 hover:text-brand-emerald-900 dark:text-brand-emerald-400 dark:hover:text-brand-emerald-300"
-                         >
-                           {t('management_admin_view')}
-                         </button>
-                       </td>
+             {loadingStudents ? (
+               <LoadingSpinner />
+             ) : (
+               <div className="overflow-x-auto">
+                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                   <thead className="bg-slate-50 dark:bg-slate-700/50">
+                     <tr>
+                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                         {t('management_admin_student_id')}
+                       </th>
+                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                         {t('management_admin_student_name')}
+                       </th>
+                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                         Jumlah Total Yang Belum Dibayar
+                       </th>
+                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                         {t('management_admin_latest_transaction')}
+                       </th>
+                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                         {t('management_admin_status')}
+                       </th>
+                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                         {t('management_admin_actions')}
+                       </th>
                      </tr>
-                   ))}
-                 </tbody>
-               </table>
-             </div>
+                   </thead>
+                   <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                     {students.map((student: any) => (
+                       <tr key={student.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800 dark:text-white">
+                           {student.id}
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                           {student.name}
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800 dark:text-white">
+                           Rp {student.unpaid_amount.toLocaleString('id-ID')}
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                           {student.latest_transaction || '-'}
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              student.status === 'paid'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                            }`}>
+                              {student.status === 'paid' ? t('administrasi_lunas') : t('administrasi_belum_lunas')}
+                            </span>
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm">
+                           <button 
+                             onClick={() => handleViewClick(student.id)}
+                             className="text-brand-emerald-600 hover:text-brand-emerald-900 dark:text-brand-emerald-400 dark:hover:text-brand-emerald-300"
+                           >
+                             {t('management_admin_view')}
+                           </button>
+                         </td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+               </div>
+             )}
 
              {/* Modal Popup */}
              {showModal && selectedStudent && (
@@ -331,11 +591,11 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
                          </div>
                          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
                            <div className="text-sm text-slate-500 dark:text-slate-400">{t('management_admin_total_payment')}</div>
-                           <div className="font-medium text-slate-800 dark:text-white">Rp {selectedStudent.totalAmount.toLocaleString('id-ID')}</div>
+                           <div className="font-medium text-slate-800 dark:text-white">Rp {selectedStudent.total_amount.toLocaleString('id-ID')}</div>
                          </div>
                          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
                            <div className="text-sm text-slate-500 dark:text-slate-400">{t('management_admin_latest_transaction')}</div>
-                           <div className="font-medium text-slate-800 dark:text-white">{selectedStudent.latestTransaction}</div>
+                           <div className="font-medium text-slate-800 dark:text-white">{selectedStudent.latest_transaction || '-'}</div>
                          </div>
                         </div>
                         
@@ -358,18 +618,19 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
                               >
                                 {t('management_admin_cancel')}
                               </button>
-                              <button 
-                                onClick={() => setIsEditingPayments(false)}
-                                className="px-3 py-2 bg-brand-emerald-600 hover:bg-brand-emerald-700 text-white rounded-lg font-medium transition-colors"
+                              <button
+                                onClick={handleSavePaymentChanges}
+                                disabled={loading}
+                                className="px-3 py-2 bg-brand-emerald-600 hover:bg-brand-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                {t('management_admin_save')}
+                                {loading ? 'Saving...' : t('management_admin_save')}
                               </button>
                             </div>
                             <div className={`absolute flex space-x-1 right-0 transition-opacity duration-200 ${isEditingPayments ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                               <button 
                                 onClick={() => {
                                   // Save original payment list before entering edit mode
-                                  setOriginalPaymentList([...selectedStudent.paymentList]);
+                                  setOriginalPaymentList([...(selectedStudent.paymentList || [])]);
                                   setIsEditingPayments(true);
                                 }}
                                 className="px-3 py-2 bg-brand-emerald-600 hover:bg-brand-emerald-700 text-white rounded-lg font-medium transition-colors"
@@ -402,13 +663,13 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
                              </tr>
                            </thead>
                            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                             {selectedStudent.paymentList.map((payment: any, idx: number) => (
+                             {(selectedStudent.paymentList || []).map((payment: any, idx: number) => (
                                <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
                                  <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
                                    {payment.type}
                                  </td>
                                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-800 dark:text-white">
-                                   Rp {payment.amount.toLocaleString('id-ID')}
+                                   Rp {parseFloat(payment.amount).toLocaleString('id-ID')}
                                  </td>
                                  <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
                                    {payment.date}
@@ -466,7 +727,7 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
                                               setReceiptData({
                                                 id: `RECEIPT-${selectedStudent.id}-${idx}`,
                                                 title: payment.type,
-                                                amount: payment.amount,
+                                                amount: parseFloat(payment.amount),
                                                 date: payment.date,
                                                 studentName: selectedStudent.name,
                                                 studentId: selectedStudent.id,
@@ -642,12 +903,12 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
                     <div className="p-4 flex flex-col h-full">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-base font-semibold text-slate-800 dark:text-white">
-                          {payment.name}
+                          {payment.title || payment.name}
                         </h3>
                       </div>
                       
                       <p className="text-slate-600 dark:text-slate-300 mb-3 text-sm flex-grow">
-                        {payment.description}
+                        {payment.description || payment.description_key}
                       </p>
                       
                       <div className="mt-auto pt-3 border-t border-slate-200 dark:border-slate-700">

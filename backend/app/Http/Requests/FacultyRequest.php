@@ -31,6 +31,7 @@ class FacultyRequest extends FormRequest
         $facultyId = $this->route('faculty') ?? $this->route('id');
 
         return [
+            'id' => ['nullable', 'string', 'max:50', 'unique:faculties,id'],
             'name' => ['required', 'string', 'max:255'],
             'code' => [
                 'required',

@@ -22,7 +22,16 @@ return Application::configure(basePath: dirname(__DIR__))
             
         ]);
 
-        //
+        // Configure CORS
+        $middleware->validateCsrfTokens(except: [
+            '*',
+        ]);
+
+        // Configure CORS for API routes
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'sanctum/csrf-cookie',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

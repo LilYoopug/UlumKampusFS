@@ -1,74 +1,131 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../../../contexts/LanguageContext';
 import { User } from '../../../../types';
-import { PAYMENT_ITEMS_MOCK, PAYMENT_HISTORY_MOCK, PaymentMethod, PAYMENT_METHODS, PaymentItem, PaymentHistoryItem } from '../../../../constants';
+import { PAYMENT_METHODS, PaymentItem, PaymentHistoryItem } from '../../../../constants';
+import apiService from '../../../../services/apiService';
 
 
 
 export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser }) => {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [selectedPayment, setSelectedPayment] = useState<PaymentItem | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>('bank_transfer');
   const [showReceipt, setShowReceipt] = useState<boolean>(false);
   const [receiptData, setReceiptData] = useState<any>(null);
   
-  const [paymentItems, setPaymentItems] = useState<PaymentItem[]>(PAYMENT_ITEMS_MOCK);
+  const [paymentItems, setPaymentItems] = useState<PaymentItem[]>([]);
   
-  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>(PAYMENT_HISTORY_MOCK);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>([]);
 
-  const handlePayment = (paymentItem: PaymentItem, method: string) => {
+  // Fetch payment data from backend
+  useEffect(() => {
+    const fetchPaymentData = async () => {
+      try {
+        setDataLoading(true);
+        
+        // Fetch payment items with user status
+        const paymentsResponse = await apiService.get('/payment-items/my-payments');
+        console.log('Payments response:', paymentsResponse);
+        if (paymentsResponse.data && paymentsResponse.data.data) {
+          const items = paymentsResponse.data.data.map((item: any) => ({
+            id: item.id,
+            titleKey: item.title_key,
+            descriptionKey: item.description_key,
+            amount: parseFloat(item.amount),
+            status: item.status,
+            dueDate: item.due_date,
+          }));
+          console.log('Processed payment items:', items);
+          setPaymentItems(items);
+        } else {
+          console.error('Unexpected response structure:', paymentsResponse);
+        }
+
+        // Fetch payment history
+        try {
+          const historyResponse = await apiService.get(`/payment-histories/user/${currentUser.id}`);
+          if (historyResponse.data && historyResponse.data.data) {
+            const history = historyResponse.data.data.map((item: any) => ({
+              id: item.history_id,
+              title: item.title,
+              amount: item.amount,
+              date: item.payment_date.split('T')[0],
+              status: item.status,
+              paymentMethod: item.payment_method_id,
+            }));
+            setPaymentHistory(history);
+          }
+        } catch (error) {
+          console.log('Payment history fetch error (expected if no history):', error);
+        }
+      } catch (error) {
+        console.error('Error fetching payment data:', error);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    fetchPaymentData();
+  }, [currentUser.id]);
+
+  const handlePayment = async (paymentItem: PaymentItem, method: string) => {
     setLoading(true);
     setPaymentStatus('processing');
     
-    // Simulate payment processing
-    setTimeout(() => {
-      setPaymentStatus('success');
+    try {
+      // Call backend API to process payment
+      const response = await apiService.post(`/payment-items/${paymentItem.id}/pay`, {
+        payment_method: method,
+      });
+
+      if (response.data && response.data.success) {
+        setPaymentStatus('success');
+        setLoading(false);
+        
+        // Update payment status in the list
+        setPaymentItems(prevItems =>
+          prevItems.map(item =>
+            item.id === paymentItem.id ? { ...item, status: 'paid' } : item
+          )
+        );
+        
+        // Create receipt data
+        const newReceiptData = {
+          id: `PAY-${Date.now()}`,
+          paymentItem: paymentItem,
+          amount: paymentItem.amount,
+          date: new Date().toISOString(),
+          method: method,
+          studentName: currentUser.name,
+          studentId: currentUser.studentId || currentUser.id || 'N/A',
+          title: t(paymentItem.titleKey as any),
+        };
+        
+        // Set receipt data and show receipt modal
+        setReceiptData(newReceiptData);
+        setShowReceipt(true);
+        
+        // Reset after showing success message
+        setTimeout(() => {
+          setPaymentStatus('idle');
+          setSelectedPayment(null);
+        }, 3000);
+      } else {
+        throw new Error('Payment failed');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentStatus('error');
       setLoading(false);
       
-      // Update payment status in the list
-      setPaymentItems(prevItems =>
-        prevItems.map(item =>
-          item.id === paymentItem.id ? { ...item, status: 'paid' } : item
-        )
-      );
-      
-      // Create receipt data
-      const newReceiptData = {
-        id: `PAY-${Date.now()}`,
-        paymentItem: paymentItem,
-        amount: paymentItem.amount,
-        date: new Date().toISOString(),
-        method: method,
-        studentName: currentUser.name,
-        studentId: currentUser.studentId || currentUser.id || 'N/A',
-        title: t(paymentItem.titleKey as any),
-      };
-      
-      // Add to payment history
-      setPaymentHistory(prevHistory => [
-        {
-          id: `${prevHistory.length + 1}`,
-          title: t(paymentItem.titleKey as any),
-          amount: paymentItem.amount,
-          date: new Date().toISOString().split('T')[0],
-          status: 'completed',
-          paymentMethod: method, // Add payment method to history
-        },
-        ...prevHistory
-      ]);
-      
-      // Set receipt data and show receipt modal
-      setReceiptData(newReceiptData);
-      setShowReceipt(true);
-      
-      // Reset after showing success message
+      // Reset after showing error message
       setTimeout(() => {
         setPaymentStatus('idle');
-        setSelectedPayment(null);
       }, 3000);
-    }, 1500);
+    }
   };
 
    const getStatusText = (status: string) => {
@@ -138,6 +195,17 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
          <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">{t('sidebar_administrasi')}</h2>
            
+           {console.log('Rendering - dataLoading:', dataLoading, 'paymentItems:', paymentItems, 'paymentItems.length:', paymentItems.length)}
+           
+           {dataLoading ? (
+             <div className="flex justify-center items-center py-12">
+               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-emerald-600"></div>
+             </div>
+           ) : paymentItems.length === 0 ? (
+             <div className="text-center py-12 text-slate-600 dark:text-slate-400">
+               No payment items found
+             </div>
+           ) : (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
            {paymentItems.map((item) => (
                <div 
@@ -216,8 +284,9 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                  </div>
                </div>
            ))}
+           </div>
+           )}
          </div>
-       </div>
 
          {/* Payment History Section */}
          <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
@@ -451,4 +520,3 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
      </div>
    );
  };
-

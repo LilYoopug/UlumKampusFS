@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\PaymentItem;
+use App\Models\UserPaymentStatus;
+use Illuminate\Support\Facades\Date;
 
 /**
  * @property-read \App\Models\Faculty|null $faculty
@@ -142,6 +145,47 @@ class User extends Authenticatable
         return $this->hasMany(DiscussionPost::class, 'user_id');
     }
 
+    public function userPaymentStatuses()
+    {
+        return $this->hasMany(UserPaymentStatus::class);
+    }
+
+    public function paymentItems()
+    {
+        return $this->hasMany(PaymentItem::class);
+    }
+
+    public function paymentHistories()
+    {
+        return $this->hasMany(PaymentHistory::class);
+    }
+
+    /**
+     * Get all payment items with their status for this user
+     * Returns payment items with status (paid/pending/unpaid)
+     * If no status exists, defaults to 'unpaid'
+     */
+    public function getPaymentItemsWithStatus()
+    {
+        $allPaymentItems = PaymentItem::all();
+        $userPaymentStatuses = $this->userPaymentStatuses()->get()->keyBy('payment_item_id');
+        
+        return $allPaymentItems->map(function ($paymentItem) use ($userPaymentStatuses) {
+            $status = $userPaymentStatuses->get($paymentItem->id);
+            
+            return [
+                'id' => $paymentItem->id,
+                'item_id' => $paymentItem->item_id,
+                'title_key' => $paymentItem->title_key,
+                'description_key' => $paymentItem->description_key,
+                'amount' => $paymentItem->amount,
+                'status' => $status ? $status->status : 'unpaid',
+                'due_date' => $status ? $status->due_date : null,
+                'paid_at' => $status ? $status->paid_at : null,
+            ];
+        });
+    }
+
     /**
      * Get the phoneNumber value (alias for phone for frontend compatibility).
      */
@@ -275,5 +319,15 @@ class User extends Authenticatable
     protected function setBadgesAttribute($value): void
     {
         $this->attributes['badges'] = is_array($value) ? json_encode($value) : $value;
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        // No automatic payment status creation
+        // Payment status is only created when payment is made
+        // Otherwise, defaults to 'unpaid' via getPaymentItemsWithStatus()
     }
 }

@@ -1,0 +1,4 @@
+{
+    "codium.codeCompletion.enable": false,
+    "roo-cline.browser.executablePath": "/data/data/com.termux/files/usr/bin/chromium-browser"
+}

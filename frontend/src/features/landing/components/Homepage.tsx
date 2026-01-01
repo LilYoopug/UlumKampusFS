@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LandingLayout } from '@/src/features/landing/components/LandingLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Icon } from '@/src/ui/components/Icon';
-import { FACULTIES } from '@/constants';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { AnimatedSection } from '@/src/ui/components/AnimatedSection';
 import { AboutSection } from '@/src/features/landing/components/AboutSection';
 import { FaqSection } from '@/src/features/landing/components/FaqSection';
 import { ContactSection } from '@/src/features/landing/components/ContactSection';
 import { handleNavClick } from '@/App';
+import { facultyAPI, courseAPI } from '@/services/apiService';
+import { Faculty, Course } from '@/types';
 
 interface HomepageProps {
   onNavigateToLogin: () => void;
@@ -18,6 +19,30 @@ interface HomepageProps {
 
 export const Homepage: React.FC<HomepageProps> = ({ onNavigateToLogin, onNavigateToRegister, onNavigateToCatalog }) => {
   const { t } = useLanguage();
+  const [faculties, setFaculties] = useState<Faculty[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [facultiesResponse, coursesResponse] = await Promise.all([
+          facultyAPI.getPublic(),
+          courseAPI.getPublic()
+        ]);
+        setFaculties(facultiesResponse.data);
+        setCourses(coursesResponse.data);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+        setFaculties([]);
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   
   const features = [
     { title: t('homepage_feature1_title'), description: t('homepage_feature1_desc'), icon: <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></> },
@@ -80,20 +105,70 @@ export const Homepage: React.FC<HomepageProps> = ({ onNavigateToLogin, onNavigat
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">{t('homepage_programs_title')}</h2>
             <p className="mt-2 text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">{t('homepage_programs_subtitle')}</p>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {FACULTIES.slice(0, 4).map(faculty => (
-                <div key={faculty.id} className="group relative overflow-hidden rounded-2xl shadow-lg">
-                  <img src={`https://picsum.photos/seed/${faculty.id}/500/700`} alt={faculty.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-start">
-                    <h3 className="text-2xl font-bold">{faculty.name}</h3>
-                    <p className="mt-1 text-slate-200">{faculty.description}</p>
+              {loading ? (
+                // Loading skeleton
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="animate-pulse bg-slate-200 dark:bg-slate-700 rounded-2xl h-96"></div>
+                ))
+              ) : (
+                faculties.slice(0, 4).map(faculty => (
+                  <div key={faculty.id} className="group relative overflow-hidden rounded-2xl shadow-lg">
+                    <img src={`https://picsum.photos/seed/${faculty.id}/500/700`} alt={faculty.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-start">
+                      <h3 className="text-2xl font-bold">{faculty.name}</h3>
+                      <p className="mt-1 text-slate-200">{faculty.description}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
             <a href="#" onClick={handleNavigate} className="mt-12 inline-block px-8 py-3 border-2 border-brand-emerald-600 text-brand-emerald-600 font-semibold rounded-full hover:bg-brand-emerald-600 hover:text-white transition-colors">
               {t('homepage_programs_view_all')}
             </a>
+          </div>
+        </AnimatedSection>
+
+        {/* Courses Section */}
+        <AnimatedSection className="py-20 bg-slate-50 dark:bg-brand-midnight">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">Jelajahi berbagai disiplin ilmu Islam yang otentik dan relevan.</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {loading ? (
+                // Loading skeleton
+                Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="animate-pulse bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 h-64"></div>
+                ))
+              ) : (
+                courses.slice(0, 6).map(course => (
+                  <div key={course.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">{course.name}</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">{course.faculty?.name || 'Fakultas'}</p>
+                        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                          <Icon className="w-4 h-4"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></Icon>
+                          <span>{course.instructor || 'Instructor'}</span>
+                        </div>
+                        <div className="flex items-center gap-4 mt-3">
+                          <span className="text-sm text-brand-emerald-600 dark:text-brand-emerald-400 font-semibold">{course.sks || course.credit_hours || 0} SKS</span>
+                          <span className="text-sm px-3 py-1 bg-brand-emerald-100 dark:bg-brand-emerald-900/50 text-brand-emerald-600 dark:text-brand-emerald-400 rounded-full">
+                            {course.mode === 'live' ? 'Live' : 'VOD'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="mt-12 text-center">
+              <a href="#" onClick={handleNavigate} className="inline-block px-8 py-3 bg-brand-emerald-600 text-white font-semibold rounded-full hover:bg-brand-emerald-500 transition-colors">
+                Lihat Semua Program
+              </a>
+            </div>
           </div>
         </AnimatedSection>
         

@@ -1,7 +1,8 @@
-import React, { useState, DragEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, DragEvent, ChangeEvent } from 'react';
 import { Course, CourseModule } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { courseModuleAPI } from '@/services/apiService';
 
 const DraggableList: React.FC<{ items: any[], renderItem: (item: any, index: number) => React.ReactNode, onReorder: (items: any[]) => void }> = ({ items, renderItem, onReorder }) => {
     const [draggingItem, setDraggingItem] = useState<number | null>(null);
@@ -46,7 +47,12 @@ const DraggableList: React.FC<{ items: any[], renderItem: (item: any, index: num
 };
 
 // Module Form Component
-const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () => void, initialData: CourseModule | null}> = ({ onSave, onClose, initialData }) => {
+const ModuleForm: React.FC<{
+    onSave: (module: Partial<CourseModule>) => void;
+    onClose: () => void;
+    initialData: CourseModule | null;
+    loading: boolean;
+}> = ({ onSave, onClose, initialData, loading }) => {
     const { t } = useLanguage();
     const isEditMode = !!initialData;
     const [title, setTitle] = useState(initialData?.title || '');
@@ -58,6 +64,7 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
     const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
     const [startTime, setStartTime] = useState(initialData?.startTime ? initialData.startTime.slice(0, 16) : '');
     const [liveUrl, setLiveUrl] = useState(initialData?.liveUrl || '');
+    const [duration, setDuration] = useState(initialData?.duration || '');
 
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -69,13 +76,14 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
             finalAttachmentUrl = URL.createObjectURL(attachmentFile);
         }
 
-        const moduleData: CourseModule = {
-            id: initialData?.id || `M${Date.now()}`,
+        const moduleData: Partial<CourseModule> = {
+            id: initialData?.id,
             title,
             type,
             description,
+            duration: type === 'video' ? duration : undefined,
             resourceUrl: type === 'live' ? undefined : resourceUrl,
-            attachmentUrl: finalAttachmentUrl,
+            attachmentUrl: finalAttachmentUrl || undefined,
             startTime: type === 'live' ? new Date(startTime).toISOString() : undefined,
             liveUrl: type === 'live' ? liveUrl : undefined,
         };
@@ -108,6 +116,7 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
                         <option value="pdf" className="dark:bg-slate-700 dark:text-white">PDF</option>
                         <option value="live" className="dark:bg-slate-700 dark:text-white">{t('module_type_live')}</option>
                         <option value="quiz" className="dark:bg-slate-700 dark:text-white">Kuis</option>
+                        <option value="hafalan" className="dark:bg-slate-700 dark:text-white">Hafalan</option>
                     </select>
                 </div>
                 <div>
@@ -131,10 +140,18 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
                         </div>
                     </>
                 ) : (
-                    <div>
-                        <label htmlFor="mod-resource" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Link Materi Utama (URL)</label>
-                        <input id="mod-resource" type="url" value={resourceUrl} onChange={e => setResourceUrl(e.target.value)} placeholder="https://... (untuk video atau PDF)" className={formInputClass}/>
-                    </div>
+                    <>
+                        <div>
+                            <label htmlFor="mod-resource" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Link Materi Utama (URL)</label>
+                            <input id="mod-resource" type="url" value={resourceUrl} onChange={e => setResourceUrl(e.target.value)} placeholder="https://... (untuk video atau PDF)" className={formInputClass}/>
+                        </div>
+                        {type === 'video' && (
+                            <div>
+                                <label htmlFor="mod-duration" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Durasi (opsional)</label>
+                                <input id="mod-duration" type="text" value={duration} onChange={e => setDuration(e.target.value)} placeholder="contoh: 45:00" className={formInputClass}/>
+                            </div>
+                        )}
+                    </>
                 )}
 
 
@@ -164,8 +181,10 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
                 
             </form>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
-                <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white rounded-lg font-semibold">{t('button_cancel')}</button>
-                <button type="submit" form="module-form" className="px-4 py-2 bg-brand-emerald-600 text-white rounded-lg font-semibold">{t('button_save')}</button>
+                <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white rounded-lg font-semibold" disabled={loading}>{t('button_cancel')}</button>
+                <button type="submit" form="module-form" className="px-4 py-2 bg-brand-emerald-600 text-white rounded-lg font-semibold disabled:opacity-50" disabled={loading}>
+                    {loading ? 'Menyimpan...' : t('button_save')}
+                </button>
             </div>
         </div>
     );
@@ -174,9 +193,39 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
 
 export const ModuleManagement: React.FC<{ course: Course }> = ({ course }) => {
     const { t } = useLanguage();
-    const [modules, setModules] = useState<CourseModule[]>(course.modules);
+    const [modules, setModules] = useState<CourseModule[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [showModuleForm, setShowModuleForm] = useState(false);
     const [editingModule, setEditingModule] = useState<CourseModule | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch modules from API
+    useEffect(() => {
+        fetchModules();
+    }, [course.id]);
+
+    const fetchModules = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await courseModuleAPI.getAll(course.id);
+            const responseData = response.data as any;
+            const modulesData: CourseModule[] = Array.isArray(responseData?.data)
+                ? responseData.data
+                : Array.isArray(responseData)
+                    ? responseData
+                    : [];
+            setModules(modulesData);
+        } catch (error) {
+            console.error('Error fetching modules:', error);
+            setError('Gagal memuat modul. Silakan coba lagi.');
+            // Fallback to course modules if API fails
+            setModules(course.modules || []);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const getModuleIcon = (type: CourseModule['type']) => {
         switch (type) {
@@ -188,6 +237,8 @@ export const ModuleManagement: React.FC<{ course: Course }> = ({ course }) => {
                 return <Icon className="w-5 h-5 text-green-500"><path d="m9 12 2 2 4-4"/></Icon>;
             case 'live':
                 return <Icon className="w-5 h-5 text-red-500"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.934a.5.5 0 0 0-.777-.416L16 11"/><rect x="2" y="7" width="14" height="10" rx="2" ry="2"/></Icon>;
+            case 'hafalan':
+                return <Icon className="w-5 h-5 text-purple-500"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></Icon>;
             default:
                 return <Icon className="w-5 h-5 text-slate-500"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></Icon>;
         }
@@ -198,26 +249,99 @@ export const ModuleManagement: React.FC<{ course: Course }> = ({ course }) => {
         setShowModuleForm(true);
     }
 
-    const handleDeleteModule = (moduleId: string) => {
-        setModules(prev => prev.filter(m => m.id !== moduleId));
+    const handleDeleteModule = async (moduleId: string) => {
+        if (!confirm('Apakah Anda yakin ingin menghapus modul ini?')) return;
+        
+        try {
+            setSaving(true);
+            await courseModuleAPI.delete(moduleId);
+            setModules(prev => prev.filter(m => m.id !== moduleId));
+        } catch (error) {
+            console.error('Error deleting module:', error);
+            alert('Gagal menghapus modul. Silakan coba lagi.');
+        } finally {
+            setSaving(false);
+        }
     };
     
-    const handleSaveModule = (moduleData: CourseModule) => {
-        if (editingModule) {
-            setModules(prev => prev.map(m => m.id === moduleData.id ? moduleData : m));
-        } else {
-            setModules(prev => [...prev, moduleData]);
+    const handleSaveModule = async (moduleData: Partial<CourseModule>) => {
+        try {
+            setSaving(true);
+            setError(null);
+
+            // Prepare data for API
+            const apiData: any = {
+                title: moduleData.title,
+                type: moduleData.type,
+                description: moduleData.description || null,
+                duration: moduleData.duration || null,
+                video_url: moduleData.type !== 'live' ? moduleData.resourceUrl : null,
+                document_url: moduleData.type === 'pdf' ? moduleData.resourceUrl : null,
+                attachment_url: moduleData.attachmentUrl || null,
+                start_time: moduleData.startTime || null,
+                live_url: moduleData.liveUrl || null,
+                is_published: true,
+            };
+
+            if (editingModule) {
+                // Update existing module
+                const response = await courseModuleAPI.update(editingModule.id, apiData);
+                const responseData = response.data as any;
+                const updatedModule: CourseModule = responseData?.data || responseData;
+                setModules(prev => prev.map(m => m.id === editingModule.id ? updatedModule : m));
+            } else {
+                // Create new module
+                const response = await courseModuleAPI.create(course.id, apiData);
+                const responseData = response.data as any;
+                const newModule: CourseModule = responseData?.data || responseData;
+                setModules(prev => [...prev, newModule]);
+            }
+
+            setShowModuleForm(false);
+            setEditingModule(null);
+        } catch (error: any) {
+            console.error('Error saving module:', error);
+            const errorMessage = error.response?.data?.message || 'Gagal menyimpan modul. Silakan coba lagi.';
+            setError(errorMessage);
+            alert(errorMessage);
+        } finally {
+            setSaving(false);
         }
-        setShowModuleForm(false);
-        setEditingModule(null);
+    };
+
+    const handleReorder = async (reorderedModules: CourseModule[]) => {
+        setModules(reorderedModules);
+        
+        try {
+            const moduleIds = reorderedModules.map(m => m.id);
+            await courseModuleAPI.reorder(course.id, moduleIds);
+        } catch (error) {
+            console.error('Error reordering modules:', error);
+            // Revert on error
+            fetchModules();
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand-emerald-500"></div>
+            </div>
+        );
     }
 
     return (
         <div className="space-y-4">
+            {error && (
+                <div className="p-3 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg text-sm">
+                    {error}
+                </div>
+            )}
+            
             {modules.length > 0 ? (
                 <DraggableList 
                     items={modules}
-                    onReorder={setModules}
+                    onReorder={handleReorder}
                     renderItem={(module: CourseModule) => (
                         <div className="flex items-center gap-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 cursor-grab">
                             <Icon className="w-5 h-5 text-slate-400 flex-shrink-0"><path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"/></Icon>
@@ -229,6 +353,11 @@ export const ModuleManagement: React.FC<{ course: Course }> = ({ course }) => {
                                         {new Date(module.startTime).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                                     </p>
                                 )}
+                                {module.duration && (
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                        Durasi: {module.duration}
+                                    </p>
+                                )}
                             </div>
                             {module.attachmentUrl && (
                                 <a href={module.attachmentUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-1 text-slate-500 hover:text-brand-emerald-600">
@@ -236,8 +365,12 @@ export const ModuleManagement: React.FC<{ course: Course }> = ({ course }) => {
                                 </a>
                             )}
                             <div className="flex gap-2">
-                                <button type="button" onClick={() => handleEditModule(module)} className="p-1 text-slate-500 hover:text-blue-500"><Icon className="w-5 h-5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></Icon></button>
-                                <button type="button" onClick={() => handleDeleteModule(module.id)} className="p-1 text-slate-500 hover:text-red-500"><Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></Icon></button>
+                                <button type="button" onClick={() => handleEditModule(module)} className="p-1 text-slate-500 hover:text-blue-500" disabled={saving}>
+                                    <Icon className="w-5 h-5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></Icon>
+                                </button>
+                                <button type="button" onClick={() => handleDeleteModule(module.id)} className="p-1 text-slate-500 hover:text-red-500" disabled={saving}>
+                                    <Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></Icon>
+                                </button>
                             </div>
                         </div>
                     )}
@@ -245,14 +378,14 @@ export const ModuleManagement: React.FC<{ course: Course }> = ({ course }) => {
             ) : (
                 <p className="text-center text-slate-500 py-4">{t('detail_no_materials_dosen')}</p>
             )}
-             <button type="button" onClick={() => { setEditingModule(null); setShowModuleForm(true); }} className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+             <button type="button" onClick={() => { setEditingModule(null); setShowModuleForm(true); }} className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" disabled={saving}>
                 <Icon className="w-5 h-5"><path d="M5 12h14"/><path d="M12 5v14"/></Icon>
                 {t('module_add_button')}
             </button>
             {showModuleForm && (
-                <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4" onClick={() => setShowModuleForm(false)}>
+                <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4" onClick={() => { if (!saving) { setShowModuleForm(false); setEditingModule(null); } }}>
                     <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
-                        <ModuleForm onSave={handleSaveModule} onClose={() => setShowModuleForm(false)} initialData={editingModule} />
+                        <ModuleForm onSave={handleSaveModule} onClose={() => { setShowModuleForm(false); setEditingModule(null); }} initialData={editingModule} loading={saving} />
                     </div>
                 </div>
             )}

@@ -67,7 +67,7 @@ class AssignmentSeeder extends Seeder
             ],
             [
                 'course_id' => $this->getCourseIdByCode('AD501'),
-                'created_by' => $this->getUserIdByEmail('yusuf.alfatih@dosen.ulumcampus.com'),
+                'created_by' => $this->getUserIdByEmail('tariq.annawawi@dosen.ulumcampus.com'),
                 'title' => 'Presentasi Kontribusi Ilmuwan Muslim',
                 'description' => 'Buat presentasi 10 slide mengenai kontribusi salah satu ilmuwan Muslim (pilih dari daftar yang disediakan) pada peradaban dunia. Kumpulkan dalam format PPTX atau PDF.',
                 'instructions' => 'Buat presentasi 10 slide mengenai kontribusi salah satu ilmuwan Muslim (pilih dari daftar yang disediakan) pada peradaban dunia. Kumpulkan dalam format PPTX atau PDF.',
@@ -103,7 +103,7 @@ class AssignmentSeeder extends Seeder
             ],
             [
                 'course_id' => $this->getCourseIdByCode('HD202'),
-                'created_by' => $this->getUserIdByEmail('yusuf.alfatih@dosen.ulumcampus.com'),
+                'created_by' => $this->getUserIdByEmail('abdullah.musnad@dosen.ulumcampus.com'),
                 'title' => 'Kritik Sanad Hadis',
                 'description' => 'Pilih satu hadis dari lampiran dan lakukan kritik sanad dasar berdasarkan metodologi yang telah dipelajari.',
                 'instructions' => 'Pilih satu hadis dari lampiran dan lakukan kritik sanad dasar berdasarkan metodologi yang telah dipelajari.',
@@ -121,7 +121,7 @@ class AssignmentSeeder extends Seeder
             ],
             [
                 'course_id' => $this->getCourseIdByCode('HD202'),
-                'created_by' => $this->getUserIdByEmail('yusuf.alfatih@dosen.ulumcampus.com'),
+                'created_by' => $this->getUserIdByEmail('abdullah.musnad@dosen.ulumcampus.com'),
                 'title' => 'Setoran Hafalan: Hadits Pertama Arba\'in',
                 'description' => 'Hafalkan matan dan sanad hadits pertama dari kitab Arba\'in An-Nawawi tentang niat. Pastikan makhraj dan harakat diucapkan dengan benar.',
                 'instructions' => 'Hafalkan matan dan sanad hadits pertama dari kitab Arba\'in An-Nawawi tentang niat. Pastikan makhraj dan harakat diucapkan dengan benar.',
@@ -137,7 +137,7 @@ class AssignmentSeeder extends Seeder
             ],
             [
                 'course_id' => $this->getCourseIdByCode('EK305'),
-                'created_by' => $this->getUserIdByEmail('yusuf.alfatih@dosen.ulumcampus.com'),
+                'created_by' => $this->getUserIdByEmail('halimah.sadiyah@dosen.ulumcampus.com'),
                 'title' => 'Analisis Produk Bank Syariah',
                 'description' => 'Pilih satu produk pembiayaan dari bank syariah di Indonesia. Analisis akad yang digunakan, skema, serta potensi risikonya. Buat laporan 3 halaman.',
                 'instructions' => 'Pilih satu produk pembiayaan dari bank syariah di Indonesia. Analisis akad yang digunakan, skema, serta potensi risikonya. Buat laporan 3 halaman.',

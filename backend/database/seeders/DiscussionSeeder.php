@@ -19,48 +19,78 @@ class DiscussionSeeder extends Seeder
                 'course_id' => $this->getCourseIdByCode('AQ101'),
                 'title' => 'Pertanyaan tentang Batasan Sifat Istiwa',
                 'created_by' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
+                'type' => 'question',
+                'status' => 'open',
                 'is_pinned' => true,
                 'is_closed' => false,
+                'is_locked' => false,
+                'view_count' => 45,
+                'reply_count' => 2,
             ],
             [
                 'id' => 'DT002',
                 'course_id' => $this->getCourseIdByCode('AQ101'),
                 'title' => 'Dalil-dalil Tauhid Uluhiyah',
                 'created_by' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
+                'type' => 'discussion',
+                'status' => 'open',
                 'is_pinned' => false,
                 'is_closed' => false,
+                'is_locked' => false,
+                'view_count' => 32,
+                'reply_count' => 2,
             ],
             [
                 'id' => 'DT003',
                 'course_id' => $this->getCourseIdByCode('FQ201'),
                 'title' => 'Diskusi: Hukum Dropshipping',
                 'created_by' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
+                'type' => 'discussion',
+                'status' => 'closed',
                 'is_pinned' => false,
                 'is_closed' => true,
+                'is_locked' => false,
+                'view_count' => 28,
+                'reply_count' => 2,
             ],
             [
                 'id' => 'DT004',
                 'course_id' => $this->getCourseIdByCode('FQ201'),
                 'title' => 'Perbedaan Murabahah dan Musyarakah Mutanaqisah?',
                 'created_by' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
+                'type' => 'question',
+                'status' => 'open',
                 'is_pinned' => false,
                 'is_closed' => false,
+                'is_locked' => false,
+                'view_count' => 18,
+                'reply_count' => 2,
             ],
             [
                 'id' => 'DT005',
                 'course_id' => $this->getCourseIdByCode('SN701'),
                 'title' => 'Potensi Bias pada Chatbot Fatwa Berbasis AI',
                 'created_by' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
+                'type' => 'question',
+                'status' => 'open',
                 'is_pinned' => true,
                 'is_closed' => false,
+                'is_locked' => false,
+                'view_count' => 67,
+                'reply_count' => 3,
             ],
             [
                 'id' => 'DT006',
                 'course_id' => $this->getCourseIdByCode('SN701'),
                 'title' => 'Halal-chain: Penerapan Blockchain untuk Industri Halal',
                 'created_by' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
+                'type' => 'discussion',
+                'status' => 'open',
                 'is_pinned' => false,
                 'is_closed' => false,
+                'is_locked' => false,
+                'view_count' => 41,
+                'reply_count' => 2,
             ]
         ];
 
@@ -72,7 +102,16 @@ class DiscussionSeeder extends Seeder
                 );
 
                 // Create posts for each thread based on frontend constants
-                $this->createDiscussionPosts($thread->id, $threadData['title']);
+                $posts = $this->createDiscussionPosts($thread->id, $threadData['title']);
+                
+                // Update last post info
+                if (!empty($posts)) {
+                    $lastPost = $posts[count($posts) - 1];
+                    $thread->update([
+                        'last_post_by' => $lastPost['user_id'],
+                        'last_post_at' => $lastPost['created_at'],
+                    ]);
+                }
             }
         }
     }
@@ -175,15 +214,26 @@ class DiscussionSeeder extends Seeder
 
         foreach ($posts as $postData) {
             if ($postData['user_id']) {
-                DiscussionPost::create([
-                    'thread_id' => $threadId,
-                    'user_id' => $postData['user_id'],
-                    'content' => $postData['content'],
-                    'created_at' => $postData['created_at'],
-                    'updated_at' => $postData['created_at'],
-                ]);
+                DiscussionPost::updateOrCreate(
+                    [
+                        'thread_id' => $threadId,
+                        'user_id' => $postData['user_id'],
+                        'content' => $postData['content'],
+                    ],
+                    [
+                        'thread_id' => $threadId,
+                        'user_id' => $postData['user_id'],
+                        'content' => $postData['content'],
+                        'created_at' => $postData['created_at'],
+                        'updated_at' => $postData['created_at'],
+                        'likes_count' => rand(0, 15), // Random likes for variety
+                        'is_edited' => false,
+                    ]
+                );
             }
         }
+        
+        return $posts;
     }
 
     private function getCourseIdByCode($code)

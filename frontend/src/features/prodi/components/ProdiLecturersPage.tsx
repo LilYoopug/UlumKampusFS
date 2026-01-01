@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { User, Course } from '@/types';
+import { User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { Dropdown } from '@/src/features/shared/components/Dropdown';
+import { apiService } from '@/services/apiService';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {
@@ -12,21 +13,81 @@ declare global {
     }
 }
 
-interface ProdiLecturersPageProps {
-    users: User[];
-    courses: Course[];
+interface LecturerWithCourseCount extends User {
+    courseCount: number;
 }
 
-export const ProdiLecturersPage: React.FC<ProdiLecturersPageProps> = ({ users, courses }) => {
+export const ProdiLecturersPage: React.FC = () => {
     const { t } = useLanguage();
+    const [lecturers, setLecturers] = useState<LecturerWithCourseCount[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const lecturers = useMemo(() => {
-        return users.filter(u => u.role === 'Dosen').map(lecturer => {
-            const courseCount = courses.filter(c => c.instructor === lecturer.name).length;
-            return { ...lecturer, courseCount };
-        });
-    }, [users, courses]);
+    // Fetch lecturers from API
+    useEffect(() => {
+        fetchLecturers();
+    }, []);
+
+    const fetchLecturers = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await apiService.getProdiLecturers();
+            
+            console.log('Prodi lecturers API response:', response);
+            
+            // Handle different response structures
+            let lecturersList: any[] = [];
+            if (Array.isArray(response)) {
+                lecturersList = response;
+            } else if (response && typeof response === 'object') {
+                const resp = response as any;
+                // Handle Axios response with .data property
+                if (resp.data) {
+                    const responseData = resp.data;
+                    if (Array.isArray(responseData)) {
+                        lecturersList = responseData;
+                    } else if (responseData.success && Array.isArray(responseData.data)) {
+                        lecturersList = responseData.data;
+                    } else if (Array.isArray(responseData.data)) {
+                        lecturersList = responseData.data;
+                    }
+                }
+                // Handle direct response object
+                else if (resp.success && Array.isArray(resp.data)) {
+                    lecturersList = resp.data;
+                } else if (Array.isArray(resp.data)) {
+                    lecturersList = resp.data;
+                }
+            }
+            
+            console.log('Extracted lecturers list:', lecturersList);
+            
+            // Transform backend data to match frontend User type
+            const transformedLecturers: LecturerWithCourseCount[] = lecturersList.map((lecturer: any) => {
+                return {
+                    id: lecturer.id || '',
+                    name: lecturer.name || '',
+                    email: lecturer.email || '',
+                    role: 'Dosen',
+                    avatarUrl: lecturer.avatarUrl || lecturer.avatar_url || lecturer.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(lecturer.name || 'User') + '&background=random',
+                    facultyId: lecturer.facultyId || lecturer.faculty_id || '',
+                    majorId: lecturer.majorId || lecturer.major_id || '',
+                    courseCount: lecturer.courseCount || 0,
+                };
+            });
+            
+            console.log('Transformed lecturers:', transformedLecturers);
+            setLecturers(transformedLecturers);
+        } catch (err) {
+            console.error('Error fetching prodi lecturers:', err);
+            setError('Failed to load lecturers. Please try again.');
+            setLecturers([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filteredLecturers = useMemo(() => {
         return lecturers.filter(lecturer =>
@@ -60,8 +121,29 @@ export const ProdiLecturersPage: React.FC<ProdiLecturersPageProps> = ({ users, c
         window.XLSX.writeFile(workbook, 'daftar-dosen.xlsx');
     };
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-emerald-600"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
+            {error && (
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg">
+                    <div className="flex items-center">
+                        <Icon className="w-5 h-5 mr-2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </Icon>
+                        {error}
+                    </div>
+                </div>
+            )}
+
             <div>
                 <h1 className="text-3xl font-bold text-slate-800 dark:text-white">{t('prodi_lecturers_title')}</h1>
                 <p className="text-slate-500 dark:text-slate-400 mt-1">{t('prodi_lecturers_subtitle')}</p>

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Course, CourseStatus, Faculty, User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
-import { FACULTIES, ALL_USERS } from '@/constants';
+import { FACULTIES } from '@/constants';
+import { apiService } from '@/services/apiService';
 
 interface ProdiCourseFormProps {
     onSave: (courseData: Course) => void;
@@ -16,10 +17,12 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
 
     const [faculties, setFaculties] = useState<Faculty[]>([]);
     const [lecturers, setLecturers] = useState<User[]>([]);
+    const [loadingLecturers, setLoadingLecturers] = useState(false);
     const [formData, setFormData] = useState({
        id: '',
        title: '',
        instructor: '',
+       instructorId: null as number | null,
        sks: 3,
        facultyId: '', // Will be set after fetching faculties
        majorId: '',
@@ -33,6 +36,7 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
                id: initialData.id,
                title: initialData.title,
                instructor: initialData.instructor,
+               instructorId: initialData.instructorId ? parseInt(initialData.instructorId.toString()) : null,
                sks: initialData.sks,
                facultyId: initialData.facultyId,
                majorId: initialData.majorId || '',
@@ -49,18 +53,83 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
        }
    }, [initialData]);
    
-   // Set faculties and lecturers from constants
+   // Set faculties from constants
    useEffect(() => {
        setFaculties(FACULTIES);
-       // Filter users to get only lecturers (dosen)
-       const dosenUsers = ALL_USERS.filter(user => user.role === 'Dosen');
-       setLecturers(dosenUsers);
+   }, []);
+
+   // Fetch lecturers from API
+   useEffect(() => {
+       const fetchLecturers = async () => {
+           try {
+               setLoadingLecturers(true);
+               const response = await apiService.getProdiLecturers();
+               
+               console.log('ProdiCourseForm - Lecturers API response:', response);
+               
+               // Handle different response structures
+               let lecturersList: any[] = [];
+               if (Array.isArray(response)) {
+                   lecturersList = response;
+               } else if (response && typeof response === 'object') {
+                   const resp = response as any;
+                   if (resp.data) {
+                       const responseData = resp.data;
+                       if (Array.isArray(responseData)) {
+                           lecturersList = responseData;
+                       } else if (responseData.success && Array.isArray(responseData.data)) {
+                           lecturersList = responseData.data;
+                       } else if (Array.isArray(responseData.data)) {
+                           lecturersList = responseData.data;
+                       }
+                   } else if (resp.success && Array.isArray(resp.data)) {
+                       lecturersList = resp.data;
+                   } else if (Array.isArray(resp.data)) {
+                       lecturersList = resp.data;
+                   }
+               }
+               
+               console.log('ProdiCourseForm - Extracted lecturers:', lecturersList);
+               
+               // Transform to User type
+               const transformedLecturers: User[] = lecturersList.map((lecturer: any) => ({
+                   id: lecturer.id || '',
+                   name: lecturer.name || '',
+                   email: lecturer.email || '',
+                   role: 'Dosen',
+                   avatarUrl: lecturer.avatarUrl || lecturer.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(lecturer.name || 'User') + '&background=random',
+                   facultyId: lecturer.facultyId || lecturer.faculty_id || '',
+                   majorId: lecturer.majorId || lecturer.major_id || '',
+               }));
+               
+               setLecturers(transformedLecturers);
+           } catch (err) {
+               console.error('Error fetching lecturers for form:', err);
+               setLecturers([]);
+           } finally {
+               setLoadingLecturers(false);
+           }
+       };
+       
+       fetchLecturers();
    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         // Prevent changing the ID field (for security)
         if (name === 'id') return;
+        
+        // Handle instructor selection to also set instructorId
+        if (name === 'instructor') {
+            const selectedLecturer = lecturers.find(l => l.name === value);
+            setFormData(prev => ({ 
+                ...prev, 
+                [name]: value,
+                instructorId: selectedLecturer ? (typeof selectedLecturer.id === 'string' ? parseInt(selectedLecturer.id) : selectedLecturer.id) : null
+            }));
+            return;
+        }
+        
         setFormData(prev => ({ ...prev, [name]: name === 'sks' ? parseInt(value) : value }));
         if (name === 'facultyId') {
             setFormData(prev => ({ ...prev, majorId: '' }));
@@ -124,11 +193,10 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
                         value={formData.instructor}
                         onChange={handleChange}
                         className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white"
-                        required
                     >
                         <option value="">Pilih Dosen Pengampu</option>
                         {lecturers.map(lecturer => (
-                            <option key={lecturer.studentId} value={lecturer.name}>
+                            <option key={lecturer.id} value={lecturer.name}>
                                 {lecturer.name}
                             </option>
                         ))}

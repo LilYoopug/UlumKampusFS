@@ -45,20 +45,24 @@ class LibraryResourceResource extends JsonResource
             'id' => $this->id,
             'course_id' => $this->course_id,
             'faculty_id' => $this->faculty_id,
-            'created_by' => $this->created_by,
+            'created_by' => (string)$this->created_by,
             'title' => $this->title,
             'description' => $this->description,
-            'resource_type' => $this->resource_type,
+            'type' => $this->type, // Use 'type' instead of 'resource_type'
             'access_level' => $this->access_level,
             'file_url' => $this->file_url,
             'file_type' => $this->file_type,
             'file_size' => $this->file_size,
             'external_link' => $this->external_link,
+            'cover_url' => $this->cover_url,
+            'source_type' => $this->source_type,
+            'source_url' => $this->source_url,
             'author' => $this->author,
             'publisher' => $this->publisher,
             'isbn' => $this->isbn,
             'doi' => $this->doi,
             'publication_year' => $this->publication_year,
+            'year' => $this->publication_year, // Alias for frontend compatibility
             'tags' => $this->tags,
             'download_count' => $this->download_count,
             'view_count' => $this->view_count,
@@ -67,6 +71,12 @@ class LibraryResourceResource extends JsonResource
             'order' => $this->order,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
+
+            // Frontend compatibility fields (camelCase aliases)
+            'coverUrl' => $this->cover_url,
+            'sourceUrl' => $this->source_url,
+            'sourceType' => $this->source_type,
+            'fileUrl' => $this->file_url,
 
             // Relationships
             'course' => new CourseResource($this->whenLoaded('course')),

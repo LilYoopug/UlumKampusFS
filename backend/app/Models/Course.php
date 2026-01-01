@@ -26,6 +26,7 @@ class Course extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'faculty_id',
         'major_id',
         'instructor_id',
@@ -44,6 +45,9 @@ class Course extends Model
         'status',
         'image_url',
         'instructor_avatar_url',
+        'learning_objectives',
+        'syllabus_data',
+        'instructor_bio_key',
     ];
 
     /**
@@ -59,6 +63,8 @@ class Course extends Model
             'current_enrollment' => 'integer',
             'year' => 'integer',
             'is_active' => 'boolean',
+            'learning_objectives' => 'array',
+            'syllabus_data' => 'array',
         ];
     }
 
@@ -267,9 +273,10 @@ class Course extends Model
     /**
      * Set the instructorId value (alias for instructor_id for frontend compatibility).
      */
-    protected function setInstructorIdAttribute(?string $value): void
+    protected function setInstructorIdAttribute($value): void
     {
-        $this->attributes['instructor_id'] = $value;
+        // Handle both string and integer types
+        $this->attributes['instructor_id'] = is_numeric($value) ? (int) $value : $value;
     }
 
     /**
@@ -294,8 +301,9 @@ class Course extends Model
     protected function getInstructorAvatarUrlAttribute(): ?string
     {
         // Try to get from loaded instructor relationship
-        if ($this->relationLoaded('instructor') && $this->instructor) {
-            return $this->instructor->avatar_url ?? null;
+        if ($this->relationLoaded('instructor')) {
+            $instructor = $this->getRelation('instructor');
+            return $instructor ? ($instructor->avatar_url ?? null) : null;
         }
 
         // Load the relationship if not already loaded
@@ -329,5 +337,61 @@ class Course extends Model
     protected function setModeAttribute(?string $value): void
     {
         $this->attributes['mode'] = $value;
+    }
+
+    /**
+     * Get the instructor name from the relationship.
+     * Note: This is accessed as $course->instructor_name, not $course->instructor
+     */
+    protected function getInstructorNameAttribute(): string
+    {
+        if ($this->relationLoaded('instructor')) {
+            $instructor = $this->getRelation('instructor');
+            return $instructor ? ($instructor->name ?? '') : '';
+        }
+
+        if ($this->instructor_id) {
+            $instructor = $this->instructor()->first();
+            return $instructor ? $instructor->name : '';
+        }
+
+        return '';
+    }
+
+    /**
+     * Get the progress from course enrollment for current user.
+     */
+    protected function getProgressAttribute(): ?int
+    {
+        // This would be calculated from the enrollment
+        // For now, return null or calculate from modules
+        return null;
+    }
+
+    /**
+     * Get the grade letter from enrollment.
+     */
+    protected function getGradeLetterAttribute(): ?string
+    {
+        // This would come from the enrollment/grade relationship
+        return null;
+    }
+
+    /**
+     * Get the grade numeric from enrollment.
+     */
+    protected function getGradeNumericAttribute(): ?float
+    {
+        // This would come from the enrollment/grade relationship
+        return null;
+    }
+
+    /**
+     * Get the completion date from enrollment.
+     */
+    protected function getCompletionDateAttribute(): ?string
+    {
+        // This would come from the enrollment relationship
+        return null;
     }
 }

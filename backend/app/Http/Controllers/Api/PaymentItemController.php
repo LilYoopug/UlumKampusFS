@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\PaymentItemResource;
 use App\Models\PaymentItem;
+use App\Models\UserPaymentStatus;
+use App\Models\PaymentHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 
 class PaymentItemController extends ApiController
 {
@@ -93,5 +97,77 @@ class PaymentItemController extends ApiController
     {
         $paymentItems = PaymentItem::where('status', $status)->get();
         return $this->success(PaymentItemResource::collection($paymentItems), 'Payment items by status retrieved successfully');
+    }
+
+    /**
+     * Get payment items with status for the authenticated user.
+     */
+    public function myPayments(): JsonResponse
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return $this->unauthorized('User not authenticated');
+        }
+
+        // Get all payment items with their status for this user
+        $paymentItemsWithStatus = $user->getPaymentItemsWithStatus();
+        
+        return $this->success($paymentItemsWithStatus, 'User payment items with status retrieved successfully');
+    }
+
+    /**
+     * Process a payment for a specific payment item.
+     */
+    public function makePayment(Request $request, string $paymentItemId): JsonResponse
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return $this->unauthorized('User not authenticated');
+        }
+
+        $validated = $request->validate([
+            'payment_method' => 'required|string',
+        ]);
+
+        $paymentItem = PaymentItem::findOrFail($paymentItemId);
+        
+        // Check if payment already exists
+        $existingPayment = UserPaymentStatus::where('user_id', $user->id)
+            ->where('payment_item_id', $paymentItemId)
+            ->first();
+
+        if ($existingPayment && $existingPayment->status === 'paid') {
+            return $this->error('Payment already completed', 400);
+        }
+
+        // Create or update payment status
+        $paymentStatus = UserPaymentStatus::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'payment_item_id' => $paymentItemId,
+            ],
+            [
+                'status' => 'paid',
+                'paid_at' => Date::now(),
+            ]
+        );
+
+        // Create payment history record
+        PaymentHistory::create([
+            'history_id' => 'PAY-' . Date::now()->format('YmdHis') . '-' . $user->id,
+            'user_id' => $user->id,
+            'payment_method_id' => $validated['payment_method'],
+            'amount' => $paymentItem->amount,
+            'status' => 'completed',
+            'payment_date' => Date::now(),
+            'title' => $paymentItem->title_key,
+        ]);
+
+        return $this->success([
+            'payment_status' => $paymentStatus,
+            'payment_item' => $paymentItem,
+        ], 'Payment processed successfully');
     }
 }

@@ -29,11 +29,11 @@ class ProdiController extends ApiController
 
         $cacheKey = "prodi_dashboard_{$facultyId}";
         $stats = Cache::remember($cacheKey, 300, function () use ($facultyId) {
-            return [
-                'overview' => [
-                    'total_students' => User::where('faculty_id', $facultyId)->where('role', 'student')->count(),
-                    'total_lecturers' => User::where('faculty_id', $facultyId)->where('role', 'faculty')->count(),
-                    'total_courses' => Course::where('faculty_id', $facultyId)->count(),
+        return [
+            'overview' => [
+                'total_students' => User::where('faculty_id', $facultyId)->where('role', 'student')->count(),
+                'total_lecturers' => User::where('faculty_id', $facultyId)->where('role', 'dosen')->count(),
+                'total_courses' => Course::where('faculty_id', $facultyId)->count(),
                     'active_courses' => Course::where('faculty_id', $facultyId)->where('is_active', true)->count(),
                     'total_enrollments' => CourseEnrollment::whereHas('course', function ($query) use ($facultyId) {
                         $query->where('faculty_id', $facultyId);
@@ -151,7 +151,7 @@ class ProdiController extends ApiController
     }
 
     /**
-     * Get lecturers in the Prodi.
+     * Get lecturers in the Prodi (paginated, for general use).
      */
     public function lecturers(Request $request): JsonResponse
     {
@@ -162,7 +162,7 @@ class ProdiController extends ApiController
 
         $query = User::with(['major'])
             ->where('faculty_id', $facultyId)
-            ->where('role', 'faculty');
+            ->where('role', 'dosen');
 
         // Filter by major
         if ($request->has('major_id')) {
@@ -191,7 +191,54 @@ class ProdiController extends ApiController
     }
 
     /**
-     * Get students in the Prodi.
+     * Get lecturers list for Prodi Admin (optimized response format).
+     * Returns data in the exact format needed by the frontend ProdiLecturersPage.
+     */
+    public function getLecturers(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $facultyId = $user->faculty_id;
+        
+        // Admin users can see all lecturers across all faculties
+        if ($user->role === 'admin' || !$facultyId) {
+            $lecturers = User::where('role', 'dosen')
+                ->orderBy('name', 'asc')
+                ->get();
+        } else {
+            // Prodi admins only see lecturers from their faculty
+            $lecturers = User::where('faculty_id', $facultyId)
+                ->where('role', 'dosen')
+                ->orderBy('name', 'asc')
+                ->get();
+        }
+
+        // Get courses taught by each lecturer
+        $lecturerIds = $lecturers->pluck('id');
+        $coursesByLecturer = Course::whereIn('instructor_id', $lecturerIds)
+            ->select('instructor_id', DB::raw('count(*) as course_count'))
+            ->groupBy('instructor_id')
+            ->pluck('course_count', 'instructor_id')
+            ->toArray();
+
+        // Transform data to match frontend format
+        $transformedLecturers = $lecturers->map(function ($lecturer) use ($coursesByLecturer) {
+            return [
+                'id' => $lecturer->id,
+                'name' => $lecturer->name,
+                'email' => $lecturer->email,
+                'role' => 'Dosen',
+                'avatarUrl' => $lecturer->avatar ?? $lecturer->avatar_url ?? "https://ui-avatars.com/api/?name=" . urlencode($lecturer->name) . "&background=random",
+                'facultyId' => $lecturer->faculty_id,
+                'majorId' => $lecturer->major_id,
+                'courseCount' => $coursesByLecturer[$lecturer->id] ?? 0,
+            ];
+        });
+
+        return $this->success($transformedLecturers);
+    }
+
+    /**
+     * Get students in the Prodi (paginated, for general use).
      */
     public function students(Request $request): JsonResponse
     {
@@ -235,6 +282,50 @@ class ProdiController extends ApiController
         $students = $query->paginate($perPage);
 
         return $this->success($students);
+    }
+
+    /**
+     * Get students list for Prodi Admin (optimized response format).
+     * Returns data in the exact format needed by the frontend ProdiStudentsPage.
+     */
+    public function getStudents(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $facultyId = $user->faculty_id;
+        
+        // Admin users can see all students across all faculties
+        if ($user->role === 'admin' || !$facultyId) {
+            $students = User::where('role', 'student')
+                ->orderBy('name', 'asc')
+                ->get();
+        } else {
+            // Prodi admins only see students from their faculty
+            $students = User::where('faculty_id', $facultyId)
+                ->where('role', 'student')
+                ->orderBy('name', 'asc')
+                ->get();
+        }
+
+        // Transform data to match frontend format
+        $transformedStudents = $students->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'name' => $student->name,
+                'email' => $student->email,
+                'role' => 'Mahasiswa',
+                'studentId' => $student->student_id ?? $student->id,
+                'studentStatus' => $student->student_status ?? 'Aktif',
+                'avatarUrl' => $student->avatar ?? $student->avatar_url ?? "https://ui-avatars.com/api/?name=" . urlencode($student->name) . "&background=random",
+                'gpa' => $student->gpa,
+                'totalSks' => $student->total_sks ?? 0,
+                'facultyId' => $student->faculty_id,
+                'majorId' => $student->major_id,
+                'joinDate' => $student->created_at,
+                'badges' => $student->badges ?? [],
+            ];
+        });
+
+        return $this->success($transformedStudents);
     }
 
     /**
@@ -385,7 +476,7 @@ class ProdiController extends ApiController
                     'users_count' => $major->users_count,
                     'courses_count' => $major->courses_count,
                     'students_count' => User::where('major_id', $major->id)->where('role', 'student')->count(),
-                    'lecturers_count' => User::where('major_id', $major->id)->where('role', 'faculty')->count(),
+                    'lecturers_count' => User::where('major_id', $major->id)->where('role', 'dosen')->count(),
                 ];
             })
             ->toArray();
@@ -420,7 +511,7 @@ class ProdiController extends ApiController
     private function getLecturerPerformance(int $facultyId): array
     {
         return User::where('faculty_id', $facultyId)
-            ->where('role', 'faculty')
+            ->where('role', 'dosen')
             ->with(['courses' => function ($query) {
                 $query->withCount('enrollments');
             }])
@@ -600,7 +691,7 @@ class ProdiController extends ApiController
     {
         return [
             'total_students' => User::where('faculty_id', $facultyId)->where('role', 'student')->count(),
-            'total_lecturers' => User::where('faculty_id', $facultyId)->where('role', 'faculty')->count(),
+            'total_lecturers' => User::where('faculty_id', $facultyId)->where('role', 'dosen')->count(),
             'total_courses' => Course::where('faculty_id', $facultyId)->count(),
             'total_majors' => Major::where('faculty_id', $facultyId)->count(),
             'total_enrollments' => CourseEnrollment::whereHas('course', function ($query) use ($facultyId) {
@@ -668,7 +759,7 @@ class ProdiController extends ApiController
      */
     private function bulkLecturerOperation(int $facultyId, array $ids, string $operation, ?int $targetId): array
     {
-        $query = User::where('faculty_id', $facultyId)->where('role', 'faculty')->whereIn('id', $ids);
+        $query = User::where('faculty_id', $facultyId)->where('role', 'dosen')->whereIn('id', $ids);
 
         switch ($operation) {
             case 'activate':

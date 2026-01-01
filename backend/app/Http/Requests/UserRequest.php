@@ -15,9 +15,9 @@ class UserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Admins and Faculty can create/update users
+        // Admins, Dosen, and Super Admin can create/update users
         $user = auth()->user();
-        return $user && in_array($user->role, ['admin', 'faculty']);
+        return $user && in_array($user->role, ['admin', 'dosen', 'super_admin']);
     }
 
     /**
@@ -31,16 +31,16 @@ class UserRequest extends FormRequest
         $userId = $this->route('user') ?? $this->route('id');
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => $isUpdate ? ['sometimes', 'string', 'max:255'] : ['required', 'string', 'max:255'],
             'email' => [
-                'required',
+                $isUpdate ? 'sometimes' : 'required',
                 'string',
                 'email',
                 'max:255',
                 $isUpdate ? Rule::unique('users')->ignore($userId) : 'unique:users',
             ],
             'password' => $isUpdate ? ['nullable', 'string', 'min:8', 'confirmed'] : ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'in:admin,faculty,student'],
+            'role' => $isUpdate ? ['sometimes', 'string', 'in:admin,dosen,student,super_admin,prodi_admin,maba'] : ['required', 'string', 'in:admin,dosen,student,super_admin,prodi_admin,maba'],
             'faculty_id' => ['nullable', 'integer', 'exists:faculties,id'],
             'major_id' => ['nullable', 'string', 'exists:majors,code'],
             'student_id' => [
@@ -54,6 +54,7 @@ class UserRequest extends FormRequest
             'graduation_year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:500'],
+            'badges' => ['nullable', 'array'],
         ];
     }
 
@@ -86,7 +87,7 @@ class UserRequest extends FormRequest
         return [
             'email.unique' => 'A user with this email already exists.',
             'student_id.unique' => 'A user with this student ID already exists.',
-            'role.in' => 'Role must be one of: admin, faculty, or student.',
+            'role.in' => 'Role must be one of: admin, dosen, student, super_admin, prodi_admin, or maba.',
             'gpa.min' => 'GPA cannot be less than 0.',
             'gpa.max' => 'GPA cannot be greater than 4.',
             'password.confirmed' => 'Password confirmation does not match.',

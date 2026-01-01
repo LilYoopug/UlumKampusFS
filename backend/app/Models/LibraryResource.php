@@ -20,6 +20,7 @@ class LibraryResource extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'course_id',
         'faculty_id',
         'created_by',
@@ -55,6 +56,7 @@ class LibraryResource extends Model
     protected function casts(): array
     {
         return [
+            'created_by' => 'integer',
             'file_size' => 'integer',
             'publication_year' => 'integer',
             'download_count' => 'integer',
@@ -62,6 +64,8 @@ class LibraryResource extends Model
             'is_published' => 'boolean',
             'published_at' => 'datetime',
             'order' => 'integer',
+            'course_id' => 'integer',
+            'faculty_id' => 'integer',
         ];
     }
 
@@ -171,65 +175,6 @@ class LibraryResource extends Model
         return !empty($this->external_link);
     }
 
-    /**
-     * Get the coverUrl value (alias for file_url for frontend compatibility).
-     */
-    protected function getCoverUrlAttribute(): ?string
-    {
-        return $this->attributes['file_url'] ?? null;
-    }
-
-    /**
-     * Set the coverUrl value (alias for file_url for frontend compatibility).
-     */
-    protected function setCoverUrlAttribute(?string $value): void
-    {
-        $this->attributes['file_url'] = $value;
-    }
-
-    /**
-     * Get the sourceType value (alias for type for frontend compatibility).
-     */
-    protected function getSourceTypeAttribute(): ?string
-    {
-        // Map type to sourceType values: 'upload' | 'link' | 'embed'
-        if ($this->isFile()) {
-            return 'upload';
-        } elseif ($this->isExternalLink()) {
-            return 'link';
-        }
-        return $this->attributes['type'] ?? null;
-    }
-
-    /**
-     * Get the sourceUrl value (alias for external_link for frontend compatibility).
-     */
-    protected function getSourceUrlAttribute(): ?string
-    {
-        return $this->attributes['external_link'] ?? null;
-    }
-
-    /**
-     * Set the sourceUrl value (alias for external_link for frontend compatibility).
-     */
-    protected function setSourceUrlAttribute(?string $value): void
-    {
-        $this->attributes['external_link'] = $value;
-    }
-
-    /**
-     * Get the year value (alias for publication_year for frontend compatibility).
-     */
-    protected function getYearAttribute(): ?int
-    {
-        return $this->attributes['publication_year'] ?? null;
-    }
-
-    /**
-     * Set the year value (alias for publication_year for frontend compatibility).
-     */
-    protected function setYearAttribute(?int $value): void
-    {
-        $this->attributes['publication_year'] = $value;
-    }
+    // Note: coverUrl, sourceType, sourceUrl, and year are handled in the resource layer
+    // These fields exist directly in the database schema
 }

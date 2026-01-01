@@ -15,9 +15,9 @@ class LibraryResourceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Admins and Faculty can create/update library resources
+        // Admins, Faculty, Dosen, Prodi Admin, and Super Admin can create/update library resources
         $user = auth()->user();
-        return $user && in_array($user->role, ['admin', 'faculty']);
+        return $user && in_array($user->role, ['admin', 'faculty', 'dosen', 'prodi_admin', 'super_admin']);
     }
 
     /**
@@ -29,27 +29,98 @@ class LibraryResourceRequest extends FormRequest
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
-        return [
-            'course_id' => ['nullable', 'integer', 'exists:courses,id'],
-            'faculty_id' => ['nullable', 'integer', 'exists:faculties,id'],
-            'created_by' => $isUpdate ? ['nullable', 'integer', 'exists:users,id'] : ['required', 'integer', 'exists:users,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'resource_type' => ['nullable', 'string', 'in:document,video,audio,link,book,article,journal,other'],
-            'access_level' => ['nullable', 'string', 'in:public,faculty,course'],
-            'file_url' => ['nullable', 'url', 'max:500'],
-            'file_type' => ['nullable', 'string', 'max:50'],
-            'file_size' => ['nullable', 'integer', 'min:0'],
-            'external_link' => ['nullable', 'url', 'max:500'],
-            'author' => ['nullable', 'string', 'max:255'],
-            'publisher' => ['nullable', 'string', 'max:255'],
-            'isbn' => ['nullable', 'string', 'max:50'],
-            'doi' => ['nullable', 'string', 'max:100'],
-            'publication_year' => ['nullable', 'integer', 'min:1000', 'max:2100'],
-            'tags' => ['nullable', 'string', 'max:500'],
-            'is_published' => ['nullable', 'boolean'],
-            'order' => ['nullable', 'integer', 'min:0'],
-        ];
+        // For updates, fields that come from the form are validated
+        // Fields not in the form should be excluded from validation
+        $editableFields = ['title', 'author', 'publication_year', 'year', 'type', 'description', 'cover_url', 'source_type', 'file_url', 'external_link', 'source_url'];
+
+        // Build validation rules based on what's actually submitted
+        $rules = [];
+
+        // Core required fields (always validate these)
+        if ($this->has('title') || !$isUpdate) {
+            $rules['title'] = ['required', 'string', 'max:255'];
+        }
+
+        // Optional fields from edit form
+        if ($this->has('author')) {
+            $rules['author'] = ['nullable', 'string', 'max:255'];
+        }
+
+        if ($this->has('publication_year') || $this->has('year')) {
+            $rules['publication_year'] = ['nullable', 'integer', 'min:1000', 'max:2100'];
+            $rules['year'] = ['nullable', 'integer', 'min:1000', 'max:2100'];
+        }
+
+        if ($this->has('type')) {
+            $rules['type'] = ['nullable', 'string', 'in:document,video,audio,link,book,article,journal,other'];
+        }
+
+        if ($this->has('description')) {
+            $rules['description'] = ['nullable', 'string'];
+        }
+
+        if ($this->has('cover_url')) {
+            $rules['cover_url'] = ['nullable', 'url', 'max:500'];
+        }
+
+        // These fields should always be validated since they're commonly used
+        // and may be mapped from camelCase by prepareForValidation
+        $rules['source_type'] = ['nullable', 'string', 'in:upload,link,embed'];
+        $rules['file_url'] = ['nullable', 'string', 'max:500'];
+        $rules['external_link'] = ['nullable', 'string', 'max:500'];
+        $rules['source_url'] = ['nullable', 'string', 'max:500'];
+        $rules['cover_url'] = ['nullable', 'string', 'max:500'];
+
+        // Less commonly edited fields (only validate if present)
+        if ($this->has('course_id')) {
+            $rules['course_id'] = ['nullable', 'string', 'exists:courses,id'];
+        }
+
+        if ($this->has('faculty_id')) {
+            $rules['faculty_id'] = ['nullable', 'string', 'exists:faculties,id'];
+        }
+
+        if ($this->has('created_by')) {
+            $rules['created_by'] = ['nullable', 'integer', 'exists:users,id'];
+        }
+
+        if ($this->has('access_level')) {
+            $rules['access_level'] = ['nullable', 'string', 'in:public,students,faculty,specific_course,specific_faculty'];
+        }
+
+        if ($this->has('file_type')) {
+            $rules['file_type'] = ['nullable', 'string', 'max:50'];
+        }
+
+        if ($this->has('file_size')) {
+            $rules['file_size'] = ['nullable', 'integer', 'min:0'];
+        }
+
+        if ($this->has('publisher')) {
+            $rules['publisher'] = ['nullable', 'string', 'max:255'];
+        }
+
+        if ($this->has('isbn')) {
+            $rules['isbn'] = ['nullable', 'string', 'max:50'];
+        }
+
+        if ($this->has('doi')) {
+            $rules['doi'] = ['nullable', 'string', 'max:100'];
+        }
+
+        if ($this->has('tags')) {
+            $rules['tags'] = ['nullable', 'string', 'max:500'];
+        }
+
+        if ($this->has('is_published')) {
+            $rules['is_published'] = ['nullable', 'boolean'];
+        }
+
+        if ($this->has('order')) {
+            $rules['order'] = ['nullable', 'integer', 'min:0'];
+        }
+
+        return $rules;
     }
 
     /**
@@ -63,17 +134,21 @@ class LibraryResourceRequest extends FormRequest
             'created_by' => 'Creator',
             'title' => 'Resource title',
             'description' => 'Description',
-            'resource_type' => 'Resource type',
+            'type' => 'Resource type',
             'access_level' => 'Access level',
             'file_url' => 'File URL',
             'file_type' => 'File type',
             'file_size' => 'File size',
             'external_link' => 'External link',
+            'cover_url' => 'Cover URL',
+            'source_type' => 'Source type',
+            'source_url' => 'Source URL',
             'author' => 'Author',
             'publisher' => 'Publisher',
             'isbn' => 'ISBN',
             'doi' => 'DOI',
             'publication_year' => 'Publication year',
+            'year' => 'Publication year',
             'tags' => 'Tags',
             'is_published' => 'Published status',
             'order' => 'Display order',
@@ -91,14 +166,20 @@ class LibraryResourceRequest extends FormRequest
             'created_by.exists' => 'The selected user does not exist.',
             'title.required' => 'The resource title is required.',
             'title.max' => 'The resource title may not exceed 255 characters.',
-            'resource_type.in' => 'The resource type must be one of: document, video, audio, link, book, article, journal, or other.',
-            'access_level.in' => 'The access level must be one of: public, faculty, or course.',
+            'type.in' => 'The resource type must be one of: document, video, audio, link, book, article, journal, or other.',
+            'access_level.in' => 'The access level must be one of: public, students, faculty, specific_course, or specific_faculty.',
             'file_url.url' => 'The file URL must be a valid URL.',
             'file_url.max' => 'The file URL may not exceed 500 characters.',
             'external_link.url' => 'The external link must be a valid URL.',
             'external_link.max' => 'The external link may not exceed 500 characters.',
+            'cover_url.url' => 'The cover URL must be a valid URL.',
+            'cover_url.max' => 'The cover URL may not exceed 500 characters.',
+            'source_type.in' => 'The source type must be one of: upload, link, or embed.',
+            'source_url.max' => 'The source URL may not exceed 500 characters.',
             'publication_year.min' => 'The publication year must be at least 1000.',
             'publication_year.max' => 'The publication year may not exceed 2100.',
+            'year.min' => 'The publication year must be at least 1000.',
+            'year.max' => 'The publication year may not exceed 2100.',
             'file_size.min' => 'The file size must be at least 0.',
             'order.min' => 'The order value must be at least 0.',
         ];
@@ -114,6 +195,37 @@ class LibraryResourceRequest extends FormRequest
             $this->merge([
                 'created_by' => auth()->id(),
             ]);
+        }
+
+        // Handle field name differences between frontend and backend
+        // Map 'year' to 'publication_year'
+        if ($this->has('year') && !$this->has('publication_year')) {
+            $this->merge([
+                'publication_year' => $this->input('year'),
+            ]);
+        }
+
+        // Map 'coverUrl' to 'cover_url'
+        if ($this->has('coverUrl') && !$this->has('cover_url')) {
+            $this->merge([
+                'cover_url' => $this->input('coverUrl'),
+            ]);
+        }
+
+        // Map 'sourceType' to 'source_type'
+        if ($this->has('sourceType') && !$this->has('source_type')) {
+            $this->merge([
+                'source_type' => $this->input('sourceType'),
+            ]);
+        }
+
+        // Map frontend camelCase to backend snake_case
+        if ($this->has('fileUrl') && !$this->has('file_url')) {
+            $this->merge(['file_url' => $this->input('fileUrl')]);
+        }
+        
+        if ($this->has('sourceUrl') && !$this->has('source_url')) {
+            $this->merge(['source_url' => $this->input('sourceUrl')]);
         }
 
         // Set published_at when is_published is true

@@ -230,6 +230,76 @@ class CourseController extends ApiController
     }
 
     /**
+     * Get assignments with submission statistics for this course.
+     *
+     * Returns assignments with:
+     * - Total enrolled students count
+     * - Submitted count
+     * - Graded count
+     * - Pending grading count
+     *
+     * Useful for Gradebook's "Daftar Tugas" tab.
+     */
+    public function assignmentsWithStats(string $id): JsonResponse
+    {
+        $course = Course::findOrFail($id);
+        
+        // Get all assignments for the course
+        $assignments = $course->assignments()
+            ->orderBy('due_date')
+            ->get();
+        
+        // Get total enrolled students for the course (all enrollments, not just 'enrolled' status)
+        // This matches the studentProgress endpoint which shows all students
+        $totalStudents = $course->enrollments()->count();
+        
+        // Build assignments with statistics
+        $assignmentsWithStats = [];
+        
+        foreach ($assignments as $assignment) {
+            // Get all submissions for this assignment
+            $submissions = $assignment->submissions;
+            $submittedCount = $submissions->count();
+            
+            // Count graded submissions (those with a grade)
+            $gradedCount = 0;
+            foreach ($submissions as $submission) {
+                if ($submission->grade !== null) {
+                    $gradedCount++;
+                }
+            }
+            
+            $assignmentsWithStats[] = [
+                'id' => $assignment->id,
+                'course_id' => $assignment->course_id,
+                'title' => $assignment->title,
+                'description' => $assignment->description,
+                'due_date' => $assignment->due_date ? $assignment->due_date->toIso8601String() : null,
+                'submission_type' => $assignment->submission_type,
+                'category' => $assignment->category,
+                'max_points' => $assignment->max_points,
+                'instructions' => $assignment->instructions,
+                'is_published' => $assignment->is_published,
+                'created_at' => $assignment->created_at ? $assignment->created_at->toIso8601String() : null,
+                'updated_at' => $assignment->updated_at ? $assignment->updated_at->toIso8601String() : null,
+                'statistics' => [
+                    'total_students' => $totalStudents,
+                    'submitted_count' => $submittedCount,
+                    'graded_count' => $gradedCount,
+                    'pending_grading_count' => $submittedCount - $gradedCount,
+                    'not_submitted_count' => $totalStudents - $submittedCount,
+                    'submission_rate' => $totalStudents > 0 ? round(($submittedCount / $totalStudents) * 100, 1) : 0,
+                ],
+            ];
+        }
+        
+        return $this->success(
+            $assignmentsWithStats,
+            'Course assignments with statistics retrieved successfully'
+        );
+    }
+
+    /**
      * Get announcements for this course.
      */
     public function announcements(string $id): JsonResponse
@@ -293,6 +363,106 @@ class CourseController extends ApiController
         return $this->success(
             $grades,
             'Course grades retrieved successfully'
+        );
+    }
+
+    /**
+     * Get student progress for this course.
+     *
+     * Returns comprehensive progress data including:
+     * - Student information
+     * - Enrollment details
+     * - Grade summary
+     * - Completion status
+     *
+     * Requires admin or faculty role.
+     */
+    public function studentProgress(string $id): JsonResponse
+    {
+        $course = Course::findOrFail($id);
+        
+        // Get all enrollments for the course
+        $enrollments = $course->enrollments()
+            ->with('student')
+            ->get();
+        
+        // Get all assignments for the course to calculate progress
+        $assignments = $course->assignments()->get();
+        $totalAssignments = $assignments->count();
+        
+        // Build student progress data
+        $studentProgressData = [];
+        
+        foreach ($enrollments as $enrollment) {
+            $student = $enrollment->student;
+            
+            if (!$student) {
+                continue;
+            }
+            
+            // Get grades for this student in this course
+            $studentGrades = $course->grades()
+                ->where('user_id', $student->id)
+                ->get();
+            
+            // Calculate grade summary
+            $averageGrade = null;
+            $gradedAssignments = 0;
+            $totalGrade = 0;
+            
+            foreach ($studentGrades as $grade) {
+                if ($grade->grade !== null) {
+                    $totalGrade += $grade->grade;
+                    $gradedAssignments++;
+                }
+            }
+            
+            if ($gradedAssignments > 0) {
+                $averageGrade = $totalGrade / $gradedAssignments;
+            }
+            
+            // Calculate progress based on enrollment progress or completion
+            $progress = $enrollment->progress_percentage ?? 0;
+            
+            // If no progress is set, calculate based on graded assignments
+            if ($progress === 0 && $totalAssignments > 0) {
+                $progress = ($gradedAssignments / $totalAssignments) * 100;
+            }
+            
+            // Determine completion status
+            $completionStatus = 'In Progress';
+            if ($enrollment->status === 'completed' || $progress >= 100) {
+                $completionStatus = 'Completed';
+            } elseif ($enrollment->status === 'dropped') {
+                $completionStatus = 'Dropped';
+            }
+            
+            $studentProgressData[] = [
+                'student' => [
+                    'id' => $student->student_id ?? $student->id,
+                    'name' => $student->name,
+                    'email' => $student->email,
+                ],
+                'enrollment' => [
+                    'id' => $enrollment->id,
+                    'status' => $enrollment->status,
+                    'progress' => (int) $progress,
+                    'enrolled_at' => $enrollment->enrolled_at ? $enrollment->enrolled_at->toIso8601String() : null,
+                    'completed_at' => $enrollment->completed_at ? $enrollment->completed_at->toIso8601String() : null,
+                ],
+                'grade_summary' => [
+                    'average_grade' => $averageGrade,
+                    'total_assignments' => $totalAssignments,
+                    'graded_assignments' => $gradedAssignments,
+                    'pending_grades' => $totalAssignments - $gradedAssignments,
+                ],
+                'completion_status' => $completionStatus,
+            ];
+        }
+        
+        return $this->success(
+            $studentProgressData,
+            'Student progress retrieved successfully'
         );
     }
 

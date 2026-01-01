@@ -34,7 +34,7 @@ class DashboardController extends ApiController
 
         return match ($user->role) {
             'student' => $this->studentStats(),
-            'faculty' => $this->facultyStats(),
+            'dosen' => $this->facultyStats(),
             'admin' => $this->managementStats(),
             default => $this->error('Invalid user role', 403),
         };

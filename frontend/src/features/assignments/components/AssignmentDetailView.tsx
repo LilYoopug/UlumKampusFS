@@ -5,6 +5,7 @@ import { Icon } from '../../../ui/components/Icon';
 import { ALL_USERS } from '../../../../constants';
 import { HafalanRecorder } from '../../../features/resources/components/HafalanRecorder';
 import { numericToLetter } from '../../../../utils/gradeConverter';
+import { gradeAPI } from '../../../../services/apiService';
 
 const SubmissionGradingCard: React.FC<{
     submission: Submission;
@@ -25,12 +26,27 @@ const SubmissionGradingCard: React.FC<{
         onSaveGrade(submission, num, feedback);
     };
 
+    // Use studentName from submission if available, otherwise try to find in ALL_USERS
+    const displayName = (submission as any).studentName || student?.name || submission.studentId;
+    const isGraded = submission.gradeLetter !== undefined || submission.gradeNumeric !== undefined;
+
     return (
         <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-start">
                 <div>
-                    <p className="font-bold text-slate-800 dark:text-white">{student?.name || submission.studentId}</p>
+                    <p className="font-bold text-slate-800 dark:text-white">{displayName}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{t('assignments_submitted_on')} {new Date(submission.submittedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                    {(submission as any).status && (
+                        <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded-full ${
+                            isGraded ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' :
+                            (submission as any).status === 'late' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' :
+                            'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300'
+                        }`}>
+                            {isGraded ? t('assignments_status_graded') : 
+                             (submission as any).status === 'late' ? t('assignments_status_late') :
+                             t('assignments_status_submitted')}
+                        </span>
+                    )}
                 </div>
                 <a href={submission.file.url} download className="flex items-center gap-2 text-sm font-semibold text-brand-emerald-600 hover:underline">
                     <Icon className="w-4 h-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></Icon>
@@ -38,11 +54,11 @@ const SubmissionGradingCard: React.FC<{
                 </a>
             </div>
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-                {submission.gradeLetter || submission.gradeNumeric !== undefined ? (
+                {isGraded ? (
                     <div>
-                        <h4 className="font-semibold text-slate-800 dark:text-white mb-2">{t('assignments_grade')}: <span className="font-bold text-brand-emerald-60 dark:text-brand-emerald-40">{submission.gradeLetter} ({submission.gradeNumeric})</span></h4>
+                        <h4 className="font-semibold text-slate-800 dark:text-white mb-2">{t('assignments_grade')}: <span className="font-bold text-brand-emerald-600 dark:text-brand-emerald-400">{submission.gradeLetter} ({submission.gradeNumeric})</span></h4>
                         <h4 className="font-semibold text-slate-800 dark:text-white mb-1">{t('assignments_feedback')}:</h4>
-                        <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{submission.feedback}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{submission.feedback || '-'}</p>
                     </div>
                 ) : (
                     <>
@@ -167,15 +183,32 @@ export const AssignmentDetailView: React.FC<{
         onUpdateAssignment({ ...assignment, files: updatedFiles });
     };
 
-    const handleSaveGrade = (submissionToUpdate: Submission, gradeNumeric: number | undefined, feedback: string) => {
+    const handleSaveGrade = async (submissionToUpdate: Submission, gradeNumeric: number | undefined, feedback: string) => {
         const gradeLetter = gradeNumeric !== undefined ? numericToLetter(gradeNumeric) : undefined;
-        const updatedSubmissions = assignment.submissions.map(s => {
-            if (s.studentId === submissionToUpdate.studentId && s.submittedAt === submissionToUpdate.submittedAt) {
-                return { ...s, gradeNumeric, gradeLetter, feedback };
-            }
-            return s;
-        });
-        onUpdateAssignment({ ...assignment, submissions: updatedSubmissions });
+        
+        try {
+            // Save grade to backend using grade API
+            await gradeAPI.create({
+                user_id: submissionToUpdate.studentId,
+                course_id: assignment.courseId,
+                assignment_id: assignment.id,
+                grade: gradeNumeric || 0,
+                grade_letter: gradeLetter || '',
+                comments: feedback, // Use 'comments' instead of 'feedback' as per Grade type
+            });
+
+            // Update local state
+            const updatedSubmissions = assignment.submissions.map(s => {
+                if (s.studentId === submissionToUpdate.studentId && s.submittedAt === submissionToUpdate.submittedAt) {
+                    return { ...s, gradeNumeric, gradeLetter, feedback };
+                }
+                return s;
+            });
+            onUpdateAssignment({ ...assignment, submissions: updatedSubmissions });
+        } catch (error) {
+            console.error('Error saving grade:', error);
+            alert('Gagal menyimpan nilai. Silakan coba lagi.');
+        }
     };
 
 

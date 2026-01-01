@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { Dropdown } from '@/src/features/shared/components/Dropdown';
+import { apiService } from '@/services/apiService';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {
@@ -12,19 +13,87 @@ declare global {
     }
 }
 
-
-interface ProdiStudentsPageProps {
-    users: User[];
-}
-
-export const ProdiStudentsPage: React.FC<ProdiStudentsPageProps> = ({ users }) => {
+export const ProdiStudentsPage: React.FC = () => {
     const { t } = useLanguage();
+    const [students, setStudents] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
 
-    const students = useMemo(() => {
-        return users.filter(u => u.role === 'Mahasiswa');
-    }, [users]);
+    // Fetch students from API
+    useEffect(() => {
+        fetchStudents();
+    }, []);
+
+    const fetchStudents = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await apiService.getProdiStudents();
+            
+            console.log('Prodi students API response:', response);
+            
+            // Handle different response structures
+            let studentsList: any[] = [];
+            if (Array.isArray(response)) {
+                studentsList = response;
+            } else if (response && typeof response === 'object') {
+                const resp = response as any;
+                // Handle Axios response with .data property
+                if (resp.data) {
+                    const responseData = resp.data;
+                    if (Array.isArray(responseData)) {
+                        studentsList = responseData;
+                    } else if (responseData.success && Array.isArray(responseData.data)) {
+                        studentsList = responseData.data;
+                    } else if (Array.isArray(responseData.data)) {
+                        studentsList = responseData.data;
+                    } else if (responseData.students && Array.isArray(responseData.students)) {
+                        studentsList = responseData.students;
+                    }
+                }
+                // Handle direct response object
+                else if (resp.success && Array.isArray(resp.data)) {
+                    studentsList = resp.data;
+                } else if (Array.isArray(resp.data)) {
+                    studentsList = resp.data;
+                } else if (resp.students && Array.isArray(resp.students)) {
+                    studentsList = resp.students;
+                }
+            }
+            
+            console.log('Extracted students list:', studentsList);
+            
+            // Transform backend data to match frontend User type
+            const transformedStudents: User[] = studentsList.map((student: any) => {
+                return {
+                    id: student.id || student.student_id || '',
+                    name: student.name || '',
+                    email: student.email || '',
+                    role: 'Mahasiswa', // Prodi students are always students
+                    studentId: student.studentId || student.student_id || student.id || '',
+                    studentStatus: student.studentStatus || student.student_status || student.status || 'Aktif',
+                    avatarUrl: student.avatarUrl || student.avatar_url || student.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name || 'User') + '&background=random',
+                    gpa: student.gpa || null,
+                    totalSks: student.totalSks || student.total_sks || 0,
+                    facultyId: student.facultyId || student.faculty_id || '',
+                    majorId: student.majorId || student.major_id || '',
+                    joinDate: student.joinDate || student.created_at || student.join_date || null,
+                    badges: student.badges || [],
+                };
+            });
+            
+            console.log('Transformed students:', transformedStudents);
+            setStudents(transformedStudents);
+        } catch (err) {
+            console.error('Error fetching prodi students:', err);
+            setError('Failed to load students. Please try again.');
+            setStudents([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filteredStudents = useMemo(() => {
         return students.filter(student => {
@@ -70,15 +139,36 @@ export const ProdiStudentsPage: React.FC<ProdiStudentsPageProps> = ({ users }) =
         { value: 'DO', label: t('prodi_student_status_do')},
     ];
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-emerald-600"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
+            {error && (
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg">
+                    <div className="flex items-center">
+                        <Icon className="w-5 h-5 mr-2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </Icon>
+                        {error}
+                    </div>
+                </div>
+            )}
+
             <div>
                 <h1 className="text-3xl font-bold text-slate-800 dark:text-white">{t('prodi_students_title')}</h1>
                 <p className="text-slate-500 dark:text-slate-400 mt-1">{t('prodi_students_subtitle')}</p>
             </div>
 
             <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
-                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
                     <div className="relative flex-grow w-full sm:w-auto">
                         <Icon className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
                             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />

@@ -11,11 +11,13 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Create users based on frontend constants
+        // Note: Use role names for backend compatibility
+        // Mapping: Mahasiswa -> student, Dosen -> dosen, Prodi Admin -> prodi_admin, etc.
         $frontendUsers = [
             [
                 'name' => 'Ahmad Faris',
                 'avatar' => 'https://picsum.photos/seed/ahmad/100/100',
-                'role' => 'Mahasiswa',
+                'role' => 'student',
                 'student_id' => 'UC2024001',
                 'email' => 'ahmad.faris@student.ulumcampus.com',
                 'phone' => '081234567890',
@@ -32,17 +34,18 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dr. Yusuf Al-Fatih',
                 'avatar' => 'https://picsum.photos/seed/yusuf/100/100',
-                'role' => 'Dosen',
+                'role' => 'dosen',
                 'student_id' => 'DSN202001',
                 'email' => 'yusuf.alfatih@dosen.ulumcampus.com',
                 'phone' => '081234567891',
                 'bio' => 'Akademisi dan da\'i yang fokus pada studi Aqidah dan Manhaj. Meraih gelar Doktor dari Universitas Islam Madinah.',
+                'faculty_id' => 'syariah',
                 'password' => Hash::make('dosen123'),
             ],
             [
                 'name' => 'Dr. Aisyah Hasanah',
                 'avatar' => 'https://picsum.photos/seed/aisyah/100/100',
-                'role' => 'Prodi Admin',
+                'role' => 'prodi_admin',
                 'student_id' => 'PRODI01',
                 'email' => 'aisyah.h@staff.ulumcampus.com',
                 'phone' => '081234567892',
@@ -51,9 +54,20 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('prodi123'),
             ],
             [
+                'name' => 'Dr. Ahmad Syafiq',
+                'avatar' => 'https://picsum.photos/seed/syafiq/100/100',
+                'role' => 'dosen',
+                'student_id' => 'DSN202006',
+                'email' => 'ahmad.syafiq@dosen.ulumcampus.com',
+                'phone' => '081234567903',
+                'bio' => 'Pakar Fiqh Muamalat dan Hukum Ekonomi Syariah. Lulusan S3 dari Al-Azhar University.',
+                'faculty_id' => 'syariah',
+                'password' => Hash::make('dosen123'),
+            ],
+            [
                 'name' => 'Prof. Dr. Ibrahim Malik',
                 'avatar' => 'https://picsum.photos/seed/ibrahim/100/100',
-                'role' => 'Manajemen Kampus',
+                'role' => 'admin',
                 'student_id' => 'REKTOR01',
                 'email' => 'rektor@ulumcampus.com',
                 'phone' => '081234567893',
@@ -63,7 +77,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Budi Santoso',
                 'avatar' => 'https://picsum.photos/seed/budi/100/100',
-                'role' => 'MABA',
+                'role' => 'maba',
                 'student_id' => 'MABA2025001',
                 'email' => 'budi.santoso@maba.ulumcampus.com',
                 'phone' => '081234567899',
@@ -79,7 +93,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Admin Sistem',
                 'avatar' => 'https://picsum.photos/seed/admin/100/100',
-                'role' => 'Super Admin',
+                'role' => 'super_admin',
                 'student_id' => 'SYSADMIN',
                 'email' => 'admin@ulumcampus.com',
                 'phone' => '081234567894',
@@ -89,17 +103,18 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dr. Eng. Faiz Rabbani',
                 'avatar' => 'https://picsum.photos/seed/faiz/100/100',
-                'role' => 'Dosen',
+                'role' => 'dosen',
                 'student_id' => 'DSN202105',
                 'email' => 'faiz.rabbani@dosen.ulumcampus.com',
                 'phone' => '081234567895',
                 'bio' => 'Insinyur dan peneliti yang menjembatani dunia teknologi dan studi Islam. Lulusan doktor teknik dari Jepang ini memimpin sebuah lab riset yang fokus mengembangkan aplikasi AI untuk kemaslahatan umat.',
+                'faculty_id' => 'sains',
                 'password' => Hash::make('dosen123'),
             ],
             [
                 'name' => 'Siti Maryam',
                 'avatar' => 'https://picsum.photos/seed/maryam/100/100',
-                'role' => 'Mahasiswa',
+                'role' => 'student',
                 'student_id' => 'UC2024002',
                 'email' => 'siti.m@student.ulumcampus.com',
                 'phone' => '081234567896',
@@ -116,7 +131,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Abdullah',
                 'avatar' => 'https://picsum.photos/seed/abdullah/100/100',
-                'role' => 'Mahasiswa',
+                'role' => 'student',
                 'student_id' => 'UC2024003',
                 'email' => 'abdullah@student.ulumcampus.com',
                 'phone' => '081234567897',
@@ -129,6 +144,50 @@ class UserSeeder extends Seeder
                 'badges' => json_encode([]),
                 'password' => Hash::make('mahasiswa123'),
                 'enrollment_year' => 2023,
+            ],
+            [
+                'name' => 'Dr. Abdullah Musnad',
+                'avatar' => 'https://picsum.photos/seed/abdullah/100/100',
+                'role' => 'dosen',
+                'student_id' => 'DSN202002',
+                'email' => 'abdullah.musnad@dosen.ulumcampus.com',
+                'phone' => '081234567898',
+                'bio' => 'Pakar ilmu hadis dan rijal al-hadis. Meraih gelar doktor dari Universitas Islam Madinah dengan spesialisasi kritik sanad dan matan.',
+                'faculty_id' => 'ushuluddin',
+                'password' => Hash::make('dosen123'),
+            ],
+            [
+                'name' => 'Dr. Halimah Sa\'diyah, M.E.I',
+                'avatar' => 'https://picsum.photos/seed/halimah/100/100',
+                'role' => 'dosen',
+                'student_id' => 'DSN202003',
+                'email' => 'halimah.sadiyah@dosen.ulumcampus.com',
+                'phone' => '081234567900',
+                'bio' => 'Pakar perbankan syariah dan ekonomi Islam. Lulusan S2 Ekonomi Islam dari Universitas Al-Azhar dan S3 dari International Islamic University Malaysia.',
+                'faculty_id' => 'ekonomi',
+                'password' => Hash::make('dosen123'),
+            ],
+            [
+                'name' => 'Prof. Dr. Tariq An-Nawawi',
+                'avatar' => 'https://picsum.photos/seed/tariq/100/100',
+                'role' => 'dosen',
+                'student_id' => 'DSN202004',
+                'email' => 'tariq.annawawi@dosen.ulumcampus.com',
+                'phone' => '081234567901',
+                'bio' => 'Sejarawan Islam dan pakar peradaban Islam. Guru besar sejarah dengan pengalaman penelitian lebih dari 25 tahun.',
+                'faculty_id' => 'adab',
+                'password' => Hash::make('dosen123'),
+            ],
+            [
+                'name' => 'Dr. Hana Al-Ghazali, M.Psi.',
+                'avatar' => 'https://picsum.photos/seed/hana/100/100',
+                'role' => 'dosen',
+                'student_id' => 'DSN202005',
+                'email' => 'hana.alghazali@dosen.ulumcampus.com',
+                'phone' => '081234567902',
+                'bio' => 'Psikolog klinis dan peneliti psikologi Islam. Menggabungkan pendekatan psikologi modern dengan nilai-nilai Islam.',
+                'faculty_id' => 'psikologi',
+                'password' => Hash::make('dosen123'),
             ]
         ];
 

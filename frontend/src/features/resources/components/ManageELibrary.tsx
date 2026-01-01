@@ -62,10 +62,13 @@ export const ManageELibrary: React.FC<ManageELibraryProps> = ({ resources, onCre
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredResources = useMemo(() => {
-        return resources.filter(resource =>
-            resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            resource.author.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        // Filter out any malformed resources and then filter by search term
+        return resources
+            .filter(resource => resource && resource.title && resource.author)
+            .filter(resource =>
+                resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                resource.author.toLowerCase().includes(searchTerm.toLowerCase())
+            );
     }, [resources, searchTerm]);
     
     const handleAddNew = () => {

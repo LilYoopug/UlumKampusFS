@@ -50,6 +50,12 @@ export interface Faculty {
     description: string;
     majors: Major[];
     createdAt?: string;
+    is_active?: boolean;
+    dean_name?: string;
+    email?: string;
+    phone?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export interface CourseModule {
@@ -77,7 +83,7 @@ export interface Course {
   id: string;
   title: string;
  instructor: string;
- instructorId?: string;
+ instructorId?: number | string;
   facultyId: string;
   majorId?: string;
   sks: number;
@@ -140,6 +146,11 @@ export interface DiscussionPost {
   authorId: string; // studentId or equivalent
   createdAt: string;
   content: string;
+  isSolution?: boolean;
+  // Additional fields populated from API response
+  authorName?: string;
+  authorAvatar?: string;
+  authorRole?: string;
 }
 
 export interface DiscussionThread {

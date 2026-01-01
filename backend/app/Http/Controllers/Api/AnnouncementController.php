@@ -56,13 +56,12 @@ class AnnouncementController extends ApiController
             $query->published()->active();
         }
 
-        $perPage = $request->input('per_page', 15);
         $announcements = $query->with(['course', 'faculty', 'creator'])
             ->ordered()
             ->latest('created_at')
-            ->paginate($perPage);
+            ->get();
 
-        return $this->paginated(AnnouncementResource::collection($announcements));
+        return $this->success(AnnouncementResource::collection($announcements));
     }
 
     /**
@@ -73,6 +72,9 @@ class AnnouncementController extends ApiController
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
         $validated['published_at'] = $validated['is_published'] ?? false ? now() : null;
+        
+        // Generate a unique ID for the announcement
+        $validated['id'] = 'AN' . str_pad((string) Announcement::count() + 1, 3, '0', STR_PAD_LEFT);
 
         $announcement = Announcement::create($validated);
         return $this->created(new AnnouncementResource($announcement), 'Announcement created successfully');

@@ -28,7 +28,7 @@ class PaymentHistoryResource extends JsonResource
             'amount' => $this->amount,
             'date' => $this->payment_date,
             'status' => $this->status,
-            'paymentMethod' => $this->paymentMethod?->name ?? 'Unknown',
+            'paymentMethod' => $this->paymentMethod?->method_id ?? 'Unknown',
         ];
     }
 }

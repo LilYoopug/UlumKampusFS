@@ -16,7 +16,7 @@ class CourseRequest extends FormRequest
     public function authorize(): bool
     {
         $user = auth()->user();
-        return $user && in_array($user->role, ['admin', 'faculty']);
+        return $user && in_array($user->role, ['admin', 'faculty', 'prodi_admin']);
     }
 
     /**
@@ -30,9 +30,15 @@ class CourseRequest extends FormRequest
         $courseId = $this->route('course') ?? $this->route('id');
 
         return [
-            'faculty_id' => ['required', 'integer', 'exists:faculties,id'],
+            'id' => [
+                'required',
+                'string',
+                'max:50',
+                $isUpdate ? Rule::unique('courses')->ignore($courseId) : 'unique:courses',
+            ],
+            'faculty_id' => ['required', 'string', 'exists:faculties,id'],
             'major_id' => ['required', 'string', 'exists:majors,code'],
-            'instructor_id' => ['required', 'integer', 'exists:users,id'],
+            'instructor_id' => ['nullable', 'integer', 'exists:users,id'],
             'code' => [
                 'required',
                 'string',

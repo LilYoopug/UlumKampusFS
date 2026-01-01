@@ -3,6 +3,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { useDarkMode } from './hooks/useDarkMode';
 import { Page, User, Course, Assignment, LibraryResource, Announcement, NotificationLink, UserRole, AnnouncementCategory } from './types';
 import { mapBackendRoleToFrontend } from './utils/roleMapper';
+import { apiService } from './services/apiService';
 import {
   ALL_USERS,
   COURSES_DATA,
@@ -87,7 +88,7 @@ function App() {
     const [users, setUsers] = useState<User[]>(ALL_USERS);
     const [courses, setCourses] = useState<Course[]>(COURSES_DATA);
     const [assignments, setAssignments] = useState<Assignment[]>(ASSIGNMENTS);
-    const [elibraryResources, setElibraryResources] = useState<LibraryResource[]>(INITIAL_ELIBRARY_RESOURCES);
+    const [elibraryResources, setElibraryResources] = useState<LibraryResource[]>([]);
     const [myLibrary, setMyLibrary] = useState<string[]>([]);
     const [announcements, setAnnouncements] = useState<Announcement[]>(ANNOUNCEMENTS_DATA);
     const [notifications, setNotifications] = useState<any[]>(NOTIFICATIONS_DATA);
@@ -109,18 +110,36 @@ function App() {
         setIsLoading(true);
         setError(null);
         try {
-            // Use mock data from constants instead of API calls
-            setUsers(ALL_USERS);
-            setCourses(COURSES_DATA);
-            setAssignments(ASSIGNMENTS);
-            setAnnouncements(ANNOUNCEMENTS_DATA);
-            setElibraryResources(INITIAL_ELIBRARY_RESOURCES);
-            setNotifications(NOTIFICATIONS_DATA);
+            // Use API service to fetch real data from backend
+            const [usersData, coursesData, assignmentsData, announcementsData, elibraryData, notificationsData, calendarData] = await Promise.all([
+                apiService.getUsers(),
+                apiService.getCourses(),
+                apiService.getAssignments(),
+                apiService.getAnnouncements(),
+                apiService.getLibraryResources(),
+                apiService.getNotifications(),
+                apiService.getAcademicCalendarEvents()
+            ]);
+            
+            const usersList = usersData.data || usersData;
+            console.log('Fetched users from API:', usersList);
+            console.log('First user has id?', usersList[0]?.hasOwnProperty('id'));
+            
+            setUsers(usersList);
+            setCourses(coursesData.data || coursesData);
+            setAssignments(assignmentsData.data || assignmentsData);
+            setAnnouncements(announcementsData.data || announcementsData);
+            setElibraryResources(elibraryData.data || elibraryData);
+            setNotifications(notificationsData.data || notificationsData);
+            setCalendarEvents(calendarData.data || calendarData);
             setDiscussionThreads(DISCUSSION_THREADS);
-            setCalendarEvents(ACADEMIC_CALENDAR_EVENTS);
             setFaculties(FACULTIES);
         } catch (err) {
+            console.error('Failed to fetch data:', err);
             setError(err instanceof Error ? err.message : 'Failed to load data');
+            // Fallback to mock data if API fails
+            console.warn('Falling back to mock data - this does not have id fields!');
+            setUsers(ALL_USERS);
         } finally {
             setIsLoading(false);
         }
@@ -130,28 +149,61 @@ function App() {
         setIsLoading(true);
         setError(null);
         try {
-            // Mock authentication - find user by email and validate password
-            const user = ALL_USERS.find(u => u.email === email);
-            const expectedPassword = USER_PASSWORDS[email];
-
-             if (user && expectedPassword && password === expectedPassword) {
-                 localStorage.setItem('auth_token', 'mock-token-' + Date.now());
-                 localStorage.setItem('current_user_id', user.studentId);
-                 setCurrentUser(user);
-                 await fetchData();
-                 setView('dashboard');
-             } else {
-                 throw new Error('Invalid credentials');
-             }
+            // Try to authenticate via API first
+            const response = await apiService.login(email, password);
+            
+            if (response.data.user && response.data.token) {
+                localStorage.setItem('auth_token', response.data.token);
+                localStorage.setItem('current_user_id', response.data.user.studentId || response.data.user.id || '');
+                setCurrentUser(response.data.user);
+                await fetchData();
+                
+                // MABA users go to registration page, others go to dashboard
+                if (response.data.user.role === 'MABA') {
+                    setView('registrasi');
+                } else {
+                    setView('dashboard');
+                }
+            } else {
+                throw new Error('Invalid response from server');
+            }
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Login failed');
-            alert('Login failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+            // Fallback to mock authentication if API fails
+            console.error('API login failed, trying mock:', err);
+            try {
+                const user = ALL_USERS.find(u => u.email === email);
+                const expectedPassword = USER_PASSWORDS[email];
+
+                if (user && expectedPassword && password === expectedPassword) {
+                    localStorage.setItem('auth_token', 'mock-token-' + Date.now());
+                    localStorage.setItem('current_user_id', user.studentId);
+                    setCurrentUser(user);
+                    await fetchData();
+                    
+                    // MABA users go to registration page, others go to dashboard
+                    if (user.role === 'MABA') {
+                        setView('registrasi');
+                    } else {
+                        setView('dashboard');
+                    }
+                } else {
+                    throw new Error('Invalid credentials');
+                }
+            } catch (mockErr) {
+                setError(mockErr instanceof Error ? mockErr.message : 'Login failed');
+                alert('Login failed: ' + (mockErr instanceof Error ? mockErr.message : 'Unknown error'));
+            }
         } finally {
             setIsLoading(false);
         }
     };
     
     const handleLogout = async () => {
+         try {
+             await apiService.logout();
+         } catch (err) {
+             console.error('Logout error:', err);
+         }
          setCurrentUser(null);
          setUsers([]);
          setCourses([]);
@@ -170,43 +222,81 @@ function App() {
 
     const handleSetCurrentUser = (user: User) => {
         setCurrentUser(user);
-        setView('dashboard');
+        
+        // MABA users go to registration page, others go to dashboard
+        if (user.role === 'MABA') {
+            setView('registrasi');
+        } else {
+            setView('dashboard');
+        }
     }
     
     // Data modification functions
-    const handleSaveCourse = (courseData: Course) => {
-        setCourses(prev => {
-            const exists = prev.some(c => c.id === courseData.id);
+    const handleSaveCourse = async (courseData: Course) => {
+        try {
+            const exists = courses.some(c => c.id === courseData.id);
+            let savedCourse;
+            
             if (exists) {
-                return prev.map(c => (c.id === courseData.id ? { ...c, ...courseData } : c));
+                savedCourse = await apiService.updateCourse(courseData.id, courseData);
+                setCourses(prev => prev.map(c => (c.id === courseData.id ? savedCourse : c)));
+            } else {
+                savedCourse = await apiService.createCourse(courseData);
+                setCourses(prev => [...prev, savedCourse]);
             }
-            const newCourse = { ...courseData };
-            if (currentUser) {
-                newCourse.instructor = currentUser.name;
-                newCourse.instructorAvatarUrl = currentUser.avatarUrl;
-            }
-            return [...prev, newCourse];
-        });
-        navigateTo('courses');
+            navigateTo('courses');
+        } catch (err) {
+            console.error('Failed to save course:', err);
+            alert('Failed to save course: ' + (err instanceof Error ? err.message : 'Unknown error'));
+        }
     };
     
-    const handleUpdateAssignment = (updatedAssignment: Assignment) => {
-        setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
+    const handleUpdateAssignment = async (updatedAssignment: Assignment) => {
+        try {
+            await apiService.updateAssignment(updatedAssignment.id, updatedAssignment);
+            setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
+        } catch (err) {
+            console.error('Failed to update assignment:', err);
+            alert('Failed to update assignment: ' + (err instanceof Error ? err.message : 'Unknown error'));
+        }
     };
 
-    const handleCreateAssignment = (newAssignmentData: Omit<Assignment, 'id' | 'submissions'>) => {
-        const newAssignment: Assignment = {
-            ...newAssignmentData,
-            id: `ASG-${Date.now()}`,
-            submissions: [],
-        };
-        setAssignments(prev => [newAssignment, ...prev]);
+    const handleCreateAssignment = async (newAssignmentData: Omit<Assignment, 'id' | 'submissions'>) => {
+        try {
+            const newAssignment = await apiService.createAssignment(newAssignmentData);
+            setAssignments(prev => [newAssignment, ...prev]);
+        } catch (err) {
+            console.error('Failed to create assignment:', err);
+            alert('Failed to create assignment: ' + (err instanceof Error ? err.message : 'Unknown error'));
+        }
     };
     
-    const handleUpdateUser = (updatedUser: User) => {
-        setUsers(prev => prev.map(u => u.studentId === updatedUser.studentId ? updatedUser : u));
-        if (currentUser && currentUser.studentId === updatedUser.studentId) {
-            setCurrentUser(updatedUser);
+    const handleUpdateUser = async (updatedUser: User) => {
+        try {
+            // Always use the database id for updates, not studentId
+            // This ensures the backend validation ignore() rule works correctly
+            const userId = updatedUser.id || '';
+            
+            console.log('handleUpdateUser called with:', {
+                user: updatedUser,
+                userId: userId,
+                studentId: updatedUser.studentId,
+                badges: updatedUser.badges
+            });
+            
+            if (!userId) {
+                console.error('User ID is missing from:', updatedUser);
+                throw new Error('User ID is required for updates. Backend requires database id field, not studentId.');
+            }
+            
+            await apiService.updateUser(userId, updatedUser);
+            setUsers(prev => prev.map(u => u.studentId === updatedUser.studentId ? updatedUser : u));
+            if (currentUser && currentUser.studentId === updatedUser.studentId) {
+                setCurrentUser(updatedUser);
+            }
+        } catch (err) {
+            console.error('Failed to update user:', err);
+            alert('Failed to update user: ' + (err instanceof Error ? err.message : 'Unknown error'));
         }
     };
 
@@ -230,26 +320,42 @@ function App() {
         }
     }, [currentUser, view]);
 
+    // Fetch library resources when accessing manage-elibrary page
+    useEffect(() => {
+        if (currentUser && view === 'manage-elibrary') {
+            const fetchLibraryResources = async () => {
+                try {
+                    const response = await apiService.getLibraryResources();
+                    setElibraryResources(response.data);
+                } catch (err) {
+                    console.error('Failed to fetch library resources:', err);
+                }
+            };
+            fetchLibraryResources();
+        }
+    }, [view, currentUser]);
+
     useEffect(() => {
         const token = localStorage.getItem('auth_token');
-        const storedUserId = localStorage.getItem('current_user_id');
         if (token && !currentUser) {
             const fetchCurrentUser = async () => {
                 try {
-                    // Mock current user retrieval from token and stored user ID
-                    let mockUser = null;
-                    if (storedUserId) {
-                        // Find the user by the stored ID
-                        mockUser = ALL_USERS.find(u => u.studentId === storedUserId);
-                    } else {
-                        // Fallback to first user if no stored ID
-                        mockUser = ALL_USERS[0];
-                    }
-                    if (mockUser) {
-                        setCurrentUser(mockUser);
+                    // Try to fetch current user from backend using the token
+                    const response = await apiService.getCurrentUser();
+                    if (response.data) {
+                        setCurrentUser(response.data);
+                        localStorage.setItem('current_user_id', response.data.id || response.data.studentId || '');
                         await fetchData();
+                        
+                        // Redirect based on role after fetching user data
+                        if (response.data.role === 'MABA') {
+                            setView('registrasi');
+                        } else {
+                            setView('dashboard');
+                        }
                     }
                 } catch (error) {
+                    console.error('Failed to fetch current user:', error);
                     // If token is invalid, remove it
                     localStorage.removeItem('auth_token');
                     localStorage.removeItem('current_user_id');
@@ -268,7 +374,7 @@ function App() {
                     case 'Mahasiswa': return <Dashboard currentUser={currentUser} courses={courses} onSelectCourse={(course) => navigateTo('course-detail', { course })} navigateTo={navigateTo} announcements={announcements} />;
                     case 'Dosen': return <DosenDashboard onSelectCourse={(course) => navigateTo('course-detail', { course })} courses={courses} currentUser={currentUser} />;
                     case 'Prodi Admin': return <ProdiDashboard currentUser={currentUser} courses={courses} users={users} />;
-                    case 'Manajemen Kampus': return <ManajemenDashboard faculties={faculties} currentUser={currentUser} users={users} navigateTo={navigateTo} />;
+                    case 'Manajemen Kampus': return <ManajemenDashboard currentUser={currentUser} navigateTo={navigateTo} />;
                     case 'Super Admin': return <SuperAdminDashboard users={users} onCreateUser={async (user) => { 
                 setUsers(prev => [...prev, user]); 
                 fetchData(); 
@@ -282,56 +388,69 @@ function App() {
                     default: return <RolePageNotAvailable />;
                 }
             case 'calendar': return <Calendar courses={courses} currentUser={currentUser} assignments={assignments} />;
-            case 'courses': return <CourseCatalog courses={courses} currentUser={currentUser} onSelectCourse={(course) => navigateTo('course-detail', { course })} onEditCourse={(course) => navigateTo('edit-course', { course })} navigateTo={navigateTo} />;
+            case 'courses': return <CourseCatalog currentUser={currentUser} onSelectCourse={(course) => navigateTo('course-detail', { course })} onEditCourse={(course) => navigateTo('edit-course', { course })} navigateTo={navigateTo} />;
             case 'course-detail': 
                 const courseToDisplay = viewParams.course || courses.find(c => c.id === viewParams.courseId);
                 return <CourseDetail course={courseToDisplay} onBack={() => navigateTo(viewParams?.from || 'courses')} initialParams={viewParams} currentUser={currentUser} assignments={assignments} onCreateAssignment={handleCreateAssignment} onUpdateAssignment={handleUpdateAssignment} />;
             case 'create-course': return <CreateCourse onSave={handleSaveCourse} onCancel={() => navigateTo('courses')} />;
             case 'edit-course': return <CreateCourse onSave={handleSaveCourse} onCancel={() => navigateTo('courses')} initialData={viewParams.course} />;
             case 'grades': return <Grades courses={courses} currentUser={currentUser} />;
-            case 'gradebook': return <Gradebook courses={courses} assignments={assignments} currentUser={currentUser} users={users} onUpdateUser={handleUpdateUser} onSelectAssignment={(assignment) => navigateTo('course-detail', { course: courses.find(c => c.id === assignment.courseId), initialTab: 'assignments' })} />;
+            case 'gradebook': return <Gradebook currentUser={currentUser} users={users} onUpdateUser={handleUpdateUser} onSelectAssignment={(assignment) => navigateTo('course-detail', { course: courses.find(c => c.id === assignment.courseId), initialTab: 'assignments' })} />;
             case 'assignments': return <AssignmentsPage courses={courses} currentUser={currentUser} onSelectAssignment={(assignment) => navigateTo('course-detail', { course: courses.find(c => c.id === assignment.courseId), initialTab: 'assignments' })} />;
             case 'video-lectures': return <VideoLectures courses={courses} currentUser={currentUser} onSelectCourse={(course) => navigateTo('course-detail', { course })} />;
             case 'elibrary': return <ELibrary resources={elibraryResources} myLibrary={myLibrary} onToggleLibrary={(id) => setMyLibrary(p => p.includes(id) ? p.filter(i => i !== id) : [...p, id])} />;
             case 'manage-elibrary': return <ManageELibrary resources={elibraryResources} onCreate={async (data) => { 
-                setElibraryResources(prev => [...prev, data]); 
-                fetchData(); 
+                try {
+                    const newResource = await apiService.createLibraryResource(data);
+                    setElibraryResources(prev => [...prev, newResource]); 
+                } catch (err) {
+                    console.error('Failed to create resource:', err);
+                    alert('Failed to create resource');
+                }
             }} onUpdate={async (data) => { 
-                setElibraryResources(prev => prev.map(r => r.id === data.id ? data : r)); 
-                fetchData(); 
+                try {
+                    await apiService.updateLibraryResource(data.id, data);
+                    setElibraryResources(prev => prev.map(r => r.id === data.id ? data : r)); 
+                } catch (err) {
+                    console.error('Failed to update resource:', err);
+                    alert('Failed to update resource');
+                }
             }} onDelete={async (id) => { 
-                setElibraryResources(prev => prev.filter(r => r.id !== id)); 
-                fetchData(); 
+                try {
+                    await apiService.deleteLibraryResource(id);
+                    setElibraryResources(prev => prev.filter(r => r.id !== id)); 
+                } catch (err) {
+                    console.error('Failed to delete resource:', err);
+                    alert('Failed to delete resource');
+                }
             }} />;
             case 'profile': return <Profile courses={courses} currentUser={currentUser} navigateTo={navigateTo} />;
             case 'settings': return <Settings isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} currentUser={currentUser} />;
             case 'worship': return <Worship />;
             case 'help': return <Help currentUser={currentUser} />;
-            case 'notifications': return <NotificationsPage onNotificationClick={(link: NotificationLink) => navigateTo(link.page, link.params)} notifications={notifications} onMarkAsRead={async (id) => { setNotifications(prev => prev.map(n => n.id === id ? {...n, isRead: true} : n)); }} />;
+            case 'notifications': return <NotificationsPage onNotificationClick={(link: NotificationLink) => navigateTo(link.page, link.params)} notifications={notifications} onMarkAsRead={async (id) => { 
+                try {
+                    await apiService.markNotificationAsRead(id);
+                    setNotifications(prev => prev.map(n => n.id === id ? {...n, isRead: true} : n)); 
+                } catch (err) {
+                    console.error('Failed to mark notification as read:', err);
+                }
+            }} />;
             case 'announcements': return <AllAnnouncementsPage initialAnnouncementId={viewParams?.announcementId} currentUser={currentUser} announcements={announcements} />;
 case 'prodi-courses': 
     if (currentUser?.role === 'Manajemen Kampus') {
-        return <ManagementCoursesPage courses={courses} />;
+        return <ManagementCoursesPage />;
     } else {
-        return <ProdiCoursesPage courses={courses} onCreateCourse={async (course) => { setCourses(prev => [...prev, course]); }} onUpdateCourse={async (course) => { setCourses(prev => prev.map(c => c.id === course.id ? course : c)); }} onDeleteCourse={async (id) => { setCourses(prev => prev.filter(c => c.id !== id)); }} />;
+        return <ProdiCoursesPage />;
     }
-            case 'prodi-students': return <ProdiStudentsPage users={users} />;
-            case 'prodi-lecturers': return <ProdiLecturersPage users={users} courses={courses} />;
+            case 'prodi-students': return <ProdiStudentsPage />;
+            case 'prodi-lecturers': return <ProdiLecturersPage />;
             case 'registrasi': return <RegistrasiPage />;
             case 'administrasi': return <AdministrasiPage currentUser={currentUser} />;
  case 'management-administration': return <ManagementAdministrationPage currentUser={currentUser} />;
             case 'student-registration': return <StudentRegistrationPage currentUser={currentUser} />;
 
-case 'user-management': return <UserManagementPage users={users} onCreateUser={async (user) => { 
-                  setUsers(prev => [...prev, user]); 
-                  fetchData(); 
-              }} onUpdateUser={async (user) => { 
-                  setUsers(prev => prev.map(u => u.studentId === user.studentId ? user : u)); 
-                  fetchData(); 
-              }} onDeleteUser={async (id) => { 
-                  setUsers(prev => prev.filter(u => u.studentId !== id)); 
-                  fetchData(); 
-              }} />;
+            case 'user-management': return <UserManagementPage />;
               case 'manajemen-fakultas': return <ManajemenFakultasPage faculties={faculties} setFaculties={setFaculties} users={users} />;
               default: return <PageNotFound />;
         }
@@ -347,28 +466,23 @@ case 'user-management': return <UserManagementPage users={users} onCreateUser={a
                     return <Login onLogin={handleLogin} onNavigateToRegister={() => navigateTo('register')} onBack={() => navigateTo('home')} />;
                 case 'register':
                     return <Register onRegister={async (data) => {
-                        try {
-                            // Mock registration - add user to mock data
-                            const newUser = {
-                                ...data,
-                                studentId: 'UC' + Date.now().toString().slice(-5),
-                                avatarUrl: 'https://picsum.photos/seed/' + data.name.split(' ')[0].toLowerCase() + '/100/100',
-                                role: 'Mahasiswa',
-                                joinDate: new Date().toISOString().split('T')[0],
-                                bio: '',
-                                studentStatus: 'Aktif',
-                                gpa: 0,
-                                totalSks: 0
-                            };
-                             setUsers(prev => [...prev, newUser]);
-                             // Automatically log in the new user
-                             localStorage.setItem('auth_token', 'mock-token-' + Date.now());
-                             localStorage.setItem('current_user_id', newUser.studentId);
-                             setCurrentUser(newUser);
-                             await fetchData();
-                             setView('dashboard');
-                        } catch (error) {
-                            alert('Registration failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                        // Try backend API registration
+                        const response = await apiService.register({
+                            name: data.name,
+                            email: data.email,
+                            phone_number: data.phoneNumber, // Frontend uses phone_number
+                            password: data.password,
+                            password_confirmation: data.password_confirmation
+                        });
+
+                        if (response.data.user && response.data.token) {
+                            localStorage.setItem('auth_token', response.data.token);
+                            localStorage.setItem('current_user_id', response.data.user.id || response.data.user.studentId || '');
+                            setCurrentUser(response.data.user);
+                            await fetchData();
+                            setView('dashboard');
+                        } else {
+                            throw new Error('Invalid response from server');
                         }
                     }} onNavigateToLogin={() => navigateTo('login')} onBack={() => navigateTo('home')} />;
                 case 'public-catalog':

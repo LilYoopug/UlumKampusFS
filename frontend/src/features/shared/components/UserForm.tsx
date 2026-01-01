@@ -18,6 +18,8 @@ export const UserForm: React.FC<UserFormProps> = ({ onSave, onCancel, initialDat
     const [role, setRole] = useState<UserRole>('Mahasiswa');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [passwordError, setPasswordError] = useState('');
 
     useEffect(() => {
         if (initialData) {
@@ -26,24 +28,48 @@ export const UserForm: React.FC<UserFormProps> = ({ onSave, onCancel, initialDat
             setRole(initialData.role);
             setPhoneNumber(initialData.phoneNumber || '');
             setPassword(''); // Always reset password field when editing
+            setPasswordConfirmation('');
+            setPasswordError('');
         } else {
             setName('');
             setEmail('');
             setRole('Mahasiswa');
             setPhoneNumber('');
             setPassword('');
+            setPasswordConfirmation('');
+            setPasswordError('');
         }
     }, [initialData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validate password confirmation for new users or when password is being changed
+        if (!isEditMode || (password && password.trim() !== '')) {
+            if (password !== passwordConfirmation) {
+                setPasswordError('Password tidak cocok');
+                return;
+            }
+            if (password.length < 8) {
+                setPasswordError('Password minimal 8 karakter');
+                return;
+            }
+            setPasswordError('');
+        } else if (password !== passwordConfirmation) {
+            // Clear error if both fields are empty (not changing password)
+            setPasswordError('');
+        }
+        
         const userData = {
             ...initialData,
             name,
             email,
             role,
             phoneNumber,
-            ...(password && password.trim() !== '' && { password }),
+            ...(password && password.trim() !== '' && { 
+                password,
+                password_confirmation: passwordConfirmation 
+            }),
         } as User;
         onSave(userData);
     };
@@ -68,7 +94,7 @@ export const UserForm: React.FC<UserFormProps> = ({ onSave, onCancel, initialDat
                         id="user-name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border-slate-300 dark:border-slate-60 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-emerald-500"
+                        className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-emerald-500"
                         placeholder="Masukkan nama lengkap"
                         required
                     />
@@ -118,10 +144,34 @@ export const UserForm: React.FC<UserFormProps> = ({ onSave, onCancel, initialDat
                         type="password"
                         id="user-password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            setPasswordError(''); // Clear error when typing
+                        }}
                         className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-emerald-500"
                         placeholder={isEditMode ? "Kosongkan jika tidak ingin diubah" : "Masukkan password"}
+                        required={!isEditMode}
                     />
+                </div>
+                <div>
+                    <label htmlFor="user-password-confirmation" className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">
+                        {isEditMode ? 'Konfirmasi Password (Kosongkan jika tidak ingin diubah)' : 'Konfirmasi Password'}
+                    </label>
+                    <input
+                        type="password"
+                        id="user-password-confirmation"
+                        value={passwordConfirmation}
+                        onChange={(e) => {
+                            setPasswordConfirmation(e.target.value);
+                            setPasswordError(''); // Clear error when typing
+                        }}
+                        className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-emerald-500"
+                        placeholder={isEditMode ? "Kosongkan jika tidak ingin diubah" : "Ulangi password"}
+                        required={!isEditMode}
+                    />
+                    {passwordError && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{passwordError}</p>
+                    )}
                 </div>
                 <div className="flex justify-end items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-700">
                     <button

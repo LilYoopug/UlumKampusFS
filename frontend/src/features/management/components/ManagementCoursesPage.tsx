@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Course } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
+import { apiService } from '@/services/apiService';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {
@@ -11,13 +12,32 @@ declare global {
     }
 }
 
-interface ManagementCoursesPageProps {
-    courses: Course[];
-}
-
-export const ManagementCoursesPage: React.FC<ManagementCoursesPageProps> = ({ courses }) => {
+export const ManagementCoursesPage: React.FC = () => {
     const { t } = useLanguage();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Fetch courses from backend API
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+    const fetchCourses = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await apiService.getCourses();
+            const coursesList = response.data || [];
+            setCourses(coursesList);
+        } catch (err) {
+            console.error('Error fetching courses:', err);
+            setError('Failed to load courses. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filteredCourses = useMemo(() => {
         return courses.filter(course =>
@@ -66,12 +86,31 @@ export const ManagementCoursesPage: React.FC<ManagementCoursesPageProps> = ({ co
 
     return (
         <div className="space-y-8">
+            {error && (
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg">
+                    <div className="flex items-center">
+                        <Icon className="w-5 h-5 mr-2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </Icon>
+                        {error}
+                    </div>
+                </div>
+            )}
+
             <div>
                 <h1 className="text-3xl font-bold text-slate-800 dark:text-white">{t('prodi_courses_title')}</h1>
                 <p className="text-slate-500 dark:text-slate-400 mt-1">{t('prodi_courses_subtitle')}</p>
             </div>
 
             <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
+                {loading && courses.length === 0 ? (
+                    <div className="flex justify-center items-center py-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-emerald-600"></div>
+                    </div>
+                ) : (
+                    <>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div className="relative flex-grow w-full sm:w-auto">
                         <Icon className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
@@ -126,6 +165,8 @@ export const ManagementCoursesPage: React.FC<ManagementCoursesPageProps> = ({ co
                         </tbody>
                     </table>
                 </div>
+                    </>
+                )}
             </div>
         </div>
     );

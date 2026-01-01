@@ -3,7 +3,7 @@ import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Announcement, AnnouncementCategory, TranslationKey, User, UserRole } from '@/types';
 import { timeAgo } from '@/utils/time';
-import { ANNOUNCEMENTS_DATA } from '@/constants';
+import { announcementAPI } from '@/services/apiService';
 
 interface AnnouncementsPageProps {
     initialAnnouncementId?: string;
@@ -34,18 +34,19 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({ initialAnn
     const { t } = useLanguage();
     const announcementRefs = useRef<Record<string, HTMLDivElement | null>>({});
     
-    const [announcements, setAnnouncements] = useState<Announcement[]>(propAnnouncements || []);
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+    const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [newTitle, setNewTitle] = useState('');
     const [newContent, setNewContent] = useState('');
     const [newCategory, setNewCategory] = useState<AnnouncementCategory>('Akademik');
+    const [submitting, setSubmitting] = useState(false);
 
     const allowedRoles: UserRole[] = ['Dosen', 'Prodi Admin', 'Manajemen Kampus', 'Super Admin'];
     const canCreate = allowedRoles.includes(currentUser.role);
 
     useEffect(() => {
-        // Initialize with prop announcements when component mounts or prop changes
-        setAnnouncements(propAnnouncements || []);
+        fetchAnnouncements();
 
         if (initialAnnouncementId && announcementRefs.current[initialAnnouncementId]) {
             setTimeout(() => {
@@ -59,26 +60,59 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({ initialAnn
                 }
             }, 10);
         }
-    }, [initialAnnouncementId, propAnnouncements]);
+    }, [initialAnnouncementId]);
+
+    const fetchAnnouncements = async () => {
+        try {
+            setLoading(true);
+            const response = await announcementAPI.getAll();
+            // Handle paginated response
+            const data = Array.isArray(response.data) 
+                ? response.data 
+                : (response.data?.data || []);
+            setAnnouncements(data);
+        } catch (error) {
+            console.error('Error fetching announcements:', error);
+            // Fallback to prop announcements if API fails
+            if (propAnnouncements && propAnnouncements.length > 0) {
+                setAnnouncements(propAnnouncements);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
     
     const handleFormSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (!newTitle.trim() || !newContent.trim()) return;
         
-        const newAnnouncementData = {
-            title: newTitle,
-            content: newContent,
-            category: newCategory,
-            authorName: currentUser.name,
-            timestamp: new Date().toISOString(),
-        };
-        
-        // Add new announcement to the list (in-memory only for mock)
-        setAnnouncements(prev => [newAnnouncementData as Announcement, ...prev]);
-        setShowForm(false);
-        setNewTitle('');
-        setNewContent('');
-        setNewCategory('Akademik');
+        setSubmitting(true);
+        try {
+            const announcementData = {
+                title: newTitle,
+                content: newContent,
+                category: newCategory,
+                target_audience: 'all',
+                priority: 'normal',
+                is_published: true,
+            };
+            
+            const response = await announcementAPI.create(announcementData);
+            
+            // Add new announcement to the list
+            setAnnouncements(prev => [response.data, ...prev]);
+            setShowForm(false);
+            setNewTitle('');
+            setNewContent('');
+            setNewCategory('Akademik');
+            
+            alert('Pengumuman berhasil dibuat!');
+        } catch (error) {
+            console.error('Error creating announcement:', error);
+            alert('Gagal membuat pengumuman. Silakan coba lagi.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -160,8 +194,22 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({ initialAnn
                 </div>
             )}
 
+            {loading ? (
+                <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-emerald-600"></div>
+                </div>
+            ) : (
             <div className="space-y-6">
-                {announcements.map(announcement => (
+                {announcements.length === 0 ? (
+                    <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                        <Icon className="w-16 h-16 mx-auto mb-4 opacity-50">
+                            <path d="M9 7H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h4l5 5V2L9 7z"/><path d="M15.5 12a4.5 4.5 0 0 0-4.5-4.5v9a4.5 4.5 0 0 0 4.5-4.5z"/>
+                        </Icon>
+                        <p className="text-lg">{t('no_announcements')}</p>
+                        <p className="text-sm mt-1">Belum ada pengumuman yang tersedia</p>
+                    </div>
+                ) : (
+                    announcements.map(announcement => (
                     <div
                         key={announcement.id}
                         ref={el => (announcementRefs.current[announcement.id] = el)}
@@ -184,8 +232,9 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({ initialAnn
                             {announcement.content}
                         </p>
                     </div>
-                ))}
+                )))}
             </div>
+            )}
         </div>
     );
 };

@@ -26,8 +26,28 @@ export const Register: React.FC<RegisterProps> = ({ onRegister, onNavigateToLogi
         setError('');
         try {
             await onRegister({ name, email, phoneNumber, password, password_confirmation: confirmPassword });
-        } catch (err) {
-            setError('Registration failed');
+        } catch (err: any) {
+            // Handle backend validation errors
+            let errorMessage = 'Registration failed. Please try again.';
+            
+            if (err.response?.data) {
+                const errorData = err.response.data;
+                
+                // Laravel validation errors format: { message: "...", errors: { field: ["error"] } }
+                if (errorData.errors) {
+                    // Get the first validation error
+                    const firstErrorField = Object.keys(errorData.errors)[0];
+                    if (firstErrorField && errorData.errors[firstErrorField]) {
+                        errorMessage = errorData.errors[firstErrorField][0];
+                    }
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
+            setError(errorMessage);
         }
     };
     

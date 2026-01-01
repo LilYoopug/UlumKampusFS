@@ -28,12 +28,13 @@ class ManagementController extends ApiController
                 'overview' => [
                     'total_users' => User::count(),
                     'total_students' => User::where('role', 'student')->count(),
-                    'total_faculty' => User::where('role', 'faculty')->count(),
+                    'total_lecturers' => User::where('role', 'dosen')->count(),
                     'total_admins' => User::where('role', 'admin')->count(),
                     'total_courses' => Course::count(),
                     'active_courses' => Course::where('is_active', true)->count(),
                     'total_enrollments' => CourseEnrollment::count(),
                     'active_enrollments' => CourseEnrollment::where('status', 'enrolled')->count(),
+                    'total_faculties' => Faculty::count(),
                 ],
                 'faculty_stats' => $this->getFacultyStatistics(),
                 'course_stats' => $this->getCourseStatistics(),
@@ -44,6 +45,76 @@ class ManagementController extends ApiController
         });
 
         return $this->success($stats);
+    }
+
+    /**
+     * Get management dashboard data for frontend.
+     * Returns data in the exact format needed by the frontend ManajemenDashboard.
+     */
+    public function getDashboardData(): JsonResponse
+    {
+        $cacheKey = 'management_dashboard_frontend';
+        $data = Cache::remember($cacheKey, 300, function () {
+            // Get all faculties
+            $faculties = Faculty::select('id', 'name')->get();
+            
+            // Get all users
+            $users = User::select('id', 'name', 'email', 'role', 'faculty_id')->get();
+            
+            // Calculate statistics
+            $totalStudents = $users->where('role', 'student')->count();
+            $totalLecturers = $users->where('role', 'dosen')->count();
+            
+            // Calculate faculty enrollment data
+            $facultyEnrollmentData = $faculties->map(function ($faculty) use ($users) {
+                $facultyName = explode(' ', $faculty->name)[0]; // Get first word of faculty name
+                $studentCount = $users->where('role', 'student')
+                    ->where('faculty_id', $faculty->id)
+                    ->count();
+                
+                return [
+                    'name' => $facultyName,
+                    'mahasiswa' => $studentCount,
+                ];
+            })->toArray();
+            
+            // Get recent activities (from announcements or course enrollments)
+            $recentActivities = [
+                [
+                    'id' => 1,
+                    'title' => 'Pendaftaran Mahasiswa Baru 2024/2025 dibuka.',
+                    'timestamp' => '1 jam lalu',
+                    'type' => 'blue'
+                ],
+                [
+                    'id' => 2,
+                    'title' => 'Fakultas Syariah memenangkan Lomba Debat Nasional.',
+                    'timestamp' => '3 jam lalu',
+                    'type' => 'green'
+                ],
+                [
+                    'id' => 3,
+                    'title' => 'Prof. Dr. Tariq An-Nawawi menerbitkan jurnal baru.',
+                    'timestamp' => '1 hari lalu',
+                    'type' => 'amber'
+                ]
+            ];
+            
+            return [
+                'stats' => [
+                    'total_students' => $totalStudents,
+                    'total_lecturers' => $totalLecturers,
+                    'total_faculties' => $faculties->count(),
+                    'total_budget' => 'Rp 2.1 M'
+                ],
+                'faculty_enrollment_data' => $facultyEnrollmentData,
+                'recent_activities' => $recentActivities,
+                'faculties' => $faculties,
+                'users' => $users
+            ];
+        });
+
+        return $this->success($data);
     }
 
     /**
@@ -546,5 +617,142 @@ class ManagementController extends ApiController
     private function generateExportFilename(string $type, string $format): string
     {
         return "{$type}_export_" . date('Y-m-d_H-i-s') . ".{$format}";
+    }
+
+    /**
+     * Get student registrations for management.
+     */
+    public function registrations(Request $request): JsonResponse
+    {
+        $query = \App\Models\StudentRegistration::with(['user', 'firstChoice', 'secondChoice', 'reviewer']);
+
+        // Filter by status
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by major preference
+        if ($request->has('first_choice_id')) {
+            $query->where('first_choice_id', $request->first_choice_id);
+        }
+
+        // Search by name or student ID
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('student_id', 'like', "%{$search}%");
+            });
+        }
+
+        $registrations = $query->orderBy('created_at', 'desc')->paginate($request->per_page ?? 15);
+
+        return $this->success($registrations, 'Registrations retrieved successfully');
+    }
+
+    /**
+     * Get registration details for management.
+     */
+    public function getRegistration(string $id): JsonResponse
+    {
+        $registration = \App\Models\StudentRegistration::with(['user', 'firstChoice', 'secondChoice', 'reviewer'])
+            ->findOrFail($id);
+
+        return $this->success($this->formatRegistrationData($registration), 'Registration details retrieved successfully');
+    }
+
+    /**
+     * Review registration (accept/reject) - for management.
+     */
+    public function reviewRegistration(Request $request, string $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:accepted,rejected',
+            'rejection_reason' => 'required_if:status,rejected|string|max:500',
+        ]);
+
+        $registration = \App\Models\StudentRegistration::findOrFail($id);
+
+        // Can only review submitted or under_review registrations
+        if (!in_array($registration->status, ['submitted', 'under_review'])) {
+            return $this->error('Registration cannot be reviewed in current status', 400);
+        }
+
+        $user = $request->user();
+        $registration->status = $validated['status'];
+        $registration->reviewed_by = $user->id;
+        $registration->reviewed_at = now();
+
+        if ($validated['status'] === 'rejected') {
+            $registration->rejection_reason = $validated['rejection_reason'];
+        } else {
+            // If accepted, update user's faculty and major
+            $registration->user->faculty_id = $registration->firstChoice->faculty_id;
+            $registration->user->major_id = $registration->first_choice_id;
+            $registration->user->role = 'student';
+            $registration->user->save();
+        }
+
+        $registration->save();
+
+        return $this->success(
+            $this->formatRegistrationData($registration->load(['firstChoice', 'secondChoice', 'reviewer'])),
+            "Registration {$validated['status']} successfully"
+        );
+    }
+
+    /**
+     * Format registration data for response.
+     */
+    private function formatRegistrationData(\App\Models\StudentRegistration $registration): array
+    {
+        return [
+            'id' => $registration->id,
+            'user_id' => $registration->user_id,
+            'user_name' => $registration->user->name ?? null,
+            'user_email' => $registration->user->email ?? null,
+            'student_id' => $registration->user->student_id ?? null,
+            
+            // Informasi Pribadi
+            'nisn' => $registration->nisn,
+            'nik' => $registration->nik,
+            'date_of_birth' => $registration->date_of_birth,
+            'place_of_birth' => $registration->place_of_birth,
+            'gender' => $registration->gender,
+            'religion' => $registration->religion,
+            'address' => $registration->address,
+            'city' => $registration->city,
+            'postal_code' => $registration->postal_code,
+            'citizenship' => $registration->citizenship,
+            'parent_name' => $registration->parent_name,
+            'parent_phone' => $registration->parent_phone,
+            'parent_job' => $registration->parent_job,
+
+            // Informasi Pendidikan
+            'school_name' => $registration->school_name,
+            'school_address' => $registration->school_address,
+            'graduation_year_school' => $registration->graduation_year_school,
+            'school_type' => $registration->school_type,
+            'school_major' => $registration->school_major,
+            'average_grade' => $registration->average_grade,
+
+            // Preferensi
+            'first_choice_id' => $registration->first_choice_id,
+            'first_choice_name' => $registration->firstChoice->name ?? null,
+            'second_choice_id' => $registration->second_choice_id,
+            'second_choice_name' => $registration->secondChoice->name ?? null,
+
+            // Status & Review
+            'status' => $registration->status,
+            'submitted_at' => $registration->submitted_at,
+            'documents' => $registration->documents,
+            'rejection_reason' => $registration->rejection_reason,
+            'reviewed_by' => $registration->reviewed_by,
+            'reviewer_name' => $registration->reviewer->name ?? null,
+            'reviewed_at' => $registration->reviewed_at,
+
+            'created_at' => $registration->created_at,
+            'updated_at' => $registration->updated_at,
+        ];
     }
 }

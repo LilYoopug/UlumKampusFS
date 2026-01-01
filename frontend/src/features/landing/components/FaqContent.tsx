@@ -4,6 +4,38 @@ import { FaqItem, UserRole } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 
 const ALL_FAQS: FaqItem[] = [
+    // MABA-specific FAQs - New Students
+    {
+        q: 'faq_q_maba_welcome',
+        a: 'faq_a_maba_welcome',
+        roles: ['MABA'],
+    },
+    {
+        q: 'faq_q_maba_first_steps',
+        a: 'faq_a_maba_first_steps',
+        roles: ['MABA'],
+    },
+    {
+        q: 'faq_q_maba_enrollment',
+        a: 'faq_a_maba_enrollment',
+        roles: ['MABA'],
+    },
+    {
+        q: 'faq_q_maba_schedule',
+        a: 'faq_a_maba_schedule',
+        roles: ['MABA'],
+    },
+    {
+        q: 'faq_q_maba_payment',
+        a: 'faq_a_maba_payment',
+        roles: ['MABA'],
+    },
+    {
+        q: 'faq_q_maba_orientation',
+        a: 'faq_a_maba_orientation',
+        roles: ['MABA'],
+    },
+    
     // General FAQs (for all roles)
     {
         q: 'faq_q_general_theme',

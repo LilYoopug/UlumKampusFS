@@ -15,7 +15,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FacultyMajorSeeder::class,
             UserSeeder::class,
-            PaymentSeeder::class,
+            StudentRegistrationSeeder::class,
+            PaymentMethodSeeder::class,
+            PaymentItemSeeder::class,
+            PaymentStatusSeeder::class,
+            PaymentHistorySeeder::class,
+            ManagementAdministrationSeeder::class,
             CourseSeeder::class,
             CourseModuleSeeder::class,
             AssignmentSeeder::class,

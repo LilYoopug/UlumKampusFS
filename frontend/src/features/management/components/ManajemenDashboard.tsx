@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Icon } from '@/src/ui/components/Icon';
 import { User, Faculty } from '@/types';
-import { FACULTIES, ANNOUNCEMENTS_DATA } from '@/constants';
+import { apiService } from '@/services/apiService';
 
 interface ManajemenDashboardProps {
     currentUser: User;
-    faculties: Faculty[];
-    users: User[];
     navigateTo?: (page: any) => void;
 }
 
@@ -23,52 +21,57 @@ const StatCard: React.FC<{value: string, label: string, icon: React.ReactNode, h
     </div>
 );
 
-export const ManajemenDashboard: React.FC<ManajemenDashboardProps> = ({ currentUser, faculties, users }) => {
+export const ManajemenDashboard: React.FC<ManajemenDashboardProps> = ({ currentUser }) => {
     const [facultyEnrollmentData, setFacultyEnrollmentData] = useState<any[]>([]);
     const [managementStats, setManagementStats] = useState({
         totalStudents: '0',
         totalLecturers: '0',
-        totalRegistrants: '0',
+        totalFaculties: '0',
         totalBudget: 'Rp 2.1 M'
     });
     const [campusActivities, setCampusActivities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!users || !faculties) return; // Check if users and faculties are defined
-        
-        // Calculate real data from users array
-        const totalStudents = users.filter(u => u.role === 'Mahasiswa').length;
-        const totalLecturers = users.filter(u => u.role === 'Dosen').length;
+        const fetchDashboardData = async () => {
+            try {
+                const response = await apiService.getManagementDashboardData();
+                // Handle different response formats
+                const data = response.data?.data || response.data;
+                
+                console.log('Management dashboard data:', data);
+                
+                // Ensure data exists before setting it
+                // Map snake_case keys to camelCase for frontend compatibility
+                const stats = data?.stats || {};
+                setManagementStats({
+                    totalStudents: stats.total_students?.toString() || '0',
+                    totalLecturers: stats.total_lecturers?.toString() || '0',
+                    totalFaculties: stats.total_faculties?.toString() || '0',
+                    totalBudget: stats.total_budget || 'Rp 2.1 M'
+                });
+                setFacultyEnrollmentData(data?.faculty_enrollment_data || []);
+                setCampusActivities(data?.recent_activities || []);
+            } catch (error) {
+                console.error('Failed to fetch management dashboard data:', error);
+                // Fallback to empty state
+                setManagementStats({
+                    totalStudents: '0',
+                    totalLecturers: '0',
+                    totalFaculties: '0',
+                    totalBudget: 'Rp 2.1 M'
+                });
+                setFacultyEnrollmentData([]);
+                setCampusActivities([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        const facultyData = faculties.map(f => ({
-            name: f.name.split(' ')[0],
-            mahasiswa: users.filter(u => 
-                u.role === 'Mahasiswa' && 
-                u.facultyId === f.id
-            ).length,
-        }));
+        fetchDashboardData();
+    }, []);
 
-        setFacultyEnrollmentData(facultyData);
-        
-         setManagementStats({
-             totalStudents: totalStudents.toString(),
-             totalLecturers: totalLecturers.toString(),
-             totalRegistrants: users.length.toString(),
-             totalBudget: 'Rp 2.1 M'
-         });
-
-        setCampusActivities(ANNOUNCEMENTS_DATA.slice(0, 3).map((a, index) => ({
-            id: a.id,
-            title: a.title,
-            timestamp: `Aktivitas ${index + 1}`,
-            type: 'blue'
-        })));
-
-        setLoading(false);
-    }, [faculties, users]);
-
-    if (loading) {
+    if (loading || !managementStats) {
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-emerald-600"></div>
@@ -117,7 +120,7 @@ export const ManajemenDashboard: React.FC<ManajemenDashboardProps> = ({ currentU
                                 </Icon>
                            </div>
                            <div>
-                               <p className="text-3xl font-bold text-slate-800 dark:text-white">{faculties.length}</p>
+                               <p className="text-3xl font-bold text-slate-800 dark:text-white">{managementStats.totalFaculties}</p>
                                <p className="text-slate-500 dark:text-slate-400 font-medium">Total Fakultas</p>
                            </div>
                        </div>
@@ -154,7 +157,7 @@ export const ManajemenDashboard: React.FC<ManajemenDashboardProps> = ({ currentU
                   
  
 
-                 <div className="lg:col-span-2 bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
+                 <div className="lg:col-span-3 bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
                      <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Aktivitas Terbaru Kampus</h2>
                      <ul className="space-y-4">
                         <li className="flex gap-4">

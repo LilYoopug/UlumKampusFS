@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Faculty, User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
+import { LoadingSpinner } from '@/src/components/shared/LoadingSpinner';
+import { facultyAPI } from '@/services/apiService';
 
 // Add declarations for CDN-loaded libraries to the global window object
 declare global {
@@ -25,10 +27,39 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
     const [editingFaculty, setEditingFaculty] = useState<Faculty | null>(null);
     const [newFaculty, setNewFaculty] = useState({
         id: '',
+        code: '',
         name: '',
         description: '',
         majors: []
     });
+    const [loading, setLoading] = useState(true); // Start with true to show loading on initial render
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch faculties from API on component mount
+    useEffect(() => {
+        fetchFaculties();
+    }, []);
+
+    const fetchFaculties = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await facultyAPI.getAll();
+            // API service now handles unwrapping the backend response
+            // Backend now returns faculties with majors included via eager loading
+            const facultiesData = Array.isArray(response.data) ? response.data : [];
+            const facultiesWithMajors = facultiesData.map((faculty: Faculty) => ({
+                ...faculty,
+                majors: faculty.majors || []
+            }));
+            setFaculties(facultiesWithMajors);
+        } catch (err) {
+            console.error('Error fetching faculties:', err);
+            setError('Gagal memuat data fakultas');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filteredFaculties = useMemo(() => {
         return faculties.filter(faculty =>
@@ -44,7 +75,7 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
         (doc as any).autoTable({
             startY: 22,
             head: [['Nama Fakultas', 'Deskripsi', 'Jumlah Prodi']],
-            body: filteredFaculties.map(f => [f.name, f.description, f.majors.length]),
+            body: filteredFaculties.map(f => [f.name, f.description, f.majors?.length || 0]),
         });
         doc.save('daftar-fakultas.pdf');
     };
@@ -54,7 +85,7 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
             filteredFaculties.map(f => ({
                 'Nama Fakultas': f.name,
                 'Deskripsi': f.description,
-                'Jumlah Prodi': f.majors.length,
+                'Jumlah Prodi': f.majors?.length || 0,
             }))
         );
         const workbook = window.XLSX.utils.book_new();
@@ -62,33 +93,63 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
         window.XLSX.writeFile(workbook, 'daftar-fakultas.xlsx');
     };
 
-    const handleAddFaculty = () => {
-        if (newFaculty.name && newFaculty.description) {
-            const facultyId = newFaculty.name.toLowerCase().replace(/\s+/g, '-');
-            const newFacultyWithId = {
-                ...newFaculty,
-                id: facultyId,
-                majors: [],
-                createdAt: new Date().toISOString()
-            };
-            setFaculties([...faculties, newFacultyWithId]);
-            setNewFaculty({ id: '', name: '', description: '', majors: [] });
-            setShowAddForm(false);
+    const handleAddFaculty = async () => {
+        if (newFaculty.name && newFaculty.code) {
+            try {
+                setLoading(true);
+                setError(null);
+                const facultyId = newFaculty.code.toLowerCase().replace(/\s+/g, '-');
+                const response = await facultyAPI.create({
+                    id: facultyId,
+                    code: newFaculty.code,
+                    name: newFaculty.name,
+                    description: newFaculty.description,
+                    is_active: true
+                } as Partial<Faculty>);
+                // API service now handles unwrapping the backend response
+                // Ensure majors array is initialized
+                const createdFaculty = {
+                    ...response.data,
+                    majors: response.data.majors || []
+                };
+                setFaculties([...faculties, createdFaculty]);
+                setNewFaculty({ id: '', code: '', name: '', description: '', majors: [] });
+                setShowAddForm(false);
+            } catch (err) {
+                console.error('Error adding faculty:', err);
+                setError('Gagal menambahkan fakultas');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
-    const handleUpdateFaculty = () => {
+    const handleUpdateFaculty = async () => {
         if (editingFaculty && editingFaculty.id) {
-            const updatedFaculties = faculties.map(faculty => 
-                faculty.id === editingFaculty.id ? {...editingFaculty, createdAt: faculty.createdAt} : faculty
-            );
-            setFaculties(updatedFaculties);
-            setEditingFaculty(null);
-            setShowEditForm(false);
+            try {
+                setLoading(true);
+                setError(null);
+                await facultyAPI.update(editingFaculty.id, {
+                    code: editingFaculty.code || editingFaculty.id,
+                    name: editingFaculty.name,
+                    description: editingFaculty.description
+                });
+                const updatedFaculties = faculties.map(faculty => 
+                    faculty.id === editingFaculty.id ? editingFaculty : faculty
+                );
+                setFaculties(updatedFaculties);
+                setEditingFaculty(null);
+                setShowEditForm(false);
+            } catch (err) {
+                console.error('Error updating faculty:', err);
+                setError('Gagal mengupdate fakultas');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
-    const handleDeleteFaculty = (id: string) => {
+    const handleDeleteFaculty = async (id: string) => {
         if (window.confirm('Apakah Anda yakin ingin menghapus fakultas ini?')) {
             // Check if any users are assigned to this faculty
             const usersInFaculty = users.filter(user => user.facultyId === id);
@@ -96,7 +157,17 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
                 alert('Tidak dapat menghapus fakultas karena masih terdapat pengguna yang terdaftar dalam fakultas ini.');
                 return;
             }
-            setFaculties(faculties.filter(faculty => faculty.id !== id));
+            try {
+                setLoading(true);
+                setError(null);
+                await facultyAPI.delete(id);
+                setFaculties(faculties.filter(faculty => faculty.id !== id));
+            } catch (err) {
+                console.error('Error deleting faculty:', err);
+                setError('Gagal menghapus fakultas');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -107,12 +178,26 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
 
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Manajemen Fakultas</h1>
-                <p className="text-slate-500 dark:text-slate-400 mt-1">Kelola fakultas di UlumCampus.</p>
-            </div>
+            {/* Loading indicator - show when loading */}
+            {loading ? (
+                <LoadingSpinner />
+            ) : (
+                <>
+                    {/* Page header - show only after loading */}
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Manajemen Fakultas</h1>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1">Kelola fakultas di UlumCampus.</p>
+                    </div>
 
-            <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
+                    {/* Error message */}
+                    {error && (
+                        <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Main content */}
+                    <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
                     <div className="relative flex-grow w-full sm:w-auto">
                         <Icon className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
@@ -135,7 +220,7 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
                         </button>
                         <button 
                             onClick={() => {
-                                setNewFaculty({ id: '', name: '', description: '', majors: [] });
+                                setNewFaculty({ id: '', code: '', name: '', description: '', majors: [] });
                                 setShowAddForm(true);
                             }}
                             className="px-4 py-2 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 transition-colors flex items-center gap-2"
@@ -163,7 +248,7 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
                                         {faculty.name}
                                     </td>
                                     <td className="px-6 py-4">{faculty.description}</td>
-                                    <td className="px-6 py-4">{faculty.majors.length}</td>
+                                    <td className="px-6 py-4">{faculty.majors?.length || 0}</td>
                                     <td className="px-6 py-4">
                                         {faculty.createdAt ? new Date(faculty.createdAt).toLocaleDateString('id-ID') : '-'}
                                     </td>
@@ -187,6 +272,8 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
                     </table>
                 </div>
             </div>
+                </>
+            )}
 
             {/* Add Faculty Modal */}
             {showAddForm && (
@@ -208,6 +295,16 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
                             </div>
 
                             <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Kode Fakultas</label>
+                                    <input
+                                        type="text"
+                                        value={newFaculty.code}
+                                        onChange={(e) => setNewFaculty({...newFaculty, code: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white"
+                                        placeholder="Contoh: FK, FT, FIK"
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Fakultas</label>
                                     <input
@@ -271,6 +368,16 @@ export const ManajemenFakultasPage: React.FC<ManajemenFakultasPageProps> = ({ fa
                             </div>
 
                             <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Kode Fakultas</label>
+                                    <input
+                                        type="text"
+                                        value={editingFaculty.code || editingFaculty.id}
+                                        onChange={(e) => setEditingFaculty({...editingFaculty, code: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white"
+                                        placeholder="Contoh: FK, FT, FIK"
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Fakultas</label>
                                     <input

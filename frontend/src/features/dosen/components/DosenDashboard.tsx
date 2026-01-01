@@ -4,7 +4,7 @@ import { Icon } from '@/src/ui/components/Icon';
 import { CourseCard } from '@/src/features/courses/components/CourseCard';
 import { Course, AnnouncementCategory, User, Assignment } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ASSIGNMENTS, ANNOUNCEMENTS_DATA } from '@/constants';
+import { dashboardAPI, courseAPI, announcementAPI, assignmentAPI } from '@/services/apiService';
 
 const StatCard: React.FC<{value: string, label: string, icon: React.ReactNode}> = ({ value, label, icon }) => (
     <div className="bg-white dark:bg-slate-800/50 p-5 rounded-2xl shadow-md flex items-center space-x-4 rtl:space-x-reverse">
@@ -30,40 +30,106 @@ export const DosenDashboard: React.FC<DosenDashboardProps> = ({ onSelectCourse, 
   const [dosenCourses, setDosenCourses] = useState<Course[]>([]);
   const [gradeDistributionData, setGradeDistributionData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(null);
   
-   useEffect(() => {
-    // Use the courses passed via props instead of fetching again
-    // This prevents API conflicts with the App component which already fetches all courses
-    const dosenCoursesData = courses.filter(course => 
-      course.instructor.toLowerCase().includes(currentUser.name.toLowerCase())
-    );
-    setDosenCourses(dosenCoursesData);
-    
-    // Use mock assignments for dosen's courses
-    const dosenCourseIds = dosenCoursesData.map(c => c.id);
-    const dosenAssignments = ASSIGNMENTS.filter(a => 
-      dosenCourseIds.includes(a.courseId)
-    );
-    setAssignments(dosenAssignments);
-    
-    // Use mock grade distribution data
-    setGradeDistributionData([
-      { name: 'A', count: 45 },
-      { name: 'A-', count: 32 },
-      { name: 'B+', count: 25 },
-      { name: 'B', count: 18 },
-      { name: 'B-', count: 10 },
-      { name: 'C+', count: 5 },
-      { name: 'C', count: 3 },
-    ]);
-    
-    setLoading(false);
- }, [currentUser.name, courses]);
+  useEffect(() => {
+    fetchDashboardData();
+  }, [currentUser.name]);
 
-   const assignmentsToGrade = assignments?.filter(a => 
-    dosenCourses.some(c => c.id === a.courseId) && 
-    a.submissions?.some(s => !s.gradeLetter && s.gradeNumeric === undefined)
- ).length || 0;
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch faculty dashboard stats
+      const statsResponse = await dashboardAPI.getFacultyStats();
+      const statsData = (statsResponse.data as any).data;
+      setStats(statsData);
+
+      // Fetch courses for this faculty
+      const coursesResponse = await courseAPI.getMyCourses();
+      const responseData = coursesResponse.data as any;
+      const facultyCourses: Course[] = Array.isArray(responseData?.data) 
+        ? responseData.data 
+        : Array.isArray(responseData) 
+          ? responseData 
+          : [];
+      setDosenCourses(facultyCourses);
+
+      // Fetch assignments for faculty courses
+      const courseIds = facultyCourses.map((c: Course) => c.id);
+      if (courseIds.length > 0) {
+        // Get assignments for each course
+        const allAssignments: Assignment[] = [];
+        for (const courseId of courseIds) {
+          try {
+            const assignmentsResponse = await assignmentAPI.getAll({ course_id: courseId });
+            const assignmentResponseData = assignmentsResponse.data as any;
+            const courseAssignments: Assignment[] = Array.isArray(assignmentResponseData?.data)
+              ? assignmentResponseData.data
+              : Array.isArray(assignmentResponseData)
+                ? assignmentResponseData
+                : [];
+            allAssignments.push(...courseAssignments);
+          } catch (error) {
+            console.error(`Error fetching assignments for course ${courseId}:`, error);
+          }
+        }
+        setAssignments(allAssignments);
+
+        // Get grade distribution from stats or calculate it
+        if (statsData.course_grades && statsData.course_grades.length > 0) {
+          // Calculate grade distribution from course grades
+          const distribution: Record<string, number> = {
+            'A': 0, 'A-': 0, 'B+': 0, 'B': 0, 'B-': 0, 'C+': 0, 'C': 0
+          };
+          
+          // Use mock distribution for now since the API doesn't provide detailed distribution
+          // In production, this should come from a dedicated grade distribution endpoint
+          setGradeDistributionData([
+            { name: 'A', count: statsData.total_students ? Math.round(statsData.total_students * 0.15) : 45 },
+            { name: 'A-', count: statsData.total_students ? Math.round(statsData.total_students * 0.12) : 32 },
+            { name: 'B+', count: statsData.total_students ? Math.round(statsData.total_students * 0.10) : 25 },
+            { name: 'B', count: statsData.total_students ? Math.round(statsData.total_students * 0.08) : 18 },
+            { name: 'B-', count: statsData.total_students ? Math.round(statsData.total_students * 0.05) : 10 },
+            { name: 'C+', count: statsData.total_students ? Math.round(statsData.total_students * 0.03) : 5 },
+            { name: 'C', count: statsData.total_students ? Math.round(statsData.total_students * 0.02) : 3 },
+          ]);
+        } else {
+          // Fallback to default distribution
+          setGradeDistributionData([
+            { name: 'A', count: 45 },
+            { name: 'A-', count: 32 },
+            { name: 'B+', count: 25 },
+            { name: 'B', count: 18 },
+            { name: 'B-', count: 10 },
+            { name: 'C+', count: 5 },
+            { name: 'C', count: 3 },
+          ]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      // Fallback to using passed courses if API fails
+      const dosenCoursesData = courses.filter(course => 
+        course.instructor.toLowerCase().includes(currentUser.name.toLowerCase())
+      );
+      setDosenCourses(dosenCoursesData);
+      setGradeDistributionData([
+        { name: 'A', count: 45 },
+        { name: 'A-', count: 32 },
+        { name: 'B+', count: 25 },
+        { name: 'B', count: 18 },
+        { name: 'B-', count: 10 },
+        { name: 'C+', count: 5 },
+        { name: 'C', count: 3 },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+   const assignmentsToGrade = stats?.assignments_pending_grading || 0;
+   const totalStudents = stats?.total_students || dosenCourses.reduce((sum, c) => sum + (c.students_count || Math.floor(Math.random() * 30) + 20), 0);
 
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementContent, setAnnouncementContent] = useState('');
@@ -76,21 +142,24 @@ export const DosenDashboard: React.FC<DosenDashboardProps> = ({ onSelectCourse, 
         return;
     }
 
-    const announcementData = {
+    try {
+      const announcementData = {
         title: announcementTitle,
         content: announcementContent,
-        category: announcementCourseId ? 'Mata Kuliah' as AnnouncementCategory : 'Akademik' as AnnouncementCategory,
+        category: (announcementCourseId ? 'Mata Kuliah' : 'Akademik') as AnnouncementCategory,
         course_id: announcementCourseId || null,
-        authorName: currentUser.name,
-        timestamp: new Date().toISOString(),
-    };
+        is_published: true,
+      };
 
-    // Add to mock announcements (in-memory only)
-    // In a real app, this would be handled by the parent component or global state
-    alert('Penguman berhasil dibuat!');
-    setAnnouncementTitle('');
-    setAnnouncementContent('');
-    setAnnouncementCourseId('');
+      await announcementAPI.create(announcementData);
+      alert('Pengumuman berhasil dibuat!');
+      setAnnouncementTitle('');
+      setAnnouncementContent('');
+      setAnnouncementCourseId('');
+    } catch (error) {
+      console.error('Error creating announcement:', error);
+      alert('Gagal membuat pengumuman. Silakan coba lagi.');
+    }
   };
 
   return (
@@ -103,12 +172,12 @@ export const DosenDashboard: React.FC<DosenDashboardProps> = ({ onSelectCourse, 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          <StatCard 
              icon={<Icon className="w-8 h-8 text-green-500"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>} 
-             value={dosenCourses.length.toString()}
+             value={stats?.total_courses?.toString() || dosenCourses.length.toString()}
              label="Mata Kuliah Diampu"
          />
          <StatCard 
              icon={<Icon className="w-8 h-8 text-blue-500"><path d="M17 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></Icon>} 
-             value={dosenCourses.reduce((sum, c) => sum + (Math.floor(Math.random() * 30) + 20), 0).toString()} 
+             value={totalStudents.toString()} 
              label="Total Mahasiswa"
          />
          <StatCard 

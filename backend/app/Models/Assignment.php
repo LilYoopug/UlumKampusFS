@@ -39,6 +39,7 @@ class Assignment extends Model
         'allow_late_submission',
         'late_penalty',
         'order',
+        'category',
     ];
 
     /**
@@ -151,37 +152,5 @@ class Assignment extends Model
     public function isOverdue(): bool
     {
         return $this->due_date && $this->due_date->isPast();
-    }
-
-    /**
-     * Get the dueDate value (alias for due_date for frontend compatibility).
-     */
-    protected function getDueDateAttribute(): ?string
-    {
-        return $this->attributes['due_date'] ?? null;
-    }
-
-    /**
-     * Set the dueDate value (alias for due_date for frontend compatibility).
-     */
-    protected function setDueDateAttribute(?string $value): void
-    {
-        $this->attributes['due_date'] = $value;
-    }
-
-    /**
-     * Get the courseId value (alias for course_id for frontend compatibility).
-     */
-    protected function getCourseIdAttribute(): ?string
-    {
-        return $this->attributes['course_id'] ?? null;
-    }
-
-    /**
-     * Set the courseId value (alias for course_id for frontend compatibility).
-     */
-    protected function setCourseIdAttribute(?string $value): void
-    {
-        $this->attributes['course_id'] = $value;
     }
 }

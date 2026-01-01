@@ -14,7 +14,7 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children, onNaviga
     <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
       <LandingHeader onNavigateToLogin={onNavigateToLogin} page={page} onBack={onBack} />
       {children}
-      <LandingFooter />
+      <LandingFooter isAuthPage={page === 'auth'} />
     </div>
   );
 };

@@ -45,6 +45,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'role' => 'MABA', // Default role for new users
         ]);
 
         // Buat token dengan nama default

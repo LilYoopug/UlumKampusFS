@@ -25,8 +25,10 @@ return new class extends Migration
         Schema::create('payment_items', function (Blueprint $table) {
             $table->id();
             $table->string('item_id')->unique(); // registration, semester, exam
-            $table->string('title_key'); // translation key
-            $table->string('description_key'); // translation key
+            $table->string('title_key')->nullable(); // translation key (legacy)
+            $table->string('description_key')->nullable(); // translation key (legacy)
+            $table->string('title')->nullable(); // actual title in Indonesian
+            $table->text('description')->nullable(); // actual description in Indonesian
             $table->decimal('amount', 15, 2);
             $table->enum('status', ['paid', 'unpaid', 'pending'])->default('unpaid');
             $table->date('due_date')->nullable();

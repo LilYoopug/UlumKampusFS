@@ -4,11 +4,11 @@ import { Course, Major, Page, User, Faculty } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FACULTIES } from '@/constants';
+import { courseAPI } from '@/services/apiService';
 
 interface CourseCatalogProps {
   onSelectCourse: (course: Course) => void;
   onEditCourse: (course: Course) => void;
-  courses: Course[];
   currentUser: User;
   navigateTo: (page: Page) => void;
 }
@@ -86,8 +86,9 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({ options, sele
 };
 
 // --- Main CourseCatalog Component ---
-export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onSelectCourse, onEditCourse, courses, currentUser, navigateTo }) => {
+export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onSelectCourse, onEditCourse, currentUser, navigateTo }) => {
   const { t } = useLanguage();
+  const [courses, setCourses] = useState<Course[]>([]);
   const [selectedFaculties, setSelectedFaculties] = useState<string[]>([]);
   const [selectedMajors, setSelectedMajors] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,10 +106,44 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onSelectCourse, on
       { value: 'sks-desc', label: t('sort_sks_desc') },
   ];
 
+  // Fetch courses from backend API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        let response;
+        if (currentUser.role === 'Dosen') {
+          // Dosen gets their courses
+          response = await courseAPI.getMyCourses();
+        } else {
+          // Other roles get all courses
+          response = await courseAPI.getAll();
+        }
+        
+        const responseData = response.data as any;
+        const coursesData: Course[] = Array.isArray(responseData?.data)
+          ? responseData.data
+          : Array.isArray(responseData)
+            ? responseData
+            : [];
+        
+        setCourses(coursesData);
+      } catch (err) {
+        console.error('Failed to fetch courses:', err);
+        setError('Gagal memuat mata kuliah. Silakan coba lagi.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [currentUser.role]);
+
   // Use mock faculties from constants
  useEffect(() => {
     setFaculties(FACULTIES);
-    setLoading(false);
   }, []);
 
   const handleFacultyChange = (selectedIds: string[]) => {

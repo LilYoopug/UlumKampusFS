@@ -20,6 +20,7 @@ class Faculty extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'name',
         'code',
         'description',
@@ -41,6 +42,20 @@ class Faculty extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($faculty) {
+            if (empty($faculty->id) && !empty($faculty->code)) {
+                $faculty->id = strtolower(str_replace(' ', '-', trim($faculty->code)));
+            }
+        });
     }
 
     /**

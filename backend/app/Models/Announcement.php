@@ -26,6 +26,7 @@ class Announcement extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'course_id',
         'faculty_id',
         'created_by',

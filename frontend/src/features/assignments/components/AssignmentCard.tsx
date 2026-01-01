@@ -30,7 +30,10 @@ export const AssignmentCard: React.FC<{
     onSelectAssignment: (assignment: Assignment) => void;
     course?: Course;
     currentUser: User;
-}> = ({ assignment, onSelectAssignment, course, currentUser }) => {
+    onEdit?: (assignment: Assignment) => void;
+    onDelete?: (assignmentId: string) => void;
+    isSaving?: boolean;
+}> = ({ assignment, onSelectAssignment, course, currentUser, onEdit, onDelete, isSaving }) => {
     const { t } = useLanguage();
     const { status, gradeLetter, gradeNumeric, isOverdue } = getAssignmentStatus(assignment, currentUser);
 
@@ -49,14 +52,36 @@ export const AssignmentCard: React.FC<{
 
     return (
         <div className="bg-white dark:bg-slate-800/50 p-5 rounded-lg shadow-md border border-slate-200 dark:border-slate-700">
-            <div className="flex justify-between items-start">
-                <div>
+            <div className="flex justify-between items-start gap-4">
+                <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-brand-emerald-600 dark:text-brand-emerald-400">{course?.title || t('assignments_unknown_course')}</p>
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white mt-1">{assignment.title}</h3>
                 </div>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${currentStatus.color}`}>
-                    {t(currentStatus.textKey)}
-                </span>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${currentStatus.color}`}>
+                        {t(currentStatus.textKey)}
+                    </span>
+                    {onEdit && onDelete && (
+                        <div className="flex gap-1">
+                            <button 
+                                onClick={() => onEdit(assignment)}
+                                className="p-2 text-slate-500 hover:text-blue-500 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                title="Edit assignment"
+                                disabled={isSaving}
+                            >
+                                <Icon className="w-5 h-5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></Icon>
+                            </button>
+                            <button 
+                                onClick={() => onDelete(assignment.id)}
+                                className="p-2 text-slate-500 hover:text-red-500 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                title="Delete assignment"
+                                disabled={isSaving}
+                            >
+                                <Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></Icon>
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
             <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex-1">

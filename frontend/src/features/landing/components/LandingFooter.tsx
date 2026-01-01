@@ -3,14 +3,18 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Icon } from '@/src/ui/components/Icon';
 import { handleNavClick } from '@/App';
 
-export const LandingFooter: React.FC = () => {
+interface LandingFooterProps {
+  isAuthPage?: boolean;
+}
+
+export const LandingFooter: React.FC<LandingFooterProps> = ({ isAuthPage = false }) => {
     const { t } = useLanguage();
     
     const sitemapLinks = [
-        { label: t('homepage_nav_programs'), href: '#programs' },
-        { label: t('homepage_nav_about'), href: '#about' },
-        { label: t('homepage_nav_faq'), href: '#faq' },
-        { label: t('homepage_footer_contact'), href: '#contact' },
+        { label: 'Program Studi', href: '#programs' },
+        { label: 'Tentang Kami', href: '#about' },
+        { label: 'FAQ', href: '#faq' },
+        { label: 'Hubungi Kami', href: '#contact' },
     ];
     
     const socialLinks = [
@@ -19,6 +23,18 @@ export const LandingFooter: React.FC = () => {
         { label: "Instagram", href: "#", icon: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></> },
         { label: "YouTube", href: "#", icon: <><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></> },
     ];
+
+    if (isAuthPage) {
+        return (
+            <footer className="bg-slate-100 dark:bg-brand-midnight">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center text-sm text-slate-500 dark:text-slate-400">
+                        <p>2024 UlumCampus. Seluruh hak cipta dilindungi.</p>
+                    </div>
+                </div>
+            </footer>
+        );
+    }
 
     return (
         <footer className="bg-slate-100 dark:bg-brand-midnight">

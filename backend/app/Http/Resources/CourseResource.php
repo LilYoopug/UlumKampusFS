@@ -39,12 +39,28 @@ class CourseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Transform syllabus_data to frontend format
+        $syllabus = [];
+        if (!empty($this->syllabus_data) && is_array($this->syllabus_data)) {
+            foreach ($this->syllabus_data as $item) {
+                if (isset($item['week']) && isset($item['topic'])) {
+                    $syllabus[] = [
+                        'week' => (int) $item['week'],
+                        'topic' => $item['topic'],
+                        'description' => $item['description'] ?? '',
+                    ];
+                }
+            }
+        }
+
         return [
             'id' => $this->id,
             'title' => $this->name,
             'instructor' => $this->instructor?->name ?? '',
             'instructorId' => $this->instructor_id,
+            'faculty' => $this->whenLoaded('faculty', fn() => $this->faculty),
             'facultyId' => $this->faculty_id,
+            'major' => $this->whenLoaded('major', fn() => $this->major),
             'majorId' => $this->major_id,
             'sks' => $this->credit_hours,
             'description' => $this->description,
@@ -56,12 +72,19 @@ class CourseResource extends JsonResource
             'mode' => $this->mode,
             'status' => $this->is_active ? 'Published' : 'Draft',
             'learningObjectives' => $this->learning_objectives ?? [],
-            'syllabus' => $this->syllabus_data ?? [],
-            'modules' => CourseModuleResource::collection($this->whenLoaded('modules')),
+            'syllabus' => $syllabus,
+            'modules' => $this->whenLoaded('modules', fn() => CourseModuleResource::collection($this->modules), []),
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
             'instructorAvatarUrl' => $this->instructor_avatar_url,
             'instructorBioKey' => $this->instructor_bio_key ?? null,
+            'students_count' => $this->current_enrollment,
+            'code' => $this->code,
+            'semester' => $this->semester,
+            'year' => $this->year,
+            'schedule' => $this->schedule,
+            'room' => $this->room,
+            'capacity' => $this->capacity,
         ];
     }
 }

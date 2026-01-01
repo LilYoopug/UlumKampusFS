@@ -33,6 +33,9 @@ Route::post('/payment/notification', [PaymentController::class, 'notificationHan
 // Public course catalog (no auth required)
 Route::get('/public/courses', 'App\Http\Controllers\Api\CourseController@publicCourses');
 
+// Public faculties catalog (no auth required)
+Route::get('/public/faculties', 'App\Http\Controllers\Api\FacultyController@publicFaculties');
+
 // Health check endpoint
 Route::get('/health', function () {
     return response()->json([
@@ -76,8 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/list/faculty', 'App\Http\Controllers\Api\UserController@faculty');
         Route::get('/list/students', 'App\Http\Controllers\Api\UserController@students');
 
-        // Admin and Faculty only - CRUD operations
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin, Dosen, and Super Admin only - CRUD operations
+        Route::middleware('role:admin,dosen,super_admin')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\UserController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\UserController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\UserController@destroy');
@@ -96,8 +99,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/majors', 'App\Http\Controllers\Api\FacultyController@majors');
         Route::get('/{id}/courses', 'App\Http\Controllers\Api\FacultyController@courses');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\FacultyController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\FacultyController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\FacultyController@destroy');
@@ -115,8 +118,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{code}/faculty', 'App\Http\Controllers\Api\MajorController@faculty');
         Route::get('/{code}/courses', 'App\Http\Controllers\Api\MajorController@courses');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\MajorController@store');
             Route::put('/{code}', 'App\Http\Controllers\Api\MajorController@update');
             Route::delete('/{code}', 'App\Http\Controllers\Api\MajorController@destroy');
@@ -128,8 +131,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // ------------------------------------------------------------------------
 
     Route::prefix('courses')->group(function () {
-        // Faculty only - get their courses (must come before /{id} route)
-        Route::middleware('role:faculty')->group(function () {
+        // Dosen only - get their courses (must come before /{id} route)
+        Route::middleware('role:dosen')->group(function () {
             Route::get('/my-courses', 'App\Http\Controllers\Api\CourseController@myCourses');
         });
 
@@ -140,10 +143,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/enrollments', 'App\Http\Controllers\Api\CourseController@enrollments');
         Route::get('/{id}/students', 'App\Http\Controllers\Api\CourseController@students');
         Route::get('/{id}/assignments', 'App\Http\Controllers\Api\CourseController@assignments');
+        Route::get('/{id}/assignments-with-stats', 'App\Http\Controllers\Api\CourseController@assignmentsWithStats');
         Route::get('/{id}/announcements', 'App\Http\Controllers\Api\CourseController@announcements');
         Route::get('/{id}/library-resources', 'App\Http\Controllers\Api\CourseController@libraryResources');
         Route::get('/{id}/discussion-threads', 'App\Http\Controllers\Api\CourseController@discussionThreads');
         Route::get('/{id}/grades', 'App\Http\Controllers\Api\CourseController@grades');
+        Route::get('/{id}/student-progress', 'App\Http\Controllers\Api\CourseController@studentProgress');
 
         // Student enrollment
         Route::middleware('role:student')->group(function () {
@@ -151,8 +156,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{id}/drop', 'App\Http\Controllers\Api\CourseController@drop');
         });
 
-        // Admin and Faculty only - module management nested under courses
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin, Dosen, and Prodi Admin only - module management nested under courses
+        Route::middleware('role:admin,dosen,prodi_admin')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\CourseController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\CourseController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\CourseController@destroy');
@@ -175,8 +180,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/assignments', 'App\Http\Controllers\Api\CourseModuleController@assignments');
         Route::get('/{id}/discussions', 'App\Http\Controllers\Api\CourseModuleController@discussions');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::put('/{id}', 'App\Http\Controllers\Api\CourseModuleController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\CourseModuleController@destroy');
         });
@@ -189,8 +194,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/assignments', 'App\Http\Controllers\Api\CourseModuleController@assignments');
         Route::get('/{id}/discussions', 'App\Http\Controllers\Api\CourseModuleController@discussions');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\CourseModuleController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\CourseModuleController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\CourseModuleController@destroy');
@@ -208,8 +213,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}', 'App\Http\Controllers\Api\EnrollmentController@show');
         });
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::get('/course/{courseId}', 'App\Http\Controllers\Api\EnrollmentController@byCourse');
             Route::put('/{id}/approve', 'App\Http\Controllers\Api\EnrollmentController@approve');
             Route::put('/{id}/reject', 'App\Http\Controllers\Api\EnrollmentController@reject');
@@ -233,8 +238,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}/my-submission', 'App\Http\Controllers\Api\AssignmentController@mySubmission');
         });
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\AssignmentController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\AssignmentController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\AssignmentController@destroy');
@@ -255,8 +260,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{id}', 'App\Http\Controllers\Api\SubmissionController@update');
         });
 
-        // Admin and Faculty only (grading)
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only (grading)
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::get('/assignment/{assignmentId}', 'App\Http\Controllers\Api\SubmissionController@byAssignment');
             Route::post('/{id}/grade', 'App\Http\Controllers\Api\SubmissionController@grade');
             Route::post('/{id}/feedback', 'App\Http\Controllers\Api\SubmissionController@feedback');
@@ -273,8 +278,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', 'App\Http\Controllers\Api\AnnouncementController@show');
         Route::post('/{id}/mark-read', 'App\Http\Controllers\Api\AnnouncementController@markRead');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\AnnouncementController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\AnnouncementController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\AnnouncementController@destroy');
@@ -293,8 +298,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@show');
         Route::post('/{id}/download', 'App\Http\Controllers\Api\LibraryResourceController@download');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin, Dosen, Prodi Admin, Super Admin only
+        Route::middleware('role:admin,dosen,prodi_admin,super_admin')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\LibraryResourceController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@destroy');
@@ -310,14 +315,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@show');
         Route::post('/{id}/download', 'App\Http\Controllers\Api\LibraryResourceController@download');
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
-            Route::post('/', 'App\Http\Controllers\Api\LibraryResourceController@store');
-            Route::put('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@update');
-            Route::delete('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@destroy');
-            Route::post('/{id}/publish', 'App\Http\Controllers\Api\LibraryResourceController@publish');
-            Route::post('/{id}/unpublish', 'App\Http\Controllers\Api\LibraryResourceController@unpublish');
-        });
+        // CRUD operations - authorization handled in controller
+        Route::post('/', 'App\Http\Controllers\Api\LibraryResourceController@store');
+        Route::put('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@update');
+        Route::delete('/{id}', 'App\Http\Controllers\Api\LibraryResourceController@destroy');
+        Route::post('/{id}/publish', 'App\Http\Controllers\Api\LibraryResourceController@publish');
+        Route::post('/{id}/unpublish', 'App\Http\Controllers\Api\LibraryResourceController@unpublish');
     });
 
     // ------------------------------------------------------------------------
@@ -330,23 +333,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', 'App\Http\Controllers\Api\DiscussionThreadController@show');
         Route::get('/{id}/posts', 'App\Http\Controllers\Api\DiscussionThreadController@posts');
 
-        // Admin and Faculty can create threads
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen can create threads
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\DiscussionThreadController@store');
         });
 
-        // Thread owner or admin/faculty can update
+        // Thread owner or admin/dosen can update
         Route::put('/{id}', 'App\Http\Controllers\Api\DiscussionThreadController@update');
 
-        // Thread owner or admin/faculty can delete
+        // Thread owner or admin/dosen can delete
         Route::delete('/{id}', 'App\Http\Controllers\Api\DiscussionThreadController@destroy');
 
-        // Thread owner or admin/faculty can close/reopen
+        // Thread owner or admin/dosen can close/reopen
         Route::post('/{id}/close', 'App\Http\Controllers\Api\DiscussionThreadController@close');
         Route::post('/{id}/reopen', 'App\Http\Controllers\Api\DiscussionThreadController@reopen');
 
-        // Admin and Faculty moderation
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen moderation
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/{id}/pin', 'App\Http\Controllers\Api\DiscussionThreadController@pin');
             Route::post('/{id}/unpin', 'App\Http\Controllers\Api\DiscussionThreadController@unpin');
             Route::post('/{id}/lock', 'App\Http\Controllers\Api\DiscussionThreadController@lock');
@@ -377,8 +380,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/posts/{id}', 'App\Http\Controllers\Api\DiscussionController@deletePost');
         Route::post('/threads/{id}/like', 'App\Http\Controllers\Api\DiscussionController@likePost');
 
-        // Admin and Faculty moderation
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen moderation
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/threads/{id}/pin', 'App\Http\Controllers\Api\DiscussionController@pinThread');
             Route::post('/threads/{id}/unpin', 'App\Http\Controllers\Api\DiscussionController@unpinThread');
             Route::post('/threads/{id}/lock', 'App\Http\Controllers\Api\DiscussionController@lockThread');
@@ -471,8 +474,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}', 'App\Http\Controllers\Api\GradeController@show');
         });
 
-        // Admin and Faculty only
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::get('/course/{courseId}', 'App\Http\Controllers\Api\GradeController@byCourse');
             Route::get('/assignment/{assignmentId}', 'App\Http\Controllers\Api\GradeController@byAssignment');
             Route::get('/student/{studentId}', 'App\Http\Controllers\Api\GradeController@byStudent');
@@ -494,8 +497,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@index');
         Route::get('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@show');
 
-        // Admin and Faculty only - create, update, delete
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only - create, update, delete
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@destroy');
@@ -508,8 +511,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@index');
         Route::get('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@show');
 
-        // Admin and Faculty only - create, update, delete
-        Route::middleware('role:admin,faculty')->group(function () {
+        // Admin and Dosen only - create, update, delete
+        Route::middleware('role:admin,dosen')->group(function () {
             Route::post('/', 'App\Http\Controllers\Api\AcademicCalendarEventController@store');
             Route::put('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@update');
             Route::delete('/{id}', 'App\Http\Controllers\Api\AcademicCalendarEventController@destroy');
@@ -531,12 +534,31 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('payment-items')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\PaymentItemController@index');
+        Route::get('/my-payments', 'App\Http\Controllers\Api\PaymentItemController@myPayments');
+        Route::post('/{id}/pay', 'App\Http\Controllers\Api\PaymentItemController@makePayment');
         Route::get('/{id}', 'App\Http\Controllers\Api\PaymentItemController@show');
         Route::post('/', 'App\Http\Controllers\Api\PaymentItemController@store');
         Route::put('/{id}', 'App\Http\Controllers\Api\PaymentItemController@update');
         Route::delete('/{id}', 'App\Http\Controllers\Api\PaymentItemController@destroy');
         Route::get('/user/{userId}', 'App\Http\Controllers\Api\PaymentItemController@byUser');
         Route::get('/status/{status}', 'App\Http\Controllers\Api\PaymentItemController@byStatus');
+    });
+
+    // ------------------------------------------------------------------------
+    // STUDENT REGISTRATION Routes
+    // ------------------------------------------------------------------------
+
+    Route::prefix('registrations')->group(function () {
+        // Student routes
+        Route::get('/my-registration', 'App\Http\Controllers\Api\RegistrationController@getMyRegistration');
+        Route::post('/save', 'App\Http\Controllers\Api\RegistrationController@saveRegistration');
+
+        // Admin/Staff routes
+        Route::middleware('role:admin,staff')->group(function () {
+            Route::get('/', 'App\Http\Controllers\Api\RegistrationController@index');
+            Route::get('/{id}', 'App\Http\Controllers\Api\RegistrationController@show');
+            Route::post('/{id}/review', 'App\Http\Controllers\Api\RegistrationController@review');
+        });
     });
 
     // ------------------------------------------------------------------------
@@ -592,27 +614,67 @@ Route::middleware('auth:sanctum')->group(function () {
     // MANAGEMENT Routes
     // ------------------------------------------------------------------------
 
-    Route::middleware('role:admin,faculty')->prefix('management')->group(function () {
+    Route::middleware('role:admin,dosen')->prefix('management')->group(function () {
         Route::get('/dashboard', 'App\Http\Controllers\Api\ManagementController@dashboard');
+        Route::get('/dashboard/data', 'App\Http\Controllers\Api\ManagementController@getDashboardData');
         Route::get('/users', 'App\Http\Controllers\Api\ManagementController@users');
         Route::get('/courses', 'App\Http\Controllers\Api\ManagementController@courses');
         Route::get('/enrollments', 'App\Http\Controllers\Api\ManagementController@enrollments');
+        Route::get('/registrations', 'App\Http\Controllers\Api\ManagementController@registrations');
+        Route::get('/registrations/{id}', 'App\Http\Controllers\Api\ManagementController@getRegistration');
+        Route::post('/registrations/{id}/review', 'App\Http\Controllers\Api\ManagementController@reviewRegistration');
         Route::get('/analytics', 'App\Http\Controllers\Api\ManagementController@analytics');
         Route::get('/export', 'App\Http\Controllers\Api\ManagementController@export');
         Route::post('/users/bulk', 'App\Http\Controllers\Api\ManagementController@bulkUserOperation');
         Route::post('/courses/bulk', 'App\Http\Controllers\Api\ManagementController@bulkCourseOperation');
+
+        // ------------------------------------------------------------------------
+        // MANAGEMENT ADMINISTRATION Routes
+        // ------------------------------------------------------------------------
+
+        Route::prefix('administration')->group(function () {
+            // Overview statistics
+            Route::get('/overview', 'App\Http\Controllers\Api\ManagementAdministrationController@overview');
+            
+            // Recent payments
+            Route::get('/recent-payments', 'App\Http\Controllers\Api\ManagementAdministrationController@recentPayments');
+            
+            // Payment types statistics
+            Route::get('/payment-types', 'App\Http\Controllers\Api\ManagementAdministrationController@paymentTypes');
+            
+            // Payment methods
+            Route::get('/payment-methods', 'App\Http\Controllers\Api\ManagementAdministrationController@paymentMethods');
+            
+            // Students payment status
+            Route::get('/students', 'App\Http\Controllers\Api\ManagementAdministrationController@studentsPaymentStatus');
+            Route::get('/students/{studentId}', 'App\Http\Controllers\Api\ManagementAdministrationController@studentPaymentDetails');
+            
+            // Update payment status
+            Route::put('/students/{studentId}/payments/{paymentItemId}', 'App\Http\Controllers\Api\ManagementAdministrationController@updatePaymentStatus');
+            
+            // Fee types management
+            Route::get('/fee-types', 'App\Http\Controllers\Api\ManagementAdministrationController@feeTypes');
+            Route::post('/fee-types', 'App\Http\Controllers\Api\ManagementAdministrationController@createFeeType');
+            Route::put('/fee-types/{itemId}', 'App\Http\Controllers\Api\ManagementAdministrationController@updateFeeType');
+            Route::delete('/fee-types/{itemId}', 'App\Http\Controllers\Api\ManagementAdministrationController@deleteFeeType');
+            
+            // Receipt
+            Route::get('/receipt/{historyId}', 'App\Http\Controllers\Api\ManagementAdministrationController@getReceipt');
+        });
     });
 
     // ------------------------------------------------------------------------
     // PRODI (Program Study) Routes
     // ------------------------------------------------------------------------
 
-    Route::middleware('role:admin,faculty')->prefix('prodi')->group(function () {
+    Route::middleware('role:admin,dosen,prodi_admin')->prefix('prodi')->group(function () {
         Route::get('/dashboard', 'App\Http\Controllers\Api\ProdiController@dashboard');
         Route::get('/courses', 'App\Http\Controllers\Api\ProdiController@courses');
         Route::post('/courses', 'App\Http\Controllers\Api\ProdiController@createCourse');
         Route::get('/lecturers', 'App\Http\Controllers\Api\ProdiController@lecturers');
+        Route::get('/lecturers/list', 'App\Http\Controllers\Api\ProdiController@getLecturers');
         Route::get('/students', 'App\Http\Controllers\Api\ProdiController@students');
+        Route::get('/students/list', 'App\Http\Controllers\Api\ProdiController@getStudents');
         Route::get('/enrollments', 'App\Http\Controllers\Api\ProdiController@enrollments');
         Route::get('/analytics', 'App\Http\Controllers\Api\ProdiController@analytics');
         Route::post('/bulk', 'App\Http\Controllers\Api\ProdiController@bulkOperation');
@@ -622,7 +684,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // FACULTY DASHBOARD Routes
     // ------------------------------------------------------------------------
 
-    Route::middleware('role:faculty')->prefix('faculty')->group(function () {
+    Route::middleware('role:dosen')->prefix('faculty')->group(function () {
         Route::get('/dashboard', function () {
             return response()->json(['message' => 'Welcome Faculty!']);
         });
@@ -654,11 +716,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Student-specific stats
         Route::middleware('role:student')->get('/student', 'App\Http\Controllers\Api\DashboardController@studentStats');
 
-        // Faculty-specific stats
-        Route::middleware('role:faculty')->get('/faculty', 'App\Http\Controllers\Api\DashboardController@facultyStats');
+        // Dosen-specific stats
+        Route::middleware('role:dosen')->get('/faculty', 'App\Http\Controllers\Api\DashboardController@facultyStats');
 
         // Prodi (program study) stats - requires faculty_id parameter
-        Route::middleware('role:admin,faculty')->get('/prodi', 'App\Http\Controllers\Api\DashboardController@prodiStats');
+        Route::middleware('role:admin,dosen')->get('/prodi', 'App\Http\Controllers\Api\DashboardController@prodiStats');
 
         // Management (admin) stats
         Route::middleware('role:admin')->get('/management', 'App\Http\Controllers\Api\DashboardController@managementStats');
