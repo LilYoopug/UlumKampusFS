@@ -53,7 +53,6 @@ export const Settings: React.FC<SettingsProps> = ({ isDarkMode, toggleDarkMode, 
             // });
             
             // For now, we'll just simulate the save operation
-            console.log("Saving profile changes:", { name, bio, avatarUrl });
             
             // Update the currentUser with the new values
             // This would typically be handled by a context or state management system

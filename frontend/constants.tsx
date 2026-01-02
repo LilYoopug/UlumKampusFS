@@ -59,3 +59,41 @@ export const PAYMENT_METHOD_ICONS: Record<string, React.ReactNode> = {
     </svg>
   ),
 };
+
+// Payment types for administration page
+export interface PaymentItem {
+  id: string;
+  item_id: string;
+  title_key: string;
+  description_key: string;
+  amount: number;
+  status: 'paid' | 'unpaid' | 'pending';
+  due_date?: string;
+}
+
+export interface PaymentHistoryItem {
+  id: string;
+  payment_item_id: string;
+  amount: number;
+  payment_method: string;
+  transaction_id: string;
+  paid_at: string;
+  status: 'success' | 'pending' | 'failed';
+}
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  type: string;
+  icon?: string;
+  is_active: boolean;
+}
+
+// Default payment methods (will be fetched from API in production)
+export const PAYMENT_METHODS: PaymentMethod[] = [
+  { id: '1', name: 'Bank Transfer BCA', type: 'bank_transfer', is_active: true },
+  { id: '2', name: 'Bank Transfer Mandiri', type: 'bank_transfer', is_active: true },
+  { id: '3', name: 'GoPay', type: 'e_wallet', is_active: true },
+  { id: '4', name: 'OVO', type: 'e_wallet', is_active: true },
+  { id: '5', name: 'Credit Card', type: 'credit_card', is_active: true },
+];

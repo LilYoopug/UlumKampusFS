@@ -244,10 +244,11 @@ const DosenCourseCatalog: React.FC<DosenCourseCatalogProps> = ({
   }, [courses, searchTerm, selectedFaculties, selectedMajors, selectedSemester, selectedYear, selectedStatus, sortBy, courseStats]);
 
   const totalStats = useMemo(() => {
+    const statsValues = Object.values(courseStats) as CourseStats[];
     return {
       totalCourses: courses.length,
-      totalStudents: Object.values(courseStats).reduce((sum, stat) => sum + stat.enrolledCount, 0),
-      totalAssignments: Object.values(courseStats).reduce((sum, stat) => sum + stat.pendingAssignments, 0),
+      totalStudents: statsValues.reduce((sum, stat) => sum + stat.enrolledCount, 0),
+      totalAssignments: statsValues.reduce((sum, stat) => sum + stat.pendingAssignments, 0),
       activeCourses: courses.filter(c => c.is_active).length,
     };
   }, [courses, courseStats]);
@@ -552,3 +553,141 @@ const DosenCourseCatalog: React.FC<DosenCourseCatalogProps> = ({
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/50">
               <Icon className="w-6 h-6 text-purple-500">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </Icon>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-slate-800 dark:text-white">{totalStats.activeCourses}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Mata Kuliah Aktif</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white dark:bg-slate-800/50 p-4 rounded-xl shadow-md">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <div className="relative">
+              <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </Icon>
+              <input
+                type="text"
+                placeholder="Cari mata kuliah..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-emerald-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={selectedSemester}
+              onChange={(e) => setSelectedSemester(e.target.value)}
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+            >
+              {semesterOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+            >
+              {yearOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+            >
+              {statusOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+            >
+              {sortOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'grid'
+                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+              </Icon>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+              </Icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Results count */}
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Menampilkan {filteredCourses.length} dari {courses.length} mata kuliah
+        </p>
+      </div>
+
+      {/* Course List */}
+      {filteredCourses.length === 0 ? (
+        <div className="bg-white dark:bg-slate-800/50 rounded-xl shadow-md p-8 text-center">
+          <Icon className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </Icon>
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Tidak ada mata kuliah ditemukan</h3>
+          <p className="text-slate-500 dark:text-slate-400">Coba ubah filter atau kata kunci pencarian Anda</p>
+        </div>
+      ) : (
+        viewMode === 'grid' ? renderGridView() : renderListView()
+      )}
+    </div>
+  );
+};
+
+export default DosenCourseCatalog;

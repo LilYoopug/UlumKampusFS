@@ -118,9 +118,6 @@ function App() {
             ]);
             
             const usersList = usersData.data || usersData;
-            console.log('Fetched users from API:', usersList);
-            console.log('First user has id?', usersList[0]?.hasOwnProperty('id'));
-            
             setUsers(usersList);
             setCourses(coursesData.data || coursesData);
             setAssignments(assignmentsData.data || assignmentsData);
@@ -247,13 +244,6 @@ function App() {
             // Always use the database id for updates, not studentId
             // This ensures the backend validation ignore() rule works correctly
             const userId = updatedUser.id || '';
-            
-            console.log('handleUpdateUser called with:', {
-                user: updatedUser,
-                userId: userId,
-                studentId: updatedUser.studentId,
-                badges: updatedUser.badges
-            });
             
             if (!userId) {
                 console.error('User ID is missing from:', updatedUser);

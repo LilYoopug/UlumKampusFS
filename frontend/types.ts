@@ -13,7 +13,6 @@ export interface User {
   id?: string;
  name: string;
  email: string;
- password?: string;
   avatarUrl?: string;
   role: UserRole;
   studentId?: string;
@@ -46,6 +45,7 @@ export interface Major {
 
 export interface Faculty {
     id: string;
+    code?: string;
     name: string;
     description: string;
     majors: Major[];

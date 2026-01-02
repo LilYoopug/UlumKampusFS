@@ -89,7 +89,6 @@ export const RegistrasiPage: React.FC = () => {
         // The API returns paginated response: { success, message, data: { data: [...], ... } }
         let majorsData: Major[] = [];
         
-        console.log('Majors API response:', response.data);
         
         const responseData = response.data as any;
         
@@ -108,7 +107,6 @@ export const RegistrasiPage: React.FC = () => {
           }
         }
         
-        console.log('Majors data loaded:', majorsData);
         setMajors(majorsData);
       } catch (error) {
         console.error('Error loading majors:', error);
@@ -183,8 +181,6 @@ export const RegistrasiPage: React.FC = () => {
     
     if (missingFields.length > 0) {
       showMessage('error', `Please fill in all required fields: ${missingFields.join(', ')}`);
-      console.log('Missing fields:', missingFields);
-      console.log('Current form data:', formData);
       return false;
     }
     return true;
@@ -223,7 +219,6 @@ export const RegistrasiPage: React.FC = () => {
         documents: formData.documents,
       };
       
-      console.log('Submitting registration data:', submissionData);
       
       // Submit registration to backend
       const response = await registrationAPI.saveRegistration(submissionData);

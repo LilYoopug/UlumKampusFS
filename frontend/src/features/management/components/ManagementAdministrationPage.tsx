@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { User } from '@/types';
-import { LoadingSpinner } from '@/src/components/shared/LoadingSpinner';
+import { LoadingSpinner } from '@/src/ui';
 import { managementAPI } from '@/services/apiService';
 
 interface ManagementAdministrationPageProps {
@@ -248,8 +248,8 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
       try {
         await managementAPI.createFeeType({
           item_id: newPayment.name.toLowerCase().replace(/\s+/g, '_'),
-          title: newPayment.name,
-          description: newPayment.description,
+          title_key: newPayment.name,
+          description_key: newPayment.description,
           amount: parseInt(newPayment.amount)
         });
         setNewPayment({ name: '', description: '', amount: '' });
@@ -269,8 +269,8 @@ export const ManagementAdministrationPage: React.FC<ManagementAdministrationPage
     if (editingPayment && newPayment.name && newPayment.amount) {
       try {
         await managementAPI.updateFeeType(editingPayment.id, {
-          title: newPayment.name,
-          description: newPayment.description,
+          title_key: newPayment.name,
+          description_key: newPayment.description,
           amount: parseInt(newPayment.amount)
         });
         setShowEditForm(false);

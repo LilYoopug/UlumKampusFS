@@ -97,7 +97,6 @@ export const Assignments: React.FC<AssignmentsProps> = ({ courses, currentUser, 
             const timer = setTimeout(() => {
                 // Try both string and original ID since backend might return number or string
                 const element = assignmentRefs.current[initialAssignmentId] || assignmentRefs.current[String(initialAssignmentId)];
-                console.log('Looking for assignment:', initialAssignmentId, 'Found element:', !!element, 'Available refs:', Object.keys(assignmentRefs.current));
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     element.classList.add('ring-2', 'ring-brand-emerald-400', 'bg-brand-emerald-50', 'dark:bg-brand-emerald-900/30');

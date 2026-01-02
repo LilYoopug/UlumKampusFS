@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Faculty, User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
-import { LoadingSpinner } from '@/src/components/shared/LoadingSpinner';
+import { LoadingSpinner } from '@/src/ui';
 import { facultyAPI } from '@/services/apiService';
 
 // Add declarations for CDN-loaded libraries to the global window object

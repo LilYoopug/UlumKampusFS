@@ -39,7 +39,6 @@ export const ManajemenDashboard: React.FC<ManajemenDashboardProps> = ({ currentU
                 // Handle different response formats
                 const data = response.data?.data || response.data;
                 
-                console.log('Management dashboard data:', data);
                 
                 // Ensure data exists before setting it
                 // Map snake_case keys to camelCase for frontend compatibility

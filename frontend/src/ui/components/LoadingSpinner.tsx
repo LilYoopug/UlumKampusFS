@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@/src/ui/components/Icon';
+import { Icon } from './Icon';
 
 interface LoadingSpinnerProps {
     size?: 'sm' | 'md' | 'lg';

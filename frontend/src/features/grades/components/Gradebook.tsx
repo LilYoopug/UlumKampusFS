@@ -222,7 +222,6 @@ export const Gradebook: React.FC<GradebookProps> = ({ currentUser, users, onUpda
                 const progressList = Array.isArray(progressData) ? progressData : (progressData?.data || []);
                 
                 if (progressList.length === 0) {
-                    console.log('No student progress found, using fallback data');
                     const allStudents = users.filter(u => u.role === 'Mahasiswa');
                     setStudentProgress(allStudents.map(student => {
                         const progress = Math.floor(Math.random() * 90) + 10;

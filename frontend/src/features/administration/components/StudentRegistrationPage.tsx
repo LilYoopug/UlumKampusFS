@@ -78,7 +78,6 @@ export const StudentRegistrationPage: React.FC = () => {
       // Transform backend data to frontend format
       const transformedData = registrationsArray.map((reg: any) => {
         // Log the raw data for debugging
-        console.log('Raw registration data:', reg);
         
         return {
           id: reg.id || '',

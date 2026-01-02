@@ -75,7 +75,6 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
                setLoadingLecturers(true);
                const response = await apiService.getProdiLecturers();
                
-               console.log('ProdiCourseForm - Lecturers API response:', response);
                
                // Handle different response structures
                let lecturersList: any[] = [];
@@ -99,7 +98,6 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
                    }
                }
                
-               console.log('ProdiCourseForm - Extracted lecturers:', lecturersList);
                
                // Transform to User type
                const transformedLecturers: User[] = lecturersList.map((lecturer: any) => ({

@@ -153,7 +153,6 @@ export const ProdiCoursesPage: React.FC = () => {
             setError(null);
             const response = await apiService.getCourses();
             
-            console.log('Raw API response:', response);
             
             // Handle different response structures
             let coursesList: any[] = [];
@@ -170,8 +169,6 @@ export const ProdiCoursesPage: React.FC = () => {
                 }
             }
             
-            console.log('Extracted courses list:', coursesList);
-            console.log('Number of courses:', coursesList.length);
             
             // Transform backend data to match frontend Course type
             const transformedCourses: Course[] = coursesList.map((course: any) => {
@@ -196,12 +193,9 @@ export const ProdiCoursesPage: React.FC = () => {
                     instructorAvatarUrl: course.instructor_avatar_url || course.instructorAvatarUrl,
                     instructorBioKey: course.instructor_bio_key || course.instructorBioKey,
                 };
-                console.log('Transformed course:', transformed);
                 return transformed;
             });
             
-            console.log('Final transformed courses:', transformedCourses);
-            console.log('Setting courses state...');
             setCourses(transformedCourses);
         } catch (err) {
             console.error('Error fetching courses:', err);
@@ -276,7 +270,6 @@ export const ProdiCoursesPage: React.FC = () => {
                 room: '',
             };
             
-            console.log('Sending to backend:', backendCourseData);
             
             if (editingCourse) {
                 await apiService.updateCourse(editingCourse.id, backendCourseData);

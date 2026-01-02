@@ -28,7 +28,6 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
         
         // Fetch payment items with user status
         const paymentsResponse = await apiService.get('/payment-items/my-payments');
-        console.log('Payments response:', paymentsResponse);
         if (paymentsResponse.data && paymentsResponse.data.data) {
           const items = paymentsResponse.data.data.map((item: any) => ({
             id: item.id,
@@ -38,7 +37,6 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
             status: item.status,
             dueDate: item.due_date,
           }));
-          console.log('Processed payment items:', items);
           setPaymentItems(items);
         } else {
           console.error('Unexpected response structure:', paymentsResponse);
@@ -59,7 +57,6 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
             setPaymentHistory(history);
           }
         } catch (error) {
-          console.log('Payment history fetch error (expected if no history):', error);
         }
       } catch (error) {
         console.error('Error fetching payment data:', error);
@@ -101,7 +98,7 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
           method: method,
           studentName: currentUser.name,
           studentId: currentUser.studentId || currentUser.id || 'N/A',
-          title: t(paymentItem.titleKey as any),
+          title: t(paymentItem.title_key as any),
         };
         
         // Set receipt data and show receipt modal
@@ -195,7 +192,6 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
          <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">{t('sidebar_administrasi')}</h2>
            
-           {console.log('Rendering - dataLoading:', dataLoading, 'paymentItems:', paymentItems, 'paymentItems.length:', paymentItems.length)}
            
            {dataLoading ? (
              <div className="flex justify-center items-center py-12">
@@ -328,7 +324,7 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                        Rp {historyItem.amount.toLocaleString('id-ID')}
                      </td>
                       <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                        {historyItem.paymentMethod ? t(PAYMENT_METHODS.find(m => m.id === historyItem.paymentMethod)?.nameKey as any) : '-'}
+                        {historyItem.paymentMethod ? (PAYMENT_METHODS.find(m => m.id === historyItem.paymentMethod)?.name || '-') : '-'}
                       </td>
                      <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                        {historyItem.date}
@@ -386,7 +382,7 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                        >
                          <div className="flex flex-col items-center">
                            <span className="text-xl">{method.icon}</span>
-                           <span className="mt-1">{t(method.nameKey as any)}</span>
+                           <span className="mt-1">{method.name}</span>
                          </div>
                        </button>
                      ))}
@@ -475,7 +471,7 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                      <div className="flex justify-between">
                        <span className="text-slate-600 dark:text-slate-300">{t('administrasi_receipt_method')}:</span>
                         <span className="font-medium text-slate-800 dark:text-white">
-                          {t(PAYMENT_METHODS.find(m => m.id === receiptData.method)?.nameKey as any)}
+                          {PAYMENT_METHODS.find(m => m.id === receiptData.method)?.name || '-'}
                         </span>
                      </div>
                      <div className="flex justify-between">

@@ -145,7 +145,6 @@ export const Grades: React.FC<GradesProps> = ({ courses: propCourses, currentUse
       const timer = setTimeout(() => {
         // Try both original and string ID since backend might return number or string
         const element = courseRefs.current[initialCourseId] || courseRefs.current[String(initialCourseId)];
-        console.log('Looking for course:', initialCourseId, 'Found element:', !!element, 'Available refs:', Object.keys(courseRefs.current));
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           element.classList.add('ring-2', 'ring-brand-emerald-400', 'bg-brand-emerald-50', 'dark:bg-brand-emerald-900/30');

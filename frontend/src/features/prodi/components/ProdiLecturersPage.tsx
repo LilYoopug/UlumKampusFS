@@ -35,7 +35,6 @@ export const ProdiLecturersPage: React.FC = () => {
             setError(null);
             const response = await apiService.getProdiLecturers();
             
-            console.log('Prodi lecturers API response:', response);
             
             // Handle different response structures
             let lecturersList: any[] = [];
@@ -62,7 +61,6 @@ export const ProdiLecturersPage: React.FC = () => {
                 }
             }
             
-            console.log('Extracted lecturers list:', lecturersList);
             
             // Transform backend data to match frontend User type
             const transformedLecturers: LecturerWithCourseCount[] = lecturersList.map((lecturer: any) => {
@@ -78,7 +76,6 @@ export const ProdiLecturersPage: React.FC = () => {
                 };
             });
             
-            console.log('Transformed lecturers:', transformedLecturers);
             setLecturers(transformedLecturers);
         } catch (err) {
             console.error('Error fetching prodi lecturers:', err);
