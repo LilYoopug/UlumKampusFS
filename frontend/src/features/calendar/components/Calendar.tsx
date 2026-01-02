@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { ACADEMIC_CALENDAR_EVENTS } from '@/constants';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Icon } from '@/src/ui/components/Icon';
 import { AcademicCalendarEvent, Assignment, Course, TranslationKey, User } from '@/types';
+import { calendarEventAPI } from '@/services/apiService';
 
 type CalendarEvent = {
     type: 'assignment' | 'live-class' | 'academic';
@@ -16,6 +16,34 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
     const { t } = useLanguage();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [academicCalendarEvents, setAcademicCalendarEvents] = useState<AcademicCalendarEvent[]>([]);
+
+    // Fetch academic calendar events from API
+    useEffect(() => {
+        const fetchCalendarEvents = async () => {
+            try {
+                const response = await calendarEventAPI.getAll();
+                const responseData = response.data as any;
+                const data = responseData?.data || responseData || [];
+                if (Array.isArray(data) && data.length > 0) {
+                    // Transform backend data to frontend format
+                    const events = data.map((event: any) => ({
+                        id: event.id,
+                        titleKey: event.title || event.title_key,
+                        startDate: event.start_date || event.startDate,
+                        endDate: event.end_date || event.endDate,
+                        category: event.category,
+                    }));
+                    setAcademicCalendarEvents(events);
+                }
+            } catch (error) {
+                console.error('Failed to fetch calendar events:', error);
+                // Keep using mock data
+            }
+        };
+
+        fetchCalendarEvents();
+    }, []);
 
     const allEvents = useMemo(() => {
         let relevantCourses = courses;
@@ -50,7 +78,7 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
         });
 
         const academicEvents: CalendarEvent[] = [];
-        ACADEMIC_CALENDAR_EVENTS.forEach(ae => {
+        academicCalendarEvents.forEach(ae => {
             const startDate = new Date(ae.startDate);
             const endDate = ae.endDate ? new Date(ae.endDate) : startDate;
 
@@ -68,7 +96,7 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
 
 
         return [...assignmentEvents, ...liveClassEvents, ...academicEvents];
-    }, [t, courses, currentUser, assignments]);
+    }, [t, courses, currentUser, assignments, academicCalendarEvents]);
 
     const eventsByDate = useMemo(() => {
         const map = new Map<string, { assignments: boolean, liveClasses: boolean, academic: boolean }>();

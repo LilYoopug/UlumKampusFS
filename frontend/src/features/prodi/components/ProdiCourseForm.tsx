@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Course, CourseStatus, Faculty, User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
-import { FACULTIES } from '@/constants';
-import { apiService } from '@/services/apiService';
+import { apiService, facultyAPI } from '@/services/apiService';
 
 interface ProdiCourseFormProps {
     onSave: (courseData: Course) => void;
@@ -42,21 +41,32 @@ export const ProdiCourseForm: React.FC<ProdiCourseFormProps> = ({ onSave, onCanc
                majorId: initialData.majorId || '',
                status: initialData.status,
            });
-       } else {
-           // Set default facultyId if available
-           if (FACULTIES.length > 0) {
-               setFormData(prev => ({
-                   ...prev,
-                   facultyId: FACULTIES[0].id
-               }));
-           }
        }
    }, [initialData]);
    
-   // Set faculties from constants
+   // Fetch faculties from API
    useEffect(() => {
-       setFaculties(FACULTIES);
-   }, []);
+       const fetchFaculties = async () => {
+           try {
+               const response = await facultyAPI.getAll();
+               const responseData = response.data as any;
+               const data = responseData?.data || responseData || [];
+               if (Array.isArray(data)) {
+                   setFaculties(data);
+                   // Set default facultyId if not editing and faculties loaded
+                   if (!initialData && data.length > 0) {
+                       setFormData(prev => ({
+                           ...prev,
+                           facultyId: data[0].id
+                       }));
+                   }
+               }
+           } catch (error) {
+               console.error('Failed to fetch faculties:', error);
+           }
+       };
+       fetchFaculties();
+   }, [initialData]);
 
    // Fetch lecturers from API
    useEffect(() => {

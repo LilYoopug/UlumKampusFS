@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ALL_USERS } from '@/constants';
 import { DiscussionThread, DiscussionPost, User } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Icon } from '@/src/ui/components/Icon';
@@ -238,11 +237,7 @@ export const DiscussionForum: React.FC<DiscussionForumProps> = ({ courseId, curr
     };
 
     const getUser = (authorId: string, authorName?: string, authorAvatar?: string, authorRole?: string): User => {
-        // First try to find user in ALL_USERS by studentId
-        const user = ALL_USERS.find(u => u.studentId === authorId);
-        if (user) return user;
-        
-        // If not found, use the provided data from API response
+        // Use the provided data from API response
         return { 
             name: authorName || 'Pengguna tidak dikenal', 
             avatarUrl: authorAvatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(authorName || 'User'),

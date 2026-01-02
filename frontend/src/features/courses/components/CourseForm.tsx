@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo, ChangeEvent, DragEvent } from 'react';
-import { Course, CourseModule, CourseStatus, SyllabusWeek } from '@/types';
-import { FACULTIES } from '@/constants';
+import { Course, CourseModule, CourseStatus, SyllabusWeek, Faculty } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { facultyAPI } from '@/services/apiService';
 
 interface CourseFormProps {
     onSave: (courseData: Course) => void;
     onCancel: () => void;
     initialData?: Course | null;
+    faculties?: Faculty[];
 }
 
 const DraggableList: React.FC<{ items: any[], renderItem: (item: any, index: number) => React.ReactNode, onReorder: (items: any[]) => void }> = ({ items, renderItem, onReorder }) => {
@@ -52,9 +53,10 @@ const DraggableList: React.FC<{ items: any[], renderItem: (item: any, index: num
     );
 };
 
-export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initialData }) => {
+export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initialData, faculties: propFaculties }) => {
   const { t } = useLanguage();
   const isEditMode = !!initialData;
+  const [faculties, setFaculties] = useState<Faculty[]>(propFaculties || []);
   const [formData, setFormData] = useState<Omit<Course, 'progress'>>({
       id: '',
       title: '',
@@ -86,6 +88,25 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
         });
     }
   }, [initialData]);
+
+  // Fetch faculties from API if not provided as prop
+  useEffect(() => {
+    if (!propFaculties || propFaculties.length === 0) {
+      const fetchFaculties = async () => {
+        try {
+          const response = await facultyAPI.getAll();
+          const responseData = response.data as any;
+          const data = responseData?.data || responseData || [];
+          if (Array.isArray(data)) {
+            setFaculties(data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch faculties:', error);
+        }
+      };
+      fetchFaculties();
+    }
+  }, [propFaculties]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -155,9 +176,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
   
   const availableMajors = useMemo(() => {
     if (!formData.facultyId) return [];
-    const selectedFaculty = FACULTIES.find(f => f.id === formData.facultyId);
+    const selectedFaculty = faculties.find(f => f.id === formData.facultyId);
     return selectedFaculty ? selectedFaculty.majors : [];
-  }, [formData.facultyId]);
+  }, [formData.facultyId, faculties]);
 
   return (
     <>
@@ -177,7 +198,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
                 <label htmlFor="facultyId" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_faculty')}</label>
                 <select name="facultyId" id="facultyId" value={formData.facultyId} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" required>
                     <option value="" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{t('create_course_form_select_faculty')}</option>
-                    {FACULTIES.map(faculty => <option key={faculty.id} value={faculty.id} className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{faculty.name}</option>)}
+                    {faculties.map(faculty => <option key={faculty.id} value={faculty.id} className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{faculty.name}</option>)}
                 </select>
             </div>
              <div>

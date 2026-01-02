@@ -932,19 +932,31 @@ export const discussionPostAPI = {
 
 export const notificationAPI = {
   getAll: (): Promise<AxiosResponse<Notification[]>> => {
-    return api.get('/notifications');
+    return api.get('/notifications').then(response => ({
+      ...response,
+      data: response.data?.data || response.data || []
+    }));
   },
 
   getById: (id: string): Promise<AxiosResponse<Notification>> => {
-    return api.get(`/notifications/${id}`);
+    return api.get(`/notifications/${id}`).then(response => ({
+      ...response,
+      data: response.data?.data || response.data
+    }));
   },
 
   create: (notificationData: Partial<Notification>): Promise<AxiosResponse<Notification>> => {
-    return api.post('/notifications', notificationData);
+    return api.post('/notifications', notificationData).then(response => ({
+      ...response,
+      data: response.data?.data || response.data
+    }));
   },
 
   update: (id: string, notificationData: Partial<Notification>): Promise<AxiosResponse<Notification>> => {
-    return api.put(`/notifications/${id}`, notificationData);
+    return api.put(`/notifications/${id}`, notificationData).then(response => ({
+      ...response,
+      data: response.data?.data || response.data
+    }));
   },
 
   delete: (id: string): Promise<AxiosResponse<void>> => {
@@ -952,11 +964,17 @@ export const notificationAPI = {
   },
 
   markRead: (id: string): Promise<AxiosResponse<Notification>> => {
-    return api.put(`/notifications/${id}/read`);
+    return api.put(`/notifications/${id}/read`).then(response => ({
+      ...response,
+      data: response.data?.data || response.data
+    }));
   },
 
   markUnread: (id: string): Promise<AxiosResponse<Notification>> => {
-    return api.post(`/notifications/${id}/mark-unread`);
+    return api.post(`/notifications/${id}/mark-unread`).then(response => ({
+      ...response,
+      data: response.data?.data || response.data
+    }));
   },
 
   markAllRead: (): Promise<AxiosResponse<{ message: string }>> => {
@@ -964,15 +982,24 @@ export const notificationAPI = {
   },
 
   getUnread: (): Promise<AxiosResponse<Notification[]>> => {
-    return api.get('/notifications/unread');
+    return api.get('/notifications/unread').then(response => ({
+      ...response,
+      data: response.data?.data || response.data || []
+    }));
   },
 
   getUrgent: (): Promise<AxiosResponse<Notification[]>> => {
-    return api.get('/notifications/urgent');
+    return api.get('/notifications/urgent').then(response => ({
+      ...response,
+      data: response.data?.data || response.data || []
+    }));
   },
 
   getCounts: (): Promise<AxiosResponse<any>> => {
-    return api.get('/notifications/counts');
+    return api.get('/notifications/counts').then(response => ({
+      ...response,
+      data: response.data?.data || response.data
+    }));
   },
 
   clearRead: (): Promise<AxiosResponse<{ message: string }>> => {
@@ -1153,15 +1180,28 @@ export const enrollmentAPI = {
 
 export const studentAPI = {
   getMyCourses: (): Promise<AxiosResponse<Course[]>> => {
-    return api.get('/student/my-courses');
+    return api.get('/student/my-courses').then(response => ({
+      ...response,
+      data: response.data?.data || response.data || []
+    }));
   },
 
   getMyAssignments: (): Promise<AxiosResponse<Assignment[]>> => {
-    return api.get('/student/my-assignments');
+    return api.get('/student/my-assignments').then(response => ({
+      ...response,
+      data: (response.data?.data || response.data || []).map(transformAssignment)
+    }));
   },
 
   getMyGrades: (): Promise<AxiosResponse<Grade[]>> => {
     return api.get('/student/my-grades');
+  },
+
+  getAllCoursesWithProgress: (): Promise<AxiosResponse<Course[]>> => {
+    return api.get('/student/all-courses').then(response => ({
+      ...response,
+      data: response.data?.data || response.data || []
+    }));
   }
 };
 

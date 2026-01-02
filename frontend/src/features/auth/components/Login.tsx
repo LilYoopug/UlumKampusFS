@@ -3,7 +3,6 @@ import { LandingLayout } from '@/src/features/landing/components/LandingLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { User } from '@/types';
 import { TranslationKey } from '@/translations';
-import { ALL_USERS } from '@/constants';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => Promise<void>;

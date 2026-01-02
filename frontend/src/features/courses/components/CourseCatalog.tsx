@@ -3,8 +3,7 @@ import { CourseCard } from './CourseCard';
 import { Course, Major, Page, User, Faculty } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FACULTIES } from '@/constants';
-import { courseAPI } from '@/services/apiService';
+import { courseAPI, studentAPI, facultyAPI } from '@/services/apiService';
 
 interface CourseCatalogProps {
   onSelectCourse: (course: Course) => void;
@@ -114,7 +113,10 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onSelectCourse, on
         setError(null);
         
         let response;
-        if (currentUser.role === 'Dosen') {
+        if (currentUser.role === 'Mahasiswa') {
+          // Mahasiswa gets courses with their enrollment progress
+          response = await studentAPI.getMyCourses();
+        } else if (currentUser.role === 'Dosen') {
           // Dosen gets their courses
           response = await courseAPI.getMyCourses();
         } else {
@@ -141,9 +143,23 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onSelectCourse, on
     fetchCourses();
   }, [currentUser.role]);
 
-  // Use mock faculties from constants
- useEffect(() => {
-    setFaculties(FACULTIES);
+  // Fetch faculties from backend API
+  useEffect(() => {
+    const fetchFaculties = async () => {
+      try {
+        const response = await facultyAPI.getAll();
+        const responseData = response.data as any;
+        const facultiesData = Array.isArray(responseData?.data) 
+          ? responseData.data 
+          : Array.isArray(responseData) 
+            ? responseData 
+            : [];
+        setFaculties(facultiesData);
+      } catch (err) {
+        console.error('Failed to fetch faculties:', err);
+      }
+    };
+    fetchFaculties();
   }, []);
 
   const handleFacultyChange = (selectedIds: string[]) => {
@@ -169,14 +185,9 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onSelectCourse, on
   }, [selectedFaculties, faculties]);
   
   const { myCourses, otherCourses } = useMemo(() => {
-    let relevantCourses: Course[];
-
-    // For Mahasiswa, only show courses they are enrolled in.
-    if (currentUser.role === 'Mahasiswa') {
-        relevantCourses = courses.filter(c => c.progress > 0 || c.completionDate);
-    } else {
-        relevantCourses = courses;
-    }
+    // For Mahasiswa, getMyCourses() already returns only enrolled courses
+    // For other roles, use all courses
+    let relevantCourses: Course[] = courses;
 
     let filteredCourses = relevantCourses.filter(course => {
         const searchMatch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

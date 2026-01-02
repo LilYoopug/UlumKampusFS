@@ -703,6 +703,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-courses', 'App\Http\Controllers\Api\StudentController@myCourses');
         Route::get('/my-assignments', 'App\Http\Controllers\Api\StudentController@myAssignments');
         Route::get('/my-grades', 'App\Http\Controllers\Api\StudentController@myGrades');
+        Route::get('/all-courses', 'App\Http\Controllers\Api\StudentController@allCoursesWithProgress');
     });
 
     // ------------------------------------------------------------------------

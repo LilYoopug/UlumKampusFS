@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Notification, NotificationLink } from '@/types';
@@ -8,9 +8,10 @@ interface NotificationsProps {
     onNotificationClick: (link: NotificationLink) => void;
     notifications: Notification[];
     onMarkAsRead: (id: string) => void;
+    initialNotificationId?: string;
 }
 
-export const Notifications: React.FC<NotificationsProps> = ({ onNotificationClick, notifications, onMarkAsRead }) => {
+export const Notifications: React.FC<NotificationsProps> = ({ onNotificationClick, notifications, onMarkAsRead, initialNotificationId }) => {
     const { t } = useLanguage();
 
     const notifIcons: Record<Notification['type'], React.ReactNode> = {
@@ -19,6 +20,25 @@ export const Notifications: React.FC<NotificationsProps> = ({ onNotificationClic
         assignment: <Icon className="w-6 h-6 text-amber-500"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></Icon>,
         announcement: <Icon className="w-6 h-6 text-red-500"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></Icon>,
     };
+
+    const notificationRefs = useRef<Record<string, HTMLLIElement | null>>({});
+
+    // Highlight initial notification if provided
+    useEffect(() => {
+        if (initialNotificationId && notifications.length > 0) {
+            const timer = setTimeout(() => {
+                const element = notificationRefs.current[initialNotificationId];
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('ring-2', 'ring-brand-emerald-400', 'bg-brand-emerald-50', 'dark:bg-brand-emerald-900/30');
+                    setTimeout(() => {
+                        element.classList.remove('ring-2', 'ring-brand-emerald-400', 'bg-brand-emerald-50', 'dark:bg-brand-emerald-900/30');
+                    }, 3000);
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [initialNotificationId, notifications]);
 
     const handleNotificationClick = (notif: Notification) => {
         onNotificationClick(notif.link);
@@ -33,7 +53,7 @@ export const Notifications: React.FC<NotificationsProps> = ({ onNotificationClic
             <div className="bg-white dark:bg-slate-800/50 rounded-lg shadow-md">
                 <ul className="divide-y divide-slate-200 dark:divide-slate-700">
                     {notifications.map(notif => (
-                        <li key={notif.id} onClick={() => handleNotificationClick(notif)} className={`p-4 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${!notif.isRead ? 'bg-slate-50 dark:bg-slate-900/30' : ''}`}>
+                        <li key={notif.id} ref={el => (notificationRefs.current[notif.id] = el)} onClick={() => handleNotificationClick(notif)} className={`p-4 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-500 cursor-pointer ${!notif.isRead ? 'bg-slate-50 dark:bg-slate-900/30' : ''}`}>
                              <div className="flex-shrink-0 mt-1 p-2 bg-slate-100 dark:bg-slate-700 rounded-full">
                                 {notifIcons[notif.type]}
                             </div>

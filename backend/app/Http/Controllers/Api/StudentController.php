@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\StudentCourseResource;
 use App\Models\User;
 use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Models\Assignment;
 use App\Models\Grade;
 use App\Models\AssignmentSubmission;
@@ -14,15 +16,56 @@ class StudentController extends ApiController
 {
     /**
      * Get courses for the current student.
+     * Returns courses with enrollment data including progress and grades.
      */
     public function myCourses(): JsonResponse
     {
         $user = auth()->user();
-        $courses = $user->enrolledCourses()
-            ->wherePivot('status', 'enrolled')
-            ->with(['faculty', 'major', 'instructor'])
+        
+        // Get all enrollments for this student (both active and completed)
+        $enrollments = CourseEnrollment::where('student_id', $user->id)
+            ->with(['course' => function ($query) {
+                $query->with(['faculty', 'major', 'instructor', 'modules']);
+            }])
             ->get();
+        
+        // Transform courses with enrollment data
+        $courses = $enrollments->map(function ($enrollment) {
+            $course = $enrollment->course;
+            if (!$course) return null;
+            
+            return new StudentCourseResource($course, $enrollment, $enrollment->student_id);
+        })->filter()->values();
+        
         return $this->success($courses);
+    }
+    
+    /**
+     * Get all courses with student-specific enrollment data.
+     * Used for dashboard display where we need progress/grades per course.
+     */
+    public function allCoursesWithProgress(): JsonResponse
+    {
+        $user = auth()->user();
+        
+        // Get all enrollments for this student
+        $enrollments = CourseEnrollment::where('student_id', $user->id)
+            ->with(['course' => function ($query) {
+                $query->with(['faculty', 'major', 'instructor', 'modules']);
+            }])
+            ->get()
+            ->keyBy('course_id');
+        
+        // Get all courses (not just enrolled) for catalog view
+        $courses = Course::with(['faculty', 'major', 'instructor', 'modules'])->get();
+        
+        // Transform courses with enrollment data where available
+        $coursesWithProgress = $courses->map(function ($course) use ($enrollments, $user) {
+            $enrollment = $enrollments->get($course->id);
+            return new StudentCourseResource($course, $enrollment, $user->id);
+        });
+        
+        return $this->success($coursesWithProgress);
     }
 
     /**

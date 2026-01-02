@@ -18,10 +18,14 @@ class CourseEnrollment extends Model
         'course_id',
         'student_id',
         'status',
+        'enrollment_date',
         'enrolled_at',
         'completed_at',
         'final_grade',
         'notes',
+        'progress_percentage',
+        'completed_modules',
+        'total_modules',
     ];
 
     /**

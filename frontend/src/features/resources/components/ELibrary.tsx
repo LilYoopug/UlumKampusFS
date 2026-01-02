@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LibraryResource } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Icon } from '@/src/ui/components/Icon';
 import { TranslationKey } from '@/translations';
+import { libraryResourceAPI } from '@/services/apiService';
 
 interface ResourceCardProps {
     resource: LibraryResource;
@@ -97,17 +98,44 @@ const journalPortals: JournalPortal[] = [
 ];
 
 interface ELibraryProps {
-    resources: LibraryResource[];
+    resources?: LibraryResource[];
     myLibrary: string[];
     onToggleLibrary: (id: string) => void;
 }
 
-export const ELibrary: React.FC<ELibraryProps> = ({ resources, myLibrary, onToggleLibrary }) => {
+export const ELibrary: React.FC<ELibraryProps> = ({ resources: propResources, myLibrary, onToggleLibrary }) => {
     const { t } = useLanguage();
     const [keyword, setKeyword] = useState('');
     const [author, setAuthor] = useState('');
     const [year, setYear] = useState('');
     const [showMyLibraryOnly, setShowMyLibraryOnly] = useState(false);
+    const [resources, setResources] = useState<LibraryResource[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch library resources from backend API
+    useEffect(() => {
+        const fetchResources = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await libraryResourceAPI.getAll();
+                const data = response.data || [];
+                setResources(data);
+            } catch (err) {
+                console.error('Failed to fetch library resources:', err);
+                setError('Gagal memuat sumber daya perpustakaan.');
+                // Fallback to props if API fails
+                if (propResources) {
+                    setResources(propResources);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResources();
+    }, [propResources]);
 
     const filteredResources = useMemo(() => {
         const resourcesToFilter = showMyLibraryOnly
@@ -128,6 +156,22 @@ export const ELibrary: React.FC<ELibraryProps> = ({ resources, myLibrary, onTogg
             return keywordMatch && authorMatch && yearMatch;
         });
     }, [keyword, author, year, resources, showMyLibraryOnly, myLibrary]);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-emerald-500"></div>
+            </div>
+        );
+    }
+
+    if (error && resources.length === 0) {
+        return (
+            <div className="text-center py-8">
+                <p className="text-red-500">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">

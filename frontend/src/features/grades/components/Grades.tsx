@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Icon } from '@/src/ui/components/Icon';
 import { Course, User } from '@/types';
+import { gradeAPI, studentAPI } from '@/services/apiService';
 
 const CertificateModal: React.FC<{ course: Course; onClose: () => void; currentUser: User; }> = ({ course, onClose, currentUser }) => {
     const { t } = useLanguage();
@@ -85,42 +86,77 @@ const CertificateModal: React.FC<{ course: Course; onClose: () => void; currentU
 };
 
 
-export const Grades: React.FC<{ courses: Course[], currentUser: User }> = ({ courses, currentUser }) => {
+interface GradesProps {
+  courses: Course[];
+  currentUser: User;
+  initialCourseId?: string;
+}
+
+export const Grades: React.FC<GradesProps> = ({ courses: propCourses, currentUser, initialCourseId }) => {
   const { t } = useLanguage();
   const [viewingCertificate, setViewingCertificate] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [completedCourses, setCompletedCourses] = useState<Course[]>([]);
+  const courseRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
 
   useEffect(() => {
     const fetchGrades = async () => {
       try {
-        if (currentUser.role === 'Dosen') {
-          // For dosen, use the courses passed via props instead of fetching again
-          // This prevents API conflicts with the App component which already fetches all courses
-          const dosenCourses = courses.filter((course: Course) => course.instructor === currentUser.name);
+        setLoading(true);
+        setError(null);
+        
+        if (currentUser.role === 'Mahasiswa') {
+          // For students, fetch directly from student API to get courses with grades
+          const response = await studentAPI.getMyCourses();
+          const courses = response.data || [];
+          // Filter only completed courses with grades
+          const completed = courses.filter((course: Course) => 
+            course.progress === 100 && course.gradeLetter
+          );
+          setCompletedCourses(completed);
+        } else if (currentUser.role === 'Dosen') {
+          // For dosen, use the courses passed via props (already filtered to their courses)
+          const dosenCourses = propCourses.filter((course: Course) => course.instructor === currentUser.name);
           const completedDosenCourses = dosenCourses.filter((course: Course) => course.progress === 100 && course.gradeLetter);
           setCompletedCourses(completedDosenCourses);
         } else {
-          // For students, use the passed courses prop (their own courses)
-          const completedStudentCourses = courses.filter(course => course.progress === 100 && course.gradeLetter);
-          setCompletedCourses(completedStudentCourses);
+          // For other roles, use prop courses
+          const completed = propCourses.filter(course => course.progress === 100 && course.gradeLetter);
+          setCompletedCourses(completed);
         }
-      } catch (error) {
-        console.error('Error fetching grades:', error);
-        // Fallback to original logic if API fails
-        if (!(currentUser.role === 'Dosen')) {
-          setCompletedCourses(courses.filter(course => course.progress === 100 && course.gradeLetter));
-        } else {
-          // For dosen, if API fails, set empty array
-          setCompletedCourses([]);
-        }
+      } catch (err) {
+        console.error('Error fetching grades:', err);
+        setError('Gagal memuat nilai. Silakan coba lagi.');
+        // Fallback to props if API fails
+        const completed = propCourses.filter(course => course.progress === 100 && course.gradeLetter);
+        setCompletedCourses(completed);
       } finally {
         setLoading(false);
       }
     };
 
     fetchGrades();
- }, [currentUser, courses]);
+ }, [currentUser, propCourses]);
+
+  // Highlight initial course if provided
+  useEffect(() => {
+    if (initialCourseId && !loading && completedCourses.length > 0) {
+      const timer = setTimeout(() => {
+        // Try both original and string ID since backend might return number or string
+        const element = courseRefs.current[initialCourseId] || courseRefs.current[String(initialCourseId)];
+        console.log('Looking for course:', initialCourseId, 'Found element:', !!element, 'Available refs:', Object.keys(courseRefs.current));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-2', 'ring-brand-emerald-400', 'bg-brand-emerald-50', 'dark:bg-brand-emerald-900/30');
+          setTimeout(() => {
+            element.classList.remove('ring-2', 'ring-brand-emerald-400', 'bg-brand-emerald-50', 'dark:bg-brand-emerald-900/30');
+          }, 3000);
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [initialCourseId, loading, completedCourses]);
 
   if (loading) {
     return (
@@ -164,7 +200,7 @@ export const Grades: React.FC<{ courses: Course[], currentUser: User }> = ({ cou
             </thead>
             <tbody>
               {completedCourses.map(course => (
-                <tr key={course.id} className="bg-white border-b dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600/50">
+                <tr key={course.id} ref={el => (courseRefs.current[String(course.id)] = el)} className="bg-white border-b dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600/50 transition-all duration-500">
                   <th scope="row" className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap dark:text-white">
                     {course.title}
                   </th>

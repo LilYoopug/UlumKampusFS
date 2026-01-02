@@ -6,24 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property int $id
- * @property int $user_id
- * @property string $type
- * @property string $title
- * @property string $message
- * @property bool $is_read
- * @property \Illuminate\Support\Carbon|null $read_at
- * @property string $priority
- * @property string|null $action_url
- * @property string|null $related_entity_type
- * @property int|null $related_entity_id
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property bool $is_sent
- * @property \Illuminate\Support\Carbon|null $sent_at
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property \Carbon\Carbon|null $deleted_at
- * @property-read \App\Models\User|null $user
+ * Resource for transforming Notification model to frontend format
+ * 
+ * Frontend expects:
+ * - id: string
+ * - type: 'forum' | 'grade' | 'assignment' | 'announcement'
+ * - messageKey: string (translation key)
+ * - context: string
+ * - timestamp: ISO date string
+ * - isRead: boolean
+ * - link: { page: string, params: object }
  */
 class NotificationResource extends JsonResource
 {
@@ -34,43 +26,37 @@ class NotificationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // The 'context' field in database is stored as JSON array, but frontend expects string
+        // We need to handle both cases
+        $context = $this->context;
+        if (is_array($context)) {
+            // If stored as array with 'text' key
+            $context = $context['text'] ?? ($context[0] ?? '');
+        }
+
+        // The 'link' field is stored as JSON object with 'page' and 'params'
+        $link = $this->link;
+        if (!is_array($link)) {
+            $link = ['page' => 'dashboard', 'params' => []];
+        }
+
+        // Get messageKey from title (we store messageKey in title field)
+        $messageKey = $this->title;
+        
+        // If title is a regular title (not a translation key), convert it to a message key
+        if ($messageKey && !str_starts_with($messageKey, 'notification_')) {
+            // Fallback: use type-based message key
+            $messageKey = 'notification_' . $this->type;
+        }
+
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
             'type' => $this->type,
-            'title' => $this->title,
-            'message' => $this->message,
-            'is_read' => $this->is_read,
-            'read_at' => $this->read_at?->toIso8601String(),
-            'priority' => $this->priority,
-            'action_url' => $this->action_url,
-            'related_entity_type' => $this->related_entity_type,
-            'related_entity_id' => $this->related_entity_id,
-            'expires_at' => $this->expires_at?->toIso8601String(),
-            'is_sent' => $this->is_sent,
-            'sent_at' => $this->sent_at?->toIso8601String(),
-            'user' => new UserResource($this->whenLoaded('user')),
-            'is_expired' => $this->when(isset($this->expires_at), fn () => $this->isExpired()),
-            'is_active' => $this->when(isset($this->expires_at), fn () => $this->isActive()),
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
-            'deleted_at' => $this->deleted_at?->toIso8601String(),
+            'messageKey' => $messageKey,
+            'context' => $context,
+            'timestamp' => $this->created_at?->toISOString(),
+            'isRead' => (bool) $this->is_read,
+            'link' => $link,
         ];
-    }
-
-    /**
-     * Check if the notification is expired
-     */
-    public function isExpired(): bool
-    {
-        return $this->expires_at && $this->expires_at->isPast();
-    }
-
-    /**
-     * Check if the notification is active (not expired)
-     */
-    public function isActive(): bool
-    {
-        return !$this->isExpired();
     }
 }

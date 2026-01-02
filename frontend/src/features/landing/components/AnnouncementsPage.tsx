@@ -47,9 +47,13 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({ initialAnn
 
     useEffect(() => {
         fetchAnnouncements();
+    }, []);
 
-        if (initialAnnouncementId && announcementRefs.current[initialAnnouncementId]) {
-            setTimeout(() => {
+    // Separate effect for highlighting - runs after announcements are loaded
+    useEffect(() => {
+        if (initialAnnouncementId && !loading && announcements.length > 0) {
+            // Use a small delay to ensure DOM is updated with refs
+            const timer = setTimeout(() => {
                 const element = announcementRefs.current[initialAnnouncementId];
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -58,18 +62,20 @@ export const AnnouncementsPage: React.FC<AnnouncementsPageProps> = ({ initialAnn
                         element.classList.remove('bg-brand-sand-100', 'dark:bg-brand-sand-900/50', 'ring-2', 'ring-brand-sand-300');
                     }, 3000);
                 }
-            }, 10);
+            }, 100);
+            return () => clearTimeout(timer);
         }
-    }, [initialAnnouncementId]);
+    }, [initialAnnouncementId, loading, announcements]);
 
     const fetchAnnouncements = async () => {
         try {
             setLoading(true);
             const response = await announcementAPI.getAll();
             // Handle paginated response
-            const data = Array.isArray(response.data) 
-                ? response.data 
-                : (response.data?.data || []);
+            const responseData = response.data as any;
+            const data = Array.isArray(responseData) 
+                ? responseData 
+                : (responseData?.data || []);
             setAnnouncements(data);
         } catch (error) {
             console.error('Error fetching announcements:', error);

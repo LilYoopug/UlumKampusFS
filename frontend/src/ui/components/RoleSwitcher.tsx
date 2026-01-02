@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { User } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
-import { ALL_USERS } from '@/constants';
 
 interface RoleSwitcherProps {
     currentUser: User;
     setCurrentUser: (user: User) => void;
+    users: User[];
 }
 
-export const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ currentUser, setCurrentUser }) => {
+export const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ currentUser, setCurrentUser, users }) => {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,7 +50,7 @@ export const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ currentUser, setCurr
       </button>
       {isOpen && (
         <div className="absolute end-0 mt-2 w-60 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-50">
-          {ALL_USERS.map(user => (
+          {users.map(user => (
             <button
               key={user.email}
               onClick={() => {

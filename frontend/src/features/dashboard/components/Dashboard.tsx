@@ -6,7 +6,7 @@ import { Badge, Faculty } from '@/types';
 import { Course, Page, Announcement, User } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { timeAgo } from '@/utils/time';
-import { ANNOUNCEMENTS_DATA, FACULTIES } from '@/constants';
+import { announcementAPI, facultyAPI, dashboardAPI } from '@/services/apiService';
 
 const gradeToPoint: Record<string, number> = {
   'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7,
@@ -34,14 +34,40 @@ export const Dashboard: React.FC<{
   announcements: Announcement[] 
 }> = ({ currentUser, onSelectCourse, courses, navigateTo, announcements }) => {
   const { t, language } = useLanguage();
- const [announcementsState, setAnnouncements] = useState<Announcement[]>(announcements);
-  const [faculties, setFaculties] = useState<Faculty[]>(FACULTIES);
+ const [announcementsState, setAnnouncements] = useState<Announcement[]>(Array.isArray(announcements) ? announcements : []);
+  const [faculties, setFaculties] = useState<Faculty[]>([]);
   const coursesInProgress = courses.filter(c => c.progress > 0 && c.progress < 100);
   
   useEffect(() => {
-    // Use mock data directly instead of API calls
-    setAnnouncements(ANNOUNCEMENTS_DATA);
-    setFaculties(FACULTIES);
+    // Fetch announcements from API
+    const fetchAnnouncements = async () => {
+      try {
+        const response = await announcementAPI.getAll();
+        const responseData = response.data as any;
+        const data = responseData?.data || responseData || [];
+        if (Array.isArray(data) && data.length > 0) {
+          setAnnouncements(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch announcements:', error);
+      }
+    };
+
+    // Fetch faculties from API
+    const fetchFaculties = async () => {
+      try {
+        const response = await facultyAPI.getAll();
+        const data = response.data || [];
+        if (Array.isArray(data) && data.length > 0) {
+          setFaculties(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch faculties:', error);
+      }
+    };
+
+    fetchAnnouncements();
+    fetchFaculties();
   }, []);
   
    const academicStats = useMemo(() => {
@@ -161,7 +187,7 @@ export const Dashboard: React.FC<{
             <button onClick={() => navigateTo('announcements')} className="text-sm font-semibold text-brand-emerald-600 hover:underline dark:text-brand-emerald-40">{t('notifications_view_all')}</button>
         </div>
         <div className="space-y-4">
-            {announcementsState.slice(0, 2).map(announcement => (
+            {(Array.isArray(announcementsState) ? announcementsState : []).slice(0, 2).map(announcement => (
                 <div key={announcement.id} className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => navigateTo('announcements', { announcementId: announcement.id })}>
                     <p className="font-semibold text-slate-700 dark:text-slate-200">{announcement.title}</p>
                     <div className="flex items-center gap-2 mt-1">

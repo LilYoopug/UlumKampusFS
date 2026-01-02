@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NotificationRequest;
+use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -100,7 +101,11 @@ class NotificationController extends ApiController
         // Get all notifications
         $notifications = $query->get();
 
-        return $this->success($notifications, 'Notifications retrieved successfully');
+        // Return with NotificationResource for frontend-compatible format
+        return $this->success(
+            NotificationResource::collection($notifications),
+            'Notifications retrieved successfully'
+        );
     }
 
     /**

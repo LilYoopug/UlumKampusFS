@@ -3,19 +3,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { useDarkMode } from './hooks/useDarkMode';
 import { Page, User, Course, Assignment, LibraryResource, Announcement, NotificationLink, UserRole, AnnouncementCategory } from './types';
 import { mapBackendRoleToFrontend } from './utils/roleMapper';
-import { apiService } from './services/apiService';
-import {
-  ALL_USERS,
-  COURSES_DATA,
-  ASSIGNMENTS,
-  ANNOUNCEMENTS_DATA,
-  INITIAL_ELIBRARY_RESOURCES,
-  NOTIFICATIONS_DATA,
-  DISCUSSION_THREADS,
-  ACADEMIC_CALENDAR_EVENTS,
-  FACULTIES,
-  USER_PASSWORDS
-} from './constants';
+import { apiService, studentAPI, discussionThreadAPI, facultyAPI } from './services/apiService';
 
 // Import all components using new feature-based barrel files
 import { Sidebar, Header } from './src/features/dashboard';
@@ -84,17 +72,17 @@ function App() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Data states
-    const [users, setUsers] = useState<User[]>(ALL_USERS);
-    const [courses, setCourses] = useState<Course[]>(COURSES_DATA);
-    const [assignments, setAssignments] = useState<Assignment[]>(ASSIGNMENTS);
+    // Data states - initialized with empty arrays, data will be fetched from API
+    const [users, setUsers] = useState<User[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [elibraryResources, setElibraryResources] = useState<LibraryResource[]>([]);
     const [myLibrary, setMyLibrary] = useState<string[]>([]);
-    const [announcements, setAnnouncements] = useState<Announcement[]>(ANNOUNCEMENTS_DATA);
-    const [notifications, setNotifications] = useState<any[]>(NOTIFICATIONS_DATA);
-    const [discussionThreads, setDiscussionThreads] = useState<any[]>(DISCUSSION_THREADS);
-    const [calendarEvents, setCalendarEvents] = useState<any[]>(ACADEMIC_CALENDAR_EVENTS);
-    const [faculties, setFaculties] = useState<any[]>(FACULTIES);
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [discussionThreads, setDiscussionThreads] = useState<any[]>([]);
+    const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+    const [faculties, setFaculties] = useState<any[]>([]);
 
     const toggleMobileSidebar = () => setIsMobileSidebarOpen(prev => !prev);
 
@@ -105,20 +93,28 @@ function App() {
         setIsMobileSidebarOpen(false);
     }, []);
 
-    const fetchData = async () => {
-        if (!currentUser) return;
+    const fetchData = async (userRole?: string) => {
+        if (!currentUser && !userRole) return;
         setIsLoading(true);
         setError(null);
+        const role = userRole || currentUser?.role;
         try {
             // Use API service to fetch real data from backend
-            const [usersData, coursesData, assignmentsData, announcementsData, elibraryData, notificationsData, calendarData] = await Promise.all([
+            // For students, fetch courses with progress from student API
+            const coursesPromise = role === 'Mahasiswa' 
+                ? studentAPI.getAllCoursesWithProgress()
+                : apiService.getCourses();
+
+            const [usersData, coursesData, assignmentsData, announcementsData, elibraryData, notificationsData, calendarData, discussionsData, facultiesData] = await Promise.all([
                 apiService.getUsers(),
-                apiService.getCourses(),
+                coursesPromise,
                 apiService.getAssignments(),
                 apiService.getAnnouncements(),
                 apiService.getLibraryResources(),
                 apiService.getNotifications(),
-                apiService.getAcademicCalendarEvents()
+                apiService.getAcademicCalendarEvents(),
+                discussionThreadAPI.getAll(),
+                facultyAPI.getAll()
             ]);
             
             const usersList = usersData.data || usersData;
@@ -132,14 +128,11 @@ function App() {
             setElibraryResources(elibraryData.data || elibraryData);
             setNotifications(notificationsData.data || notificationsData);
             setCalendarEvents(calendarData.data || calendarData);
-            setDiscussionThreads(DISCUSSION_THREADS);
-            setFaculties(FACULTIES);
+            setDiscussionThreads(discussionsData.data || discussionsData);
+            setFaculties(facultiesData.data || facultiesData);
         } catch (err) {
             console.error('Failed to fetch data:', err);
             setError(err instanceof Error ? err.message : 'Failed to load data');
-            // Fallback to mock data if API fails
-            console.warn('Falling back to mock data - this does not have id fields!');
-            setUsers(ALL_USERS);
         } finally {
             setIsLoading(false);
         }
@@ -156,7 +149,7 @@ function App() {
                 localStorage.setItem('auth_token', response.data.token);
                 localStorage.setItem('current_user_id', response.data.user.studentId || response.data.user.id || '');
                 setCurrentUser(response.data.user);
-                await fetchData();
+                await fetchData(response.data.user.role);
                 
                 // MABA users go to registration page, others go to dashboard
                 if (response.data.user.role === 'MABA') {
@@ -168,31 +161,9 @@ function App() {
                 throw new Error('Invalid response from server');
             }
         } catch (err) {
-            // Fallback to mock authentication if API fails
-            console.error('API login failed, trying mock:', err);
-            try {
-                const user = ALL_USERS.find(u => u.email === email);
-                const expectedPassword = USER_PASSWORDS[email];
-
-                if (user && expectedPassword && password === expectedPassword) {
-                    localStorage.setItem('auth_token', 'mock-token-' + Date.now());
-                    localStorage.setItem('current_user_id', user.studentId);
-                    setCurrentUser(user);
-                    await fetchData();
-                    
-                    // MABA users go to registration page, others go to dashboard
-                    if (user.role === 'MABA') {
-                        setView('registrasi');
-                    } else {
-                        setView('dashboard');
-                    }
-                } else {
-                    throw new Error('Invalid credentials');
-                }
-            } catch (mockErr) {
-                setError(mockErr instanceof Error ? mockErr.message : 'Login failed');
-                alert('Login failed: ' + (mockErr instanceof Error ? mockErr.message : 'Unknown error'));
-            }
+            console.error('API login failed:', err);
+            setError(err instanceof Error ? err.message : 'Login failed');
+            alert('Login failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
         } finally {
             setIsLoading(false);
         }
@@ -345,7 +316,7 @@ function App() {
                     if (response.data) {
                         setCurrentUser(response.data);
                         localStorage.setItem('current_user_id', response.data.id || response.data.studentId || '');
-                        await fetchData();
+                        await fetchData(response.data.role);
                         
                         // Redirect based on role after fetching user data
                         if (response.data.role === 'MABA') {
@@ -394,9 +365,9 @@ function App() {
                 return <CourseDetail course={courseToDisplay} onBack={() => navigateTo(viewParams?.from || 'courses')} initialParams={viewParams} currentUser={currentUser} assignments={assignments} onCreateAssignment={handleCreateAssignment} onUpdateAssignment={handleUpdateAssignment} />;
             case 'create-course': return <CreateCourse onSave={handleSaveCourse} onCancel={() => navigateTo('courses')} />;
             case 'edit-course': return <CreateCourse onSave={handleSaveCourse} onCancel={() => navigateTo('courses')} initialData={viewParams.course} />;
-            case 'grades': return <Grades courses={courses} currentUser={currentUser} />;
+            case 'grades': return <Grades courses={courses} currentUser={currentUser} initialCourseId={viewParams?.courseId} />;
             case 'gradebook': return <Gradebook currentUser={currentUser} users={users} onUpdateUser={handleUpdateUser} onSelectAssignment={(assignment) => navigateTo('course-detail', { course: courses.find(c => c.id === assignment.courseId), initialTab: 'assignments' })} />;
-            case 'assignments': return <AssignmentsPage courses={courses} currentUser={currentUser} onSelectAssignment={(assignment) => navigateTo('course-detail', { course: courses.find(c => c.id === assignment.courseId), initialTab: 'assignments' })} />;
+            case 'assignments': return <AssignmentsPage courses={courses} currentUser={currentUser} onSelectAssignment={(assignment) => navigateTo('course-detail', { course: courses.find(c => c.id === assignment.courseId), initialTab: 'assignments' })} initialAssignmentId={viewParams?.assignmentId} />;
             case 'video-lectures': return <VideoLectures courses={courses} currentUser={currentUser} onSelectCourse={(course) => navigateTo('course-detail', { course })} />;
             case 'elibrary': return <ELibrary resources={elibraryResources} myLibrary={myLibrary} onToggleLibrary={(id) => setMyLibrary(p => p.includes(id) ? p.filter(i => i !== id) : [...p, id])} />;
             case 'manage-elibrary': return <ManageELibrary resources={elibraryResources} onCreate={async (data) => { 
@@ -435,7 +406,7 @@ function App() {
                 } catch (err) {
                     console.error('Failed to mark notification as read:', err);
                 }
-            }} />;
+            }} initialNotificationId={viewParams?.notificationId} />;
             case 'announcements': return <AllAnnouncementsPage initialAnnouncementId={viewParams?.announcementId} currentUser={currentUser} announcements={announcements} />;
 case 'prodi-courses': 
     if (currentUser?.role === 'Manajemen Kampus') {
@@ -479,7 +450,7 @@ case 'prodi-courses':
                             localStorage.setItem('auth_token', response.data.token);
                             localStorage.setItem('current_user_id', response.data.user.id || response.data.user.studentId || '');
                             setCurrentUser(response.data.user);
-                            await fetchData();
+                            await fetchData(response.data.user.role);
                             setView('dashboard');
                         } else {
                             throw new Error('Invalid response from server');

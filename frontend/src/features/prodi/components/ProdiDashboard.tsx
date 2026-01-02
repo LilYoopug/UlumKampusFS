@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Icon } from '@/src/ui/components/Icon';
-import { FACULTIES } from '@/constants';
-import { Course, User } from '@/types';
+import { Course, User, Faculty } from '@/types';
+import { facultyAPI } from '@/services/apiService';
 
 const StatCard: React.FC<{value: string, label: string, icon: React.ReactNode}> = ({ value, label, icon }) => (
     <div className="bg-white dark:bg-slate-800/50 p-5 rounded-2xl shadow-md flex items-center space-x-4 rtl:space-x-reverse">
@@ -31,7 +31,26 @@ interface ProdiDashboardProps {
 
 export const ProdiDashboard: React.FC<ProdiDashboardProps> = ({ courses, users, currentUser }) => {
     const myFacultyId = currentUser.facultyId;
-    const myFaculty = useMemo(() => FACULTIES.find(f => f.id === myFacultyId), [myFacultyId]);
+    const [faculties, setFaculties] = useState<Faculty[]>([]);
+    
+    // Fetch faculties from API
+    useEffect(() => {
+        const fetchFaculties = async () => {
+            try {
+                const response = await facultyAPI.getAll();
+                const responseData = response.data as any;
+                const data = responseData?.data || responseData || [];
+                if (Array.isArray(data)) {
+                    setFaculties(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch faculties:', error);
+            }
+        };
+        fetchFaculties();
+    }, []);
+    
+    const myFaculty = useMemo(() => faculties.find(f => f.id === myFacultyId), [myFacultyId, faculties]);
     
     const prodiStats = useMemo(() => {
         const prodiStudents = users.filter(u => (u.role === 'Mahasiswa' || u.role === 'student') && u.facultyId === myFacultyId);

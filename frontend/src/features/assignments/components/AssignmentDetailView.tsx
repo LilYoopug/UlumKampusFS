@@ -2,7 +2,6 @@ import React, { useState, useMemo, ChangeEvent } from 'react';
 import { Assignment, Course, Submission, User } from '../../../../types';
 import { useLanguage } from '../../../../contexts/LanguageContext';
 import { Icon } from '../../../ui/components/Icon';
-import { ALL_USERS } from '../../../../constants';
 import { HafalanRecorder } from '../../../features/resources/components/HafalanRecorder';
 import { numericToLetter } from '../../../../utils/gradeConverter';
 import { gradeAPI } from '../../../../services/apiService';
@@ -449,7 +448,7 @@ export const AssignmentDetailView: React.FC<{
                                 <SubmissionGradingCard
                                     key={`${sub.studentId}-${sub.submittedAt}`}
                                     submission={sub}
-                                    student={ALL_USERS.find(u => u.studentId === sub.studentId)}
+                                    student={undefined}
                                     onSaveGrade={handleSaveGrade}
                                 />
                             ))}

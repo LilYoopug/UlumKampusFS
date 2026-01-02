@@ -3,7 +3,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Course, CourseStatus } from '@/types';
 import { Icon } from '@/src/ui/components/Icon';
 import { ProdiCourseForm } from '@/src/features/prodi/components/ProdiCourseForm';
-import { FACULTIES } from '@/constants';
 import { apiService } from '@/services/apiService';
 
 // Mapping function to convert frontend string IDs to backend integer IDs
