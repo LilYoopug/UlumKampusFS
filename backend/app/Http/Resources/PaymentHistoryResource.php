@@ -23,12 +23,15 @@ class PaymentHistoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->history_id,
+            'id' => $this->id,
+            'history_id' => $this->history_id,
             'title' => $this->title,
             'amount' => $this->amount,
             'date' => $this->payment_date,
+            'payment_date' => $this->payment_date,
             'status' => $this->status,
-            'paymentMethod' => $this->paymentMethod?->method_id ?? 'Unknown',
+            'payment_method_id' => $this->payment_method_id,
+            'paymentMethod' => $this->paymentMethod?->method_id ?? $this->payment_method_id ?? 'Unknown',
         ];
     }
 }

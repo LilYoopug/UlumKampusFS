@@ -153,9 +153,8 @@ class ManagementController extends ApiController
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $users = $query->paginate($perPage);
+        // Get all results
+        $users = $query->get();
 
         return $this->success($users);
     }
@@ -196,9 +195,8 @@ class ManagementController extends ApiController
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $courses = $query->paginate($perPage);
+        // Get all results
+        $courses = $query->get();
 
         return $this->success($courses);
     }
@@ -242,9 +240,8 @@ class ManagementController extends ApiController
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $enrollments = $query->paginate($perPage);
+        // Get all results
+        $enrollments = $query->get();
 
         return $this->success($enrollments);
     }
@@ -645,7 +642,7 @@ class ManagementController extends ApiController
             });
         }
 
-        $registrations = $query->orderBy('created_at', 'desc')->paginate($request->per_page ?? 15);
+        $registrations = $query->orderBy('created_at', 'desc')->get();
 
         return $this->success($registrations, 'Registrations retrieved successfully');
     }

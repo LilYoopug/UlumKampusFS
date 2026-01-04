@@ -95,9 +95,8 @@ class ProdiController extends ApiController
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $courses = $query->paginate($perPage);
+        // Get all results
+        $courses = $query->get();
 
         return $this->success($courses);
     }
@@ -183,9 +182,8 @@ class ProdiController extends ApiController
         $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $lecturers = $query->paginate($perPage);
+        // Get all results
+        $lecturers = $query->get();
 
         return $this->success($lecturers);
     }
@@ -277,9 +275,8 @@ class ProdiController extends ApiController
         $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $students = $query->paginate($perPage);
+        // Get all results
+        $students = $query->get();
 
         return $this->success($students);
     }
@@ -377,9 +374,8 @@ class ProdiController extends ApiController
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 15);
-        $enrollments = $query->paginate($perPage);
+        // Get all results
+        $enrollments = $query->get();
 
         return $this->success($enrollments);
     }

@@ -5,199 +5,220 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
-use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Models\User;
 
 class AssignmentSubmissionSeeder extends Seeder
 {
+    private $feedbackTemplates = [
+        'excellent' => [
+            'Kerja yang sangat luar biasa! Analisis Anda mendalam dan argumen sangat kuat.',
+            'Mashaa Allah, pekerjaan yang sangat baik! Referensi dalil yang digunakan sangat tepat.',
+            'Luar biasa! Struktur tulisan rapi dan pemahaman konsep sangat komprehensif.',
+            'Excellent work! Presentasi visual menarik dan penjelasan sangat jelas.',
+            'Barakallahu fiik! Hafalan sangat lancar dengan tajwid yang baik.',
+        ],
+        'good' => [
+            'Pekerjaan yang baik. Beberapa poin sudah tepat, namun masih bisa ditingkatkan.',
+            'Bagus, namun analisis bisa lebih mendalam. Perhatikan referensi yang digunakan.',
+            'Kerja yang cukup baik. Pertahankan dan tingkatkan di tugas berikutnya.',
+            'Konsep sudah dipahami dengan baik, namun aplikasinya perlu diperdalam.',
+            'Hafalan cukup lancar, namun perlu memperbaiki beberapa makhraj huruf.',
+        ],
+        'average' => [
+            'Pekerjaan cukup memadai. Perlu lebih banyak latihan dan pendalaman materi.',
+            'Jawaban sudah sesuai namun kurang lengkap. Tambahkan lebih banyak referensi.',
+            'Tugas diterima. Mohon perhatikan format dan struktur penulisan.',
+            'Cukup baik, namun argumen perlu lebih kuat dengan dalil yang jelas.',
+            'Hafalan perlu diulang-ulang lagi untuk memperkuat kelancaran.',
+        ],
+        'needs_improvement' => [
+            'Perlu perbaikan signifikan. Silakan konsultasi untuk penjelasan lebih lanjut.',
+            'Tugas belum memenuhi standar. Mohon direvisi sesuai instruksi.',
+            'Banyak bagian yang perlu diperbaiki. Perhatikan feedback yang diberikan.',
+            'Pemahaman konsep masih kurang. Pelajari ulang materi yang diberikan.',
+            'Hafalan belum lancar. Harap latihan lebih intensif dan setorkan ulang.',
+        ],
+    ];
+
     public function run(): void
     {
-        // Create assignment submissions based on frontend constants
-        $submissions = [
-            // AQ101 - Esai Reflektif Pilar Keimanan - GRADED
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Esai Reflektif Pilar Keimanan'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'file_url' => 'assignments/ahmad_faris_pilar_keimanan.pdf',
-                'file_name' => 'Refleksi_Pilar_Keimanan_AhmadFaris.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(2)->setTime(14, 30),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'graded',
-                'grade' => 88,
-                'feedback' => 'Esai yang sangat reflektif dan mendalam. Ahmad berhasil menghubungkan konsep keimanan dengan pengalaman pribadi dengan baik. Referensi Al-Qur\'an yang digunakan relevan dan tepat.',
-            ],
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Esai Reflektif Pilar Keimanan'),
-                'student_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'file_url' => 'assignments/siti_maryam_pilar_keimanan.pdf',
-                'file_name' => 'Refleksi_Pilar_Keimanan_SitiMaryam.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(1)->setTime(10, 15),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'graded',
-                'grade' => 92,
-                'feedback' => 'Penulisan yang sangat sistematis dan terstruktur. Siti menunjukkan pemahaman yang komprehensif tentang pilar-pilar keimanan. Analisis yang disajikan sangat kuat dan argumentatif.',
-            ],
-            
-            // AQ101 - Setoran Hafalan: Tiga Landasan Utama
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Setoran Hafalan: Tiga Landasan Utama'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'file_url' => 'assignments/ahmad_faris_hafalan_tiga_landasan.mp3',
-                'file_name' => 'Hafalan_Tiga_Landasan_AhmadFaris.mp3',
-                'content' => 'Alhamdulillah, saya telah menghafalkan matan Al-Ushul Ats-Tsalatsah dengan lancar. Mohon dikoreksi pelafalannya.',
-                'submitted_at' => now()->subDays(3)->setTime(16, 45),
-                'is_late' => false,
-                'attempt_number' => 2,
-                'status' => 'submitted',
-                'grade' => null,
-                'feedback' => null,
-            ],
-            
-            // FQ201 - Analisis Studi Kasus Riba (Overdue)
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Analisis Studi Kasus Riba'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'file_url' => 'assignments/ahmad_faris_studi_kasus_riba.pdf',
-                'file_name' => 'Analisis_Riba_BankKonvensional.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(5)->setTime(23, 59),
-                'is_late' => true,
-                'attempt_number' => 1,
-                'status' => 'late',
-                'grade' => null,
-                'feedback' => null,
-            ],
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Analisis Studi Kasus Riba'),
-                'student_id' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
-                'file_url' => 'assignments/abdullah_studi_kasus_riba.pdf',
-                'file_name' => 'Analisis_Riba_LembagaKeuangan.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(3)->setTime(20, 30),
-                'is_late' => true,
-                'attempt_number' => 1,
-                'status' => 'late',
-                'grade' => null,
-                'feedback' => null,
-            ],
-            
-            // AD501 - Presentasi Kontribusi Ilmuwan Muslim (Due 20 days ago) - GRADED
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Presentasi Kontribusi Ilmuwan Muslim'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'file_url' => 'assignments/ahmad_faris_kontribusi_ilmuwan.pptx',
-                'file_name' => 'Kontribusi_AlKhwarizmi_AhmadFaris.pptx',
-                'content' => 'Saya memilih Al-Khwarizmi sebagai tokoh yang dianalisis, mengingat kontribusinya yang monumental dalam bidang matematika dan astronomi.',
-                'submitted_at' => now()->subDays(19)->setTime(12, 0),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'graded',
-                'grade' => 95,
-                'feedback' => 'Kerja yang sangat baik, Ahmad! Analisis Anda tentang kontribusi Ibn Al-Haytham dalam bidang optik sangat mendalam dan presentasinya visualnya menarik. Pertahankan!',
-            ],
-            
-            // TR401 - Rancangan RPP Inovatif - GRADED
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Rancangan RPP Inovatif'),
-                'student_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'file_url' => 'assignments/siti_maryam_rpp_pai.pdf',
-                'file_name' => 'RPP_PAI_SMASitiMaryam.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(4)->setTime(15, 20),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'graded',
-                'grade' => 81,
-                'feedback' => 'Konsepnya sudah bagus, namun mohon perjelas lagi bagian asesmen formatifnya. Pastikan terukur dan relevan dengan tujuan pembelajaran. Silakan direvisi.',
-            ],
-            
-            // HD202 - Kritik Sanad Hadis - GRADED
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Kritik Sanad Hadis'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'file_url' => 'assignments/ahmad_faris_kritik_sanad.pdf',
-                'file_name' => 'Kritik_Sanad_Hadis_AhmadFaris.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(1)->setTime(18, 45),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'graded',
-                'grade' => 85,
-                'feedback' => 'Analisis sanad yang baik dan teliti. Ahmad menunjukkan pemahaman yang baik tentang metodologi kritik sanad dasar. Perlu ditingkatkan lagi pada bagian kritik matan.',
-            ],
-            
-            // HD202 - Setoran Hafalan: Hadits Pertama Arba'in
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Setoran Hafalan: Hadits Pertama Arba\'in'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'file_url' => 'assignments/ahmad_faris_hafalan_arbain.mp3',
-                'file_name' => 'Hafalan_Hadits_Pertama_Arbaein_AhmadFaris.mp3',
-                'content' => 'Inilah hafalan saya untuk hadits pertama kitab Arba\'in An-Nawawi tentang niat. Mohon koreksi makhraj dan harakatnya.',
-                'submitted_at' => now()->subHours(12),
-                'is_late' => false,
-                'attempt_number' => 3,
-                'status' => 'submitted',
-                'grade' => null,
-                'feedback' => null,
-            ],
-            
-            // EK305 - Analisis Produk Bank Syariah - GRADED
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Analisis Produk Bank Syariah'),
-                'student_id' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
-                'file_url' => 'assignments/abdullah_produk_bank_syariah.pdf',
-                'file_name' => 'Analisis_KPR_Murabahah_Abdullah.pdf',
-                'content' => null,
-                'submitted_at' => now()->subDays(10)->setTime(11, 30),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'graded',
-                'grade' => 90,
-                'feedback' => 'Laporan analisis yang sangat komprehensif. Abdullah berhasil menjelaskan akad Murabahah dengan jelas dan mengidentifikasi potensi risiko dengan baik. Analisis solusi alternatif juga sangat tepat.',
-            ],
-            
-            // SN701 - Proyek Akhir: Proposal Aplikasi Islami berbasis AI
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Proyek Akhir: Proposal Aplikasi Islami berbasis AI'),
-                'student_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'file_url' => 'assignments/siti_maryam_proposal_ai.pdf',
-                'file_name' => 'Proposal_Aplikasi_QuranChatAI_SitiMaryam.pdf',
-                'content' => 'Proposal untuk aplikasi chatbot berbasis AI yang dapat menjawab pertanyaan seputar Al-Qur\'an dengan referensi tafsir yang terpercaya.',
-                'submitted_at' => now()->subDays(5)->setTime(14, 0),
-                'is_late' => false,
-                'attempt_number' => 1,
-                'status' => 'submitted',
-                'grade' => null,
-                'feedback' => null,
-            ],
-        ];
+        $assignments = Assignment::where('is_published', true)->get();
+        
+        if ($assignments->isEmpty()) {
+            return;
+        }
 
-        foreach ($submissions as $submissionData) {
-            if ($submissionData['assignment_id'] && $submissionData['student_id']) {
-                AssignmentSubmission::updateOrCreate(
-                    [
-                        'assignment_id' => $submissionData['assignment_id'],
-                        'student_id' => $submissionData['student_id']
-                    ],
-                    $submissionData
-                );
+        $submissionCount = 0;
+
+        foreach ($assignments as $assignment) {
+            // Get enrolled students for this course
+            $enrolledStudents = CourseEnrollment::where('course_id', $assignment->course_id)
+                ->whereIn('status', ['enrolled', 'completed'])
+                ->with('student')
+                ->get()
+                ->pluck('student')
+                ->filter();
+            
+            if ($enrolledStudents->isEmpty()) {
+                continue;
+            }
+
+            // 60-90% of enrolled students submit
+            $submissionRate = rand(60, 90) / 100;
+            $numSubmissions = max(1, (int)($enrolledStudents->count() * $submissionRate));
+            $submittingStudents = $enrolledStudents->random(min($numSubmissions, $enrolledStudents->count()));
+
+            foreach ($submittingStudents as $student) {
+                $submission = $this->createSubmission($assignment, $student);
+                if ($submission) {
+                    $submissionCount++;
+                }
             }
         }
+        
+        $this->command->info("Created {$submissionCount} assignment submissions!");
     }
 
-    private function getAssignmentIdByTitle($title)
+    private function createSubmission(Assignment $assignment, User $student): ?AssignmentSubmission
     {
-        $assignment = Assignment::where('title', $title)->first();
-        return $assignment ? $assignment->id : null;
+        $dueDate = $assignment->due_date;
+        $isPastDue = $dueDate < now();
+        
+        // Determine submission timing
+        $isLate = false;
+        $submittedAt = null;
+        
+        if ($isPastDue) {
+            // Assignment is past due - submission was in the past
+            $daysBeforeDue = rand(-5, 3); // -5 to 3 days relative to due date
+            $submittedAt = $dueDate->copy()->addDays($daysBeforeDue);
+            $isLate = $daysBeforeDue > 0;
+        } else {
+            // Assignment still open - some submitted, some will submit later
+            if (rand(1, 100) <= 70) {
+                // 70% already submitted
+                $daysAgo = rand(1, 14);
+                $submittedAt = now()->subDays($daysAgo);
+                $isLate = false;
+            } else {
+                // 30% haven't submitted yet (no submission record)
+                return null;
+            }
+        }
+
+        // Determine status
+        $statuses = ['submitted', 'graded', 'returned'];
+        $statusWeights = [30, 60, 10];
+        
+        if ($isLate) {
+            $status = 'late';
+        } else {
+            $status = $this->weightedRandom($statuses, $statusWeights);
+        }
+
+        // Generate grade if graded
+        $grade = null;
+        $feedback = null;
+        
+        if ($status === 'graded' || $status === 'returned') {
+            $gradeRange = rand(1, 100);
+            if ($gradeRange <= 15) {
+                $grade = rand(60, 69);
+                $feedback = $this->feedbackTemplates['needs_improvement'][array_rand($this->feedbackTemplates['needs_improvement'])];
+            } elseif ($gradeRange <= 35) {
+                $grade = rand(70, 79);
+                $feedback = $this->feedbackTemplates['average'][array_rand($this->feedbackTemplates['average'])];
+            } elseif ($gradeRange <= 70) {
+                $grade = rand(80, 89);
+                $feedback = $this->feedbackTemplates['good'][array_rand($this->feedbackTemplates['good'])];
+            } else {
+                $grade = rand(90, 100);
+                $feedback = $this->feedbackTemplates['excellent'][array_rand($this->feedbackTemplates['excellent'])];
+            }
+        }
+
+        // Generate file info based on submission type
+        $fileUrl = null;
+        $fileName = null;
+        $content = null;
+        
+        $studentNameSlug = str_replace(' ', '_', strtolower($student->name));
+        $assignmentSlug = str_replace([' ', ':', ','], ['_', '', ''], strtolower($assignment->title));
+        
+        switch ($assignment->submission_type) {
+            case 'file':
+                $extensions = explode(',', $assignment->allowed_file_types ?? 'pdf');
+                $ext = trim($extensions[0]);
+                $fileName = "{$student->nim}_{$studentNameSlug}_{$assignmentSlug}.{$ext}";
+                $fileUrl = "assignments/{$fileName}";
+                break;
+            case 'hafalan':
+                $fileName = "hafalan_{$student->nim}_{$assignmentSlug}.mp3";
+                $fileUrl = "hafalan/{$fileName}";
+                $content = "Rekaman hafalan untuk tugas: {$assignment->title}";
+                break;
+            case 'text':
+                $content = $this->generateTextContent($assignment->title);
+                break;
+            case 'quiz':
+                $content = json_encode(['answers' => $this->generateQuizAnswers()]);
+                break;
+        }
+
+        return AssignmentSubmission::updateOrCreate(
+            [
+                'assignment_id' => $assignment->id,
+                'student_id' => $student->id,
+            ],
+            [
+                'file_url' => $fileUrl,
+                'file_name' => $fileName,
+                'content' => $content,
+                'submitted_at' => $submittedAt,
+                'is_late' => $isLate,
+                'attempt_number' => $assignment->submission_type === 'hafalan' ? rand(1, $assignment->attempts_allowed) : 1,
+                'status' => $status,
+                'grade' => $grade,
+                'feedback' => $feedback,
+            ]
+        );
     }
 
-    private function getUserIdByEmail($email)
+    private function weightedRandom(array $items, array $weights): string
     {
-        $user = User::where('email', $email)->first();
-        return $user ? $user->id : null;
+        $totalWeight = array_sum($weights);
+        $random = rand(1, $totalWeight);
+        
+        $current = 0;
+        foreach ($items as $index => $item) {
+            $current += $weights[$index];
+            if ($random <= $current) {
+                return $item;
+            }
+        }
+        
+        return $items[0];
+    }
+
+    private function generateTextContent(string $title): string
+    {
+        $paragraphs = [
+            "Bismillahirrahmanirrahim. Dalam menjawab tugas tentang {$title}, saya akan menjelaskan berdasarkan pemahaman yang telah saya pelajari dari berbagai referensi.",
+            "Menurut pandangan ulama, konsep ini memiliki dasar yang kuat dalam Al-Qur'an dan As-Sunnah. Dalil yang mendukung hal ini antara lain...",
+            "Dari analisis yang saya lakukan, dapat disimpulkan bahwa pemahaman yang benar tentang topik ini sangat penting untuk diamalkan dalam kehidupan sehari-hari.",
+            "Wallahu a'lam bishawab. Semoga jawaban ini dapat memberikan pemahaman yang bermanfaat.",
+        ];
+        
+        return implode("\n\n", $paragraphs);
+    }
+
+    private function generateQuizAnswers(): array
+    {
+        $answers = [];
+        for ($i = 1; $i <= rand(5, 10); $i++) {
+            $answers["q{$i}"] = ['A', 'B', 'C', 'D'][array_rand(['A', 'B', 'C', 'D'])];
+        }
+        return $answers;
     }
 }

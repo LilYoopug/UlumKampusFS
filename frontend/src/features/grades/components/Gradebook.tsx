@@ -411,59 +411,116 @@ export const Gradebook: React.FC<GradebookProps> = ({ currentUser, users, onUpda
                             </button>
                         </nav>
                     </div>
-                    <div className="p-6">
+                    <div className="p-4 lg:p-6">
                         {activeTab === 'progress' && (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300">
-                                        <tr>
-                                            <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Mahasiswa</th>
-                                            <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Progres</th>
-                                            <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Rata-rata</th>
-                                            <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Status</th>
-                                            <th className="px-4 py-3 text-end text-slate-700 dark:text-slate-300">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {studentProgress.map(sp => {
-                                            const student = users.find(u => u.studentId === sp.studentId);
-                                            if (!student) return null;
-                                            return (
-                                                <tr key={student.studentId} className="border-b dark:border-slate-700">
-                                                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{student.name}</td>
-                                                    <td className="px-4 py-3">
-                                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
-                                                            <div className="bg-brand-emerald-500 h-2.5 rounded-full" style={{ width: `${sp.progress}%` }}></div>
+                            <>
+                                {/* Desktop Table View */}
+                                <div className="hidden lg:block overflow-x-auto">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300">
+                                            <tr>
+                                                <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Mahasiswa</th>
+                                                <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Progres</th>
+                                                <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Rata-rata</th>
+                                                <th className="px-4 py-3 text-slate-700 dark:text-slate-300">Status</th>
+                                                <th className="px-4 py-3 text-end text-slate-700 dark:text-slate-300">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {studentProgress.map(sp => {
+                                                const student = users.find(u => u.studentId === sp.studentId);
+                                                if (!student) return null;
+                                                return (
+                                                    <tr key={student.studentId} className="border-b dark:border-slate-700">
+                                                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{student.name}</td>
+                                                        <td className="px-4 py-3">
+                                                            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                                                                <div className="bg-brand-emerald-500 h-2.5 rounded-full" style={{ width: `${sp.progress}%` }}></div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{sp.averageGrade?.toFixed(1) || '-'}</td>
+                                                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                                                            {sp.status === 'Completed' ? 'Lulus' : 'Belum Lulus'}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-end">
+                                                            <div className="flex justify-end gap-2">
+                                                                {sp.status === 'Completed' ? (
+                                                                    <button onClick={() => handleViewCertificate(student.studentId)} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-md">Lihat Sertifikat</button>
+                                                                ) : (
+                                                                    <button onClick={() => handleMarkAsComplete(student.studentId)} className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-md">Tandai Lulus</button>
+                                                                )}
+                                                                 <button onClick={() => handleOpenBadgeModal(student.studentId)} className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded-md">Beri Lencana</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Mobile Card View */}
+                                <div className="lg:hidden space-y-3">
+                                    {studentProgress.map(sp => {
+                                        const student = users.find(u => u.studentId === sp.studentId);
+                                        if (!student) return null;
+                                        return (
+                                            <div key={student.studentId} className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-10 h-10 rounded-full bg-brand-emerald-100 dark:bg-brand-emerald-900/50 flex items-center justify-center text-brand-emerald-600 dark:text-brand-emerald-400 font-semibold">
+                                                        {student.name.charAt(0)}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold text-slate-800 dark:text-white text-base truncate">{student.name}</p>
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${sp.status === 'Completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400'}`}>
+                                                            {sp.status === 'Completed' ? 'Lulus' : 'Belum Lulus'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                                    <div>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Progres</p>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                                                <div className="bg-brand-emerald-500 h-2 rounded-full" style={{ width: `${sp.progress}%` }}></div>
+                                                            </div>
+                                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{sp.progress}%</span>
                                                         </div>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{sp.averageGrade?.toFixed(1) || '-'}</td>
-                                                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                                        {sp.status === 'Completed' ? 'Lulus' : 'Belum Lulus'}
-                                                    </td>
-                                                    <td className="px-4 py-3 text-end">
-                                                        <div className="flex justify-end gap-2">
-                                                            {sp.status === 'Completed' ? (
-                                                                <button onClick={() => handleViewCertificate(student.studentId)} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-md">Lihat Sertifikat</button>
-                                                            ) : (
-                                                                <button onClick={() => handleMarkAsComplete(student.studentId)} className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-md">Tandai Lulus</button>
-                                                            )}
-                                                             <button onClick={() => handleOpenBadgeModal(student.studentId)} className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded-md">Beri Lencana</button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Rata-rata Nilai</p>
+                                                        <p className="text-lg font-bold text-slate-800 dark:text-white">{sp.averageGrade?.toFixed(1) || '-'}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-2">
+                                                    {sp.status === 'Completed' ? (
+                                                        <button onClick={() => handleViewCertificate(student.studentId)} className="flex-1 py-2.5 text-sm font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg active:scale-[0.98] transition-all">
+                                                            Lihat Sertifikat
+                                                        </button>
+                                                    ) : (
+                                                        <button onClick={() => handleMarkAsComplete(student.studentId)} className="flex-1 py-2.5 text-sm font-medium bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 rounded-lg active:scale-[0.98] transition-all">
+                                                            Tandai Lulus
+                                                        </button>
+                                                    )}
+                                                    <button onClick={() => handleOpenBadgeModal(student.studentId)} className="flex-1 py-2.5 text-sm font-medium bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 rounded-lg active:scale-[0.98] transition-all">
+                                                        Beri Lencana
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </>
                         )}
                          {activeTab === 'assignments' && (
                              <>
-                             {/* Add Assignment Button - only show when on assignments tab */}
-                             <div className="mb-4 flex justify-end">
-                                 <button 
-                                     onClick={() => setIsAssignmentFormOpen(true)} 
-                                     className="flex items-center gap-2 px-4 py-2 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 transition-colors"
+                             {/* Add Assignment Button */}
+                             <div className="mb-4">
+                                 <button
+                                     onClick={() => setIsAssignmentFormOpen(true)}
+                                     className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-brand-emerald-600 text-white font-semibold rounded-xl hover:bg-brand-emerald-700 transition-all active:scale-[0.98]"
                                  >
                                      <Icon className="w-5 h-5">
                                          <line x1="12" y1="5" x2="12" y2="19"/>
@@ -472,7 +529,9 @@ export const Gradebook: React.FC<GradebookProps> = ({ currentUser, users, onUpda
                                      Tambah Tugas
                                  </button>
                              </div>
-                             <div className="overflow-x-auto">
+
+                             {/* Desktop Table View */}
+                             <div className="hidden lg:block overflow-x-auto">
                                  <table className="w-full text-sm text-left">
                                      <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300">
                                          <tr>
@@ -487,50 +546,112 @@ export const Gradebook: React.FC<GradebookProps> = ({ currentUser, users, onUpda
                                              const stats = getAssignmentStats(assignment);
                                              return (
                                                  <tr key={assignment.id} className="border-b dark:border-slate-700">
-                                             <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{assignment.title}</td>
-                                             <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                                                 {assignment.dueDate 
-                                                     ? (() => {
-                                                         const date = new Date(assignment.dueDate);
-                                                         return isNaN(date.getTime()) 
-                                                             ? 'Tidak ada tanggal' 
-                                                             : date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-                                                     })()
-                                                     : 'Tidak ada tanggal'
-                                                 }
-                                             </td>
-                                             <td className="px-6 py-4">
-                                                 <div className="flex flex-col gap-1">
-                                                     <span className="text-slate-600 dark:text-slate-300">
-                                                         {stats.submittedCount} / {stats.totalStudents || totalStudents} terkirim
-                                                     </span>
-                                                     {stats.pendingGrading > 0 && (
-                                                         <span className="text-xs text-amber-600 dark:text-amber-400">
-                                                             {stats.pendingGrading} belum dinilai
-                                                         </span>
-                                                     )}
-                                                 </div>
-                                             </td>
-                                             <td className="px-6 py-4 text-end">
-                                                 <div className="flex justify-end gap-3">
-                                                     <button 
-                                                         onClick={() => {
-                                                             setEditingAssignment(assignment);
-                                                             setIsAssignmentFormOpen(true);
-                                                         }}
-                                                         className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                                                         title="Edit assignment"
-                                                     >
-                                                         Edit
-                                                     </button>
-                                                     <button onClick={() => onSelectAssignment(assignment)} className="font-semibold text-brand-emerald-600 dark:text-brand-emerald-500 hover:underline">{t('gradebook_action_grade')}</button>
-                                                 </div>
-                                             </td>
+                                                     <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{assignment.title}</td>
+                                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                                                         {assignment.dueDate
+                                                             ? (() => {
+                                                                 const date = new Date(assignment.dueDate);
+                                                                 return isNaN(date.getTime())
+                                                                     ? 'Tidak ada tanggal'
+                                                                     : date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+                                                             })()
+                                                             : 'Tidak ada tanggal'
+                                                         }
+                                                     </td>
+                                                     <td className="px-6 py-4">
+                                                         <div className="flex flex-col gap-1">
+                                                             <span className="text-slate-600 dark:text-slate-300">
+                                                                 {stats.submittedCount} / {stats.totalStudents || totalStudents} terkirim
+                                                             </span>
+                                                             {stats.pendingGrading > 0 && (
+                                                                 <span className="text-xs text-amber-600 dark:text-amber-400">
+                                                                     {stats.pendingGrading} belum dinilai
+                                                                 </span>
+                                                             )}
+                                                         </div>
+                                                     </td>
+                                                     <td className="px-6 py-4 text-end">
+                                                         <div className="flex justify-end gap-3">
+                                                             <button
+                                                                 onClick={() => {
+                                                                     setEditingAssignment(assignment);
+                                                                     setIsAssignmentFormOpen(true);
+                                                                 }}
+                                                                 className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                                                             >
+                                                                 Edit
+                                                             </button>
+                                                             <button onClick={() => onSelectAssignment(assignment)} className="font-semibold text-brand-emerald-600 dark:text-brand-emerald-500 hover:underline">{t('gradebook_action_grade')}</button>
+                                                         </div>
+                                                     </td>
                                                  </tr>
                                              );
                                          })}
                                      </tbody>
                                  </table>
+                             </div>
+
+                             {/* Mobile Card View */}
+                             <div className="lg:hidden space-y-3">
+                                 {courseAssignments.map(assignment => {
+                                     const stats = getAssignmentStats(assignment);
+                                     const dueDate = assignment.dueDate ? new Date(assignment.dueDate) : null;
+                                     const isOverdue = dueDate && dueDate < new Date();
+                                     return (
+                                         <div key={assignment.id} className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                             <div className="mb-3">
+                                                 <h4 className="font-semibold text-slate-800 dark:text-white text-base">{assignment.title}</h4>
+                                                 <p className={`text-sm mt-1 ${isOverdue ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'}`}>
+                                                     {dueDate && !isNaN(dueDate.getTime())
+                                                         ? `Tenggat: ${dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}`
+                                                         : 'Tidak ada tenggat'
+                                                     }
+                                                 </p>
+                                             </div>
+
+                                             <div className="flex items-center gap-4 mb-4">
+                                                 <div className="flex-1">
+                                                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Pengumpulan</p>
+                                                     <div className="flex items-center gap-2">
+                                                         <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                                             <div
+                                                                 className="bg-brand-emerald-500 h-2 rounded-full"
+                                                                 style={{ width: `${(stats.submittedCount / (stats.totalStudents || totalStudents)) * 100}%` }}
+                                                             ></div>
+                                                         </div>
+                                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                             {stats.submittedCount}/{stats.totalStudents || totalStudents}
+                                                         </span>
+                                                     </div>
+                                                 </div>
+                                                 {stats.pendingGrading > 0 && (
+                                                     <div className="text-center">
+                                                         <p className="text-lg font-bold text-amber-500">{stats.pendingGrading}</p>
+                                                         <p className="text-xs text-slate-500">Belum dinilai</p>
+                                                     </div>
+                                                 )}
+                                             </div>
+
+                                             <div className="flex gap-2">
+                                                 <button
+                                                     onClick={() => {
+                                                         setEditingAssignment(assignment);
+                                                         setIsAssignmentFormOpen(true);
+                                                     }}
+                                                     className="flex-1 py-2.5 text-sm font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg active:scale-[0.98] transition-all"
+                                                 >
+                                                     Edit
+                                                 </button>
+                                                 <button
+                                                     onClick={() => onSelectAssignment(assignment)}
+                                                     className="flex-1 py-2.5 text-sm font-medium bg-brand-emerald-100 dark:bg-brand-emerald-900/50 text-brand-emerald-700 dark:text-brand-emerald-400 rounded-lg active:scale-[0.98] transition-all"
+                                                 >
+                                                     {t('gradebook_action_grade')}
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     );
+                                 })}
                              </div>
                              </>
                          )}

@@ -567,13 +567,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('payment-histories')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\PaymentHistoryController@index');
+        Route::get('/user/{userId}', 'App\Http\Controllers\Api\PaymentHistoryController@byUser');
+        Route::get('/status/{status}', 'App\Http\Controllers\Api\PaymentHistoryController@byStatus');
+        Route::get('/method/{paymentMethodId}', 'App\Http\Controllers\Api\PaymentHistoryController@byPaymentMethod');
         Route::get('/{id}', 'App\Http\Controllers\Api\PaymentHistoryController@show');
         Route::post('/', 'App\Http\Controllers\Api\PaymentHistoryController@store');
         Route::put('/{id}', 'App\Http\Controllers\Api\PaymentHistoryController@update');
         Route::delete('/{id}', 'App\Http\Controllers\Api\PaymentHistoryController@destroy');
-        Route::get('/user/{userId}', 'App\Http\Controllers\Api\PaymentHistoryController@byUser');
-        Route::get('/status/{status}', 'App\Http\Controllers\Api\PaymentHistoryController@byStatus');
-        Route::get('/method/{paymentMethodId}', 'App\Http\Controllers\Api\PaymentHistoryController@byPaymentMethod');
     });
 
     // ------------------------------------------------------------------------

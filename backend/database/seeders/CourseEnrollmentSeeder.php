@@ -11,163 +11,83 @@ class CourseEnrollmentSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create course enrollments based on frontend constants (COURSES_DATA)
-        // Ahmad Faris enrollments based on progress > 0 in frontend
-        $enrollments = [
-            // Ahmad Faris - MAHASISWA_USER enrollments based on frontend COURSES_DATA
-            [
-                'course_id' => $this->getCourseIdByCode('AQ101'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(60),
-                'enrolled_at' => now()->subDays(60),
-                'status' => 'enrolled',
-                'progress_percentage' => 75,
-                'completed_modules' => 2,
-                'total_modules' => 3,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('FQ201'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(90),
-                'enrolled_at' => now()->subDays(90),
-                'status' => 'completed',
-                'progress_percentage' => 100,
-                'completed_modules' => 3,
-                'total_modules' => 3,
-                'completed_at' => now()->subDays(30),
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('EK301'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(45),
-                'enrolled_at' => now()->subDays(45),
-                'status' => 'enrolled',
-                'progress_percentage' => 95,
-                'completed_modules' => 2,
-                'total_modules' => 3,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('TR401'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(14),
-                'enrolled_at' => now()->subDays(14),
-                'status' => 'enrolled',
-                'progress_percentage' => 10,
-                'completed_modules' => 0,
-                'total_modules' => 2,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('HD202'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(30),
-                'enrolled_at' => now()->subDays(30),
-                'status' => 'enrolled',
-                'progress_percentage' => 25,
-                'completed_modules' => 1,
-                'total_modules' => 3,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('AD501'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(120),
-                'enrolled_at' => now()->subDays(120),
-                'status' => 'completed',
-                'progress_percentage' => 100,
-                'completed_modules' => 3,
-                'total_modules' => 3,
-                'completed_at' => now()->subDays(60),
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('PS601'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(7),
-                'enrolled_at' => now()->subDays(7),
-                'status' => 'enrolled',
-                'progress_percentage' => 5,
-                'completed_modules' => 0,
-                'total_modules' => 2,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('SN701'),
-                'student_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(21),
-                'enrolled_at' => now()->subDays(21),
-                'status' => 'enrolled',
-                'progress_percentage' => 15,
-                'completed_modules' => 0,
-                'total_modules' => 3,
-            ],
-            
-            // Siti Maryam - enrolled in courses
-            [
-                'course_id' => $this->getCourseIdByCode('AQ101'),
-                'student_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(90),
-                'enrolled_at' => now()->subDays(90),
-                'status' => 'completed',
-                'progress_percentage' => 100,
-                'completed_modules' => 3,
-                'total_modules' => 3,
-                'completed_at' => now()->subDays(30),
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('TR401'),
-                'student_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(20),
-                'enrolled_at' => now()->subDays(20),
-                'status' => 'enrolled',
-                'progress_percentage' => 50,
-                'completed_modules' => 1,
-                'total_modules' => 2,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('SN701'),
-                'student_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(10),
-                'enrolled_at' => now()->subDays(10),
-                'status' => 'enrolled',
-                'progress_percentage' => 67,
-                'completed_modules' => 2,
-                'total_modules' => 3,
-            ],
-            
-            // Abdullah - enrolled in courses
-            [
-                'course_id' => $this->getCourseIdByCode('FQ201'),
-                'student_id' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(25),
-                'enrolled_at' => now()->subDays(25),
-                'status' => 'enrolled',
-                'progress_percentage' => 33,
-                'completed_modules' => 1,
-                'total_modules' => 3,
-            ],
-            [
-                'course_id' => $this->getCourseIdByCode('EK305'),
-                'student_id' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
-                'enrollment_date' => now()->subDays(15),
-                'enrolled_at' => now()->subDays(15),
-                'status' => 'enrolled',
-                'progress_percentage' => 33,
-                'completed_modules' => 1,
-                'total_modules' => 3,
-            ],
-        ];
+        // Get all students and courses
+        $students = User::whereIn('role', ['student', 'maba'])->get();
+        $courses = Course::where('status', 'Published')->get();
+        
+        if ($students->isEmpty() || $courses->isEmpty()) {
+            return;
+        }
 
-        foreach ($enrollments as $enrollmentData) {
-            if ($enrollmentData['course_id'] && $enrollmentData['student_id']) {
+        $statuses = ['enrolled', 'completed', 'dropped', 'pending'];
+        $statusWeights = [60, 25, 10, 5]; // 60% enrolled, 25% completed, 10% dropped, 5% pending
+        
+        $enrollmentCount = 0;
+        
+        // Each student enrolls in 3-8 courses
+        foreach ($students as $student) {
+            $numCourses = rand(3, 8);
+            $selectedCourses = $courses->random(min($numCourses, $courses->count()));
+            
+            foreach ($selectedCourses as $course) {
+                $status = $this->weightedRandom($statuses, $statusWeights);
+                $enrollmentDate = now()->subDays(rand(1, 365));
+                
+                $progressPercentage = match($status) {
+                    'completed' => 100,
+                    'dropped' => rand(5, 40),
+                    'pending' => 0,
+                    default => rand(10, 95),
+                };
+                
+                $totalModules = rand(3, 12);
+                $completedModules = (int)(($progressPercentage / 100) * $totalModules);
+                
+                $completedAt = null;
+                if ($status === 'completed') {
+                    $completedAt = $enrollmentDate->copy()->addDays(rand(30, 120));
+                }
+                
                 CourseEnrollment::updateOrCreate(
                     [
-                        'course_id' => $enrollmentData['course_id'],
-                        'student_id' => $enrollmentData['student_id']
+                        'course_id' => $course->id,
+                        'student_id' => $student->id,
                     ],
-                    $enrollmentData
+                    [
+                        'enrollment_date' => $enrollmentDate,
+                        'enrolled_at' => $enrollmentDate,
+                        'status' => $status,
+                        'progress_percentage' => $progressPercentage,
+                        'completed_modules' => $completedModules,
+                        'total_modules' => $totalModules,
+                        'completed_at' => $completedAt,
+                    ]
                 );
+                
+                $enrollmentCount++;
             }
         }
         
         // Update current_enrollment count for each course
         $this->updateCourseEnrollmentCounts();
+        
+        $this->command->info("Created {$enrollmentCount} course enrollments!");
+    }
+    
+    private function weightedRandom(array $items, array $weights): string
+    {
+        $totalWeight = array_sum($weights);
+        $random = rand(1, $totalWeight);
+        
+        $current = 0;
+        foreach ($items as $index => $item) {
+            $current += $weights[$index];
+            if ($random <= $current) {
+                return $item;
+            }
+        }
+        
+        return $items[0];
     }
     
     private function updateCourseEnrollmentCounts()
@@ -177,17 +97,5 @@ class CourseEnrollmentSeeder extends Seeder
             $count = CourseEnrollment::where('course_id', $course->id)->count();
             $course->update(['current_enrollment' => $count]);
         }
-    }
-
-    private function getCourseIdByCode($code)
-    {
-        $course = Course::where('code', $code)->first();
-        return $course ? $course->id : null;
-    }
-
-    private function getUserIdByEmail($email)
-    {
-        $user = User::where('email', $email)->first();
-        return $user ? $user->id : null;
     }
 }

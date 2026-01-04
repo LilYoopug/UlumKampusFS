@@ -18,9 +18,8 @@ class MajorController extends ApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = $request->input('per_page', 15);
-        $majors = Major::active()->with('faculty')->paginate($perPage);
-        return $this->paginated(MajorResource::collection($majors));
+        $majors = Major::active()->with('faculty')->get();
+        return $this->success(MajorResource::collection($majors));
     }
 
     /**

@@ -2,15 +2,12 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Icon } from '@/src/ui/components/Icon';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LanguageSwitcher } from '@/src/features/shared/components/LanguageSwitcher';
-import { RoleSwitcher } from '@/src/ui/components/RoleSwitcher';
-import { User, Notification, NotificationLink, Page } from '@/types';
+import { Notification, NotificationLink, Page } from '@/types';
 import { timeAgo } from '@/utils/time';
 
 interface HeaderProps {
     toggleDarkMode: () => void;
     isDarkMode: boolean;
-    currentUser: User;
-    setCurrentUser: (user: User) => void;
     navigateTo: (page: Page) => void;
     handleNotificationClick: (link: NotificationLink) => void;
     onToggleMobileSidebar: () => void;
@@ -19,7 +16,7 @@ interface HeaderProps {
     onMarkAllNotificationsAsRead: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ toggleDarkMode, isDarkMode, currentUser, setCurrentUser, navigateTo, handleNotificationClick, onToggleMobileSidebar, notifications, onMarkNotificationAsRead, onMarkAllNotificationsAsRead }) => {
+export const Header: React.FC<HeaderProps> = ({ toggleDarkMode, isDarkMode, navigateTo, handleNotificationClick, onToggleMobileSidebar, notifications, onMarkNotificationAsRead, onMarkAllNotificationsAsRead }) => {
   const { t } = useLanguage();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -67,7 +64,6 @@ export const Header: React.FC<HeaderProps> = ({ toggleDarkMode, isDarkMode, curr
       <div className="hidden sm:flex flex-1"></div>
 
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <RoleSwitcher currentUser={currentUser} setCurrentUser={setCurrentUser} />
         <LanguageSwitcher />
          <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
            {isDarkMode ? (

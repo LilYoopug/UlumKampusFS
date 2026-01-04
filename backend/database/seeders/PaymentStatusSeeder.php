@@ -19,8 +19,8 @@ class PaymentStatusSeeder extends Seeder
         $currentYear = Date::now()->year;
         $currentMonth = Date::now()->month;
         
-        // Get all students (MABA and Mahasiswa)
-        $students = User::whereIn('role', ['MABA', 'Mahasiswa'])->get();
+        // Get all students (maba and student roles)
+        $students = User::whereIn('role', ['maba', 'student'])->get();
         
         // Get all payment items
         $paymentItems = PaymentItem::all();
@@ -63,8 +63,8 @@ class PaymentStatusSeeder extends Seeder
                         $status = 'paid';
                         $paidAt = Date::now()->subMonths(3);
                     } elseif ($item->item_id === 'semester') {
-                        $status = 'pending';
-                        $paidAt = null;
+                        $status = 'paid';
+                        $paidAt = Date::now()->subMonths(1);
                     } elseif ($item->item_id === 'exam') {
                         $status = 'unpaid';
                         $paidAt = null;
@@ -84,27 +84,31 @@ class PaymentStatusSeeder extends Seeder
                 } elseif ($student->email === 'budi.santoso@maba.ulumcampus.com') {
                     // Budi (MABA) - new student
                     if ($item->item_id === 'registration') {
-                        $status = 'pending';
-                        $paidAt = null;
+                        $status = 'paid';
+                        $paidAt = Date::now()->subDays(10);
                     } elseif ($item->item_id === 'semester') {
                         $status = 'unpaid';
                         $paidAt = null;
                     } elseif ($item->item_id === 'exam') {
-                        $status = 'paid';
-                        $paidAt = Date::now()->subDays(5);
-                    }
-                } else {
-                    // Other students - random status for variety
-                    $random = rand(1, 10);
-                    if ($random <= 4) {
-                        $status = 'paid';
-                        $paidAt = Date::now()->subDays(rand(1, 60));
-                    } elseif ($random <= 6) {
-                        $status = 'pending';
-                        $paidAt = null;
-                    } else {
                         $status = 'unpaid';
                         $paidAt = null;
+                    }
+                } else {
+                    // Other students - ensure at least one paid payment
+                    // Registration is always paid (first payment)
+                    if ($item->item_id === 'registration') {
+                        $status = 'paid';
+                        $paidAt = Date::now()->subDays(rand(30, 120));
+                    } else {
+                        // Random status for other payments (50/50 paid/unpaid)
+                        $random = rand(1, 10);
+                        if ($random <= 5) {
+                            $status = 'paid';
+                            $paidAt = Date::now()->subDays(rand(1, 60));
+                        } else {
+                            $status = 'unpaid';
+                            $paidAt = null;
+                        }
                     }
                 }
 

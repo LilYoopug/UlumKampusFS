@@ -32,6 +32,12 @@ class PaymentItemSeeder extends Seeder
                 'description' => 'Biaya ujian semester',
                 'amount' => 250000,
             ],
+            [
+                'item_id' => 'other',
+                'title' => 'Biaya Lain-lain',
+                'description' => 'Other academic fees',
+                'amount' => 1000000,
+            ],
         ];
 
         foreach ($paymentItems as $item) {

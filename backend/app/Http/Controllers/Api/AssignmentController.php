@@ -17,7 +17,6 @@ class AssignmentController extends ApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = $request->input('per_page', 15);
         $courseId = $request->input('course_id');
 
         $query = Assignment::with(['course', 'module', 'creator', 'submissions.student']);
@@ -29,9 +28,9 @@ class AssignmentController extends ApiController
 
         $assignments = $query->published()
             ->ordered()
-            ->paginate($perPage);
+            ->get();
 
-        return $this->paginated(
+        return $this->success(
             AssignmentResource::collection($assignments),
             'Assignments retrieved successfully'
         );

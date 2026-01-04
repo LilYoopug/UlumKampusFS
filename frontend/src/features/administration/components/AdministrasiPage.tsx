@@ -46,17 +46,27 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
         try {
           const historyResponse = await apiService.get(`/payment-histories/user/${currentUser.id}`);
           if (historyResponse.data && historyResponse.data.data) {
-            const history = historyResponse.data.data.map((item: any) => ({
-              id: item.history_id,
-              title: item.title,
-              amount: item.amount,
-              date: item.payment_date.split('T')[0],
-              status: item.status,
-              paymentMethod: item.payment_method_id,
-            }));
+            // Use a Set to track unique history_ids and prevent duplicates
+            const seenIds = new Set<string>();
+            const history = historyResponse.data.data
+              .filter((item: any) => {
+                const uniqueKey = item.history_id || item.id;
+                if (seenIds.has(uniqueKey)) return false;
+                seenIds.add(uniqueKey);
+                return true;
+              })
+              .map((item: any) => ({
+                id: item.id || item.history_id,
+                title: item.title,
+                amount: item.amount,
+                date: item.payment_date ? item.payment_date.split('T')[0] : item.date,
+                status: item.status,
+                paymentMethod: item.payment_method_id || item.paymentMethod,
+              }));
             setPaymentHistory(history);
           }
         } catch (error) {
+          console.error('Error fetching payment history:', error);
         }
       } catch (error) {
         console.error('Error fetching payment data:', error);
@@ -217,15 +227,15 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                  <div className="p-5 flex flex-col h-full">
                    <div className="flex justify-between items-start mb-3">
                      <h3 className="text-lg font-bold text-slate-800 dark:text-white">
-                       {t(item.titleKey as any)}
+                       {item.titleKey?.startsWith('administrasi_') || item.titleKey?.startsWith('payment_') ? t(item.titleKey as any) : item.titleKey}
                      </h3>
                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(item.status)}`}>
                        {getStatusText(item.status)}
                      </span>
                    </div>
-                   
+
                    <p className="text-slate-600 dark:text-slate-300 mb-4 text-sm flex-grow">
-                     {t(item.descriptionKey as any)}
+                     {item.descriptionKey?.startsWith('administrasi_') || item.descriptionKey?.startsWith('payment_') ? t(item.descriptionKey as any) : item.descriptionKey}
                    </p>
                    
                     {item.dueDate && (
@@ -349,9 +359,9 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-slate-800 dark:text-white">
-                      {t('administrasi_make_payment')} - {t(selectedPayment.titleKey as any)}
+                      {t('administrasi_make_payment')} - {selectedPayment.titleKey?.startsWith('administrasi_') || selectedPayment.titleKey?.startsWith('payment_') ? t(selectedPayment.titleKey as any) : selectedPayment.titleKey}
                     </h3>
-                    <button 
+                    <button
                       onClick={() => setSelectedPayment(null)}
                       className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                     >
@@ -360,9 +370,9 @@ export const AdministrasiPage: React.FC<{ currentUser: User }> = ({ currentUser 
                       </svg>
                     </button>
                   </div>
-                  
+
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-4">
-                    {t(selectedPayment.descriptionKey as any)}
+                    {selectedPayment.descriptionKey?.startsWith('administrasi_') || selectedPayment.descriptionKey?.startsWith('payment_') ? t(selectedPayment.descriptionKey as any) : selectedPayment.descriptionKey}
                   </p>
                   
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">

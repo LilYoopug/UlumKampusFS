@@ -4,135 +4,161 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Grade;
+use App\Models\AssignmentSubmission;
 use App\Models\Assignment;
 use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Models\User;
 
 class GradeSeeder extends Seeder
 {
+    private $gradeComments = [
+        'A+' => [
+            'Luar biasa! Kerja yang sangat memuaskan dengan pemahaman mendalam.',
+            'Exceptional work! Menunjukkan penguasaan materi yang sempurna.',
+            'Mashaa Allah, hasil yang sangat membanggakan. Pertahankan!',
+            'Outstanding performance. Contoh teladan bagi mahasiswa lain.',
+        ],
+        'A' => [
+            'Sangat baik! Pemahaman konsep yang kuat dan aplikasi yang tepat.',
+            'Excellent! Menunjukkan kemampuan analisis yang baik.',
+            'Kerja yang sangat memuaskan. Terus tingkatkan!',
+            'Barakallahu fiik! Hasil yang sangat baik.',
+        ],
+        'A-' => [
+            'Bagus sekali! Sedikit perbaikan dan bisa lebih sempurna.',
+            'Hasil yang sangat baik dengan beberapa catatan kecil.',
+            'Pemahaman yang baik, terus asah kemampuan analisis.',
+        ],
+        'B+' => [
+            'Baik! Pemahaman cukup solid, perlu pendalaman di beberapa area.',
+            'Kerja yang baik. Perhatikan detail untuk hasil lebih optimal.',
+            'Sudah di jalur yang benar, tingkatkan konsistensi.',
+        ],
+        'B' => [
+            'Cukup baik. Perlu lebih banyak latihan dan pendalaman materi.',
+            'Pemahaman dasar sudah ada, perlu dikembangkan lebih lanjut.',
+            'Hasil memadai, namun masih banyak ruang untuk perbaikan.',
+        ],
+        'B-' => [
+            'Cukup. Perlu usaha lebih untuk memahami konsep secara mendalam.',
+            'Hasil bisa lebih baik dengan persiapan yang lebih matang.',
+        ],
+        'C+' => [
+            'Perlu perbaikan. Banyak konsep yang belum dipahami dengan baik.',
+            'Hasil di bawah harapan. Konsultasikan kesulitan yang dihadapi.',
+        ],
+        'C' => [
+            'Minimum passing. Perlu kerja keras untuk meningkatkan pemahaman.',
+            'Batas lulus. Sangat disarankan untuk mengikuti remedial.',
+        ],
+        'D' => [
+            'Tidak memenuhi standar. Perlu mengulang atau remedial.',
+            'Pemahaman sangat kurang. Harap konsultasi dengan dosen.',
+        ],
+        'E' => [
+            'Tidak lulus. Wajib mengulang mata kuliah ini.',
+            'Gagal memenuhi kompetensi minimum. Perlu persiapan lebih baik.',
+        ],
+    ];
+
     public function run(): void
     {
-        // Create assignment-level grades based on frontend constants
-        $grades = [
-            // Ahmad Faris - AQ101 Esai Reflektif Pilar Keimanan
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Esai Reflektif Pilar Keimanan'),
-                'user_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'grade' => 92.00,
-                'grade_letter' => 'A',
-                'comments' => 'Tulisan yang sangat baik dengan analisis mendalam. Referensi Al-Qur\'an dan hadis yang digunakan relevan dan kuat. Pertahankan kualitas ini.',
-            ],
-            
-            // Siti Maryam - AQ101 Esai Reflektif Pilar Keimanan
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Esai Reflektif Pilar Keimanan'),
-                'user_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'grade' => 95.00,
-                'grade_letter' => 'A+',
-                'comments' => 'Luar biasa! Struktur tulisan sangat rapi dengan argumen yang logis dan berbasis dalil yang kuat. Contoh yang sangat baik.',
-            ],
-            
-            // Ahmad Faris - AD501 Presentasi Kontribusi Ilmuwan Muslim
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Presentasi Kontribusi Ilmuwan Muslim'),
-                'user_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'grade' => 88.00,
-                'grade_letter' => 'A-',
-                'comments' => 'Presentasi yang informatif tentang Al-Khwarizmi. Visualisasi yang bagus dan penjelasan yang jelas. Bisa ditambahkan lebih banyak detail tentang dampak karya-karyanya.',
-            ],
-            
-            // Ahmad Faris - FQ201 Analisis Studi Kasus Riba (Late)
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Analisis Studi Kasus Riba'),
-                'user_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'grade' => 85.00,
-                'grade_letter' => 'B+',
-                'comments' => 'Analisis yang baik, namun karena pengumpulan terlambat, ada penalti 25 poin. Jika dikumpulkan tepat waktu, skor Anda akan sekitar A-. Selalu perhatikan deadline.',
-            ],
-            
-            // Abdullah - FQ201 Analisis Studi Kasus Riba (Late)
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Analisis Studi Kasus Riba'),
-                'user_id' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
-                'grade' => 82.00,
-                'grade_letter' => 'B',
-                'comments' => 'Analisis cukup baik dengan identifikasi potensi riba yang tepat. Namun, solusi syar\'i yang ditawarkan bisa lebih detail. Tepat waktu, jadi tidak ada penalti.',
-            ],
-            
-            // Siti Maryam - TR401 Rancangan RPP Inovatif
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Rancangan RPP Inovatif'),
-                'user_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'grade' => 90.00,
-                'grade_letter' => 'A',
-                'comments' => 'RPP yang sangat kreatif dengan integrasi teknologi yang relevan. Langkah-langkah pembelajaran jelas dan terstruktur. Sangat baik!',
-            ],
-            
-            // Ahmad Faris - HD202 Kritik Sanad Hadis
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Kritik Sanad Hadis'),
-                'user_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'grade' => 87.00,
-                'grade_letter' => 'A-',
-                'comments' => 'Kritik sanad yang tepat dengan penggunaan terminologi yang benar. Perlu lebih memperdalam analisis tentang \'adalah perawi.',
-            ],
-            
-            // Ahmad Faris - HD202 Setoran Hafalan: Hadits Pertama Arba'in
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Setoran Hafalan: Hadits Pertama Arba\'in'),
-                'user_id' => $this->getUserIdByEmail('ahmad.faris@student.ulumcampus.com'),
-                'grade' => 93.00,
-                'grade_letter' => 'A',
-                'comments' => 'Hafalan yang sangat lancar dengan pelafalan yang baik. Makhraj dan harakat diucapkan dengan benar. Pertahankan hafalan ini!',
-            ],
-            
-            // Abdullah - EK305 Analisis Produk Bank Syariah
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Analisis Produk Bank Syariah'),
-                'user_id' => $this->getUserIdByEmail('abdullah@student.ulumcampus.com'),
-                'grade' => 86.00,
-                'grade_letter' => 'A-',
-                'comments' => 'Analisis KPR Murabahah yang komprehensif. Penjelasan skema dan risiko cukup baik. Bisa ditambahkan contoh perhitungan untuk lebih jelas.',
-            ],
-            
-            // Siti Maryam - SN701 Proyek Akhir: Proposal Aplikasi Islami berbasis AI
-            [
-                'assignment_id' => $this->getAssignmentIdByTitle('Proyek Akhir: Proposal Aplikasi Islami berbasis AI'),
-                'user_id' => $this->getUserIdByEmail('siti.m@student.ulumcampus.com'),
-                'grade' => 91.00,
-                'grade_letter' => 'A',
-                'comments' => 'Proposal yang sangat menjanjikan! Konsep QuranChatAI sangat relevan dan pertimbangan etika syariah dijelaskan dengan baik. Kerja bagus!',
-            ],
-        ];
+        // Get graded submissions and create grades based on them
+        $gradedSubmissions = AssignmentSubmission::where('status', 'graded')
+            ->whereNotNull('grade')
+            ->with(['assignment', 'student'])
+            ->get();
+        
+        $gradeCount = 0;
 
-        foreach ($grades as $gradeData) {
-            if ($gradeData['assignment_id'] && $gradeData['user_id']) {
-                // Get course_id from assignment
-                $assignment = Assignment::find($gradeData['assignment_id']);
-                if ($assignment) {
-                    $gradeData['course_id'] = $assignment->course_id;
-                    
-                    Grade::updateOrCreate(
-                        [
-                            'assignment_id' => $gradeData['assignment_id'],
-                            'user_id' => $gradeData['user_id']
-                        ],
-                        $gradeData
-                    );
-                }
+        foreach ($gradedSubmissions as $submission) {
+            if (!$submission->assignment || !$submission->student) {
+                continue;
             }
+
+            $gradeValue = $submission->grade;
+            $gradeLetter = $this->getGradeLetter($gradeValue);
+            
+            Grade::updateOrCreate(
+                [
+                    'assignment_id' => $submission->assignment_id,
+                    'user_id' => $submission->student_id,
+                ],
+                [
+                    'course_id' => $submission->assignment->course_id,
+                    'grade' => $gradeValue,
+                    'grade_letter' => $gradeLetter,
+                    'comments' => $this->getRandomComment($gradeLetter),
+                    'graded_at' => $submission->submitted_at?->addDays(rand(1, 7)),
+                    'graded_by' => $submission->assignment->created_by,
+                ]
+            );
+            
+            $gradeCount++;
         }
+
+        // Also create course final grades for completed enrollments
+        $completedEnrollments = CourseEnrollment::where('status', 'completed')
+            ->with(['course', 'student'])
+            ->get();
+
+        foreach ($completedEnrollments as $enrollment) {
+            if (!$enrollment->course || !$enrollment->student) {
+                continue;
+            }
+
+            // Calculate average from assignment grades for this course
+            $avgGrade = Grade::where('course_id', $enrollment->course_id)
+                ->where('user_id', $enrollment->student_id)
+                ->avg('grade');
+            
+            if (!$avgGrade) {
+                $avgGrade = rand(60, 100); // Random if no assignment grades
+            }
+
+            $gradeLetter = $this->getGradeLetter($avgGrade);
+
+            // Create final course grade (no assignment_id means it's a final grade)
+            Grade::updateOrCreate(
+                [
+                    'course_id' => $enrollment->course_id,
+                    'user_id' => $enrollment->student_id,
+                    'assignment_id' => null,
+                ],
+                [
+                    'grade' => round($avgGrade, 2),
+                    'grade_letter' => $gradeLetter,
+                    'comments' => "Nilai akhir mata kuliah. {$this->getRandomComment($gradeLetter)}",
+                    'graded_at' => $enrollment->completed_at ?? now()->subDays(rand(1, 30)),
+                ]
+            );
+            
+            $gradeCount++;
+        }
+        
+        $this->command->info("Created {$gradeCount} grades!");
     }
 
-    private function getAssignmentIdByTitle($title)
+    private function getGradeLetter(float $grade): string
     {
-        $assignment = Assignment::where('title', $title)->first();
-        return $assignment ? $assignment->id : null;
+        return match(true) {
+            $grade >= 95 => 'A+',
+            $grade >= 90 => 'A',
+            $grade >= 85 => 'A-',
+            $grade >= 80 => 'B+',
+            $grade >= 75 => 'B',
+            $grade >= 70 => 'B-',
+            $grade >= 65 => 'C+',
+            $grade >= 60 => 'C',
+            $grade >= 50 => 'D',
+            default => 'E',
+        };
     }
 
-    private function getUserIdByEmail($email)
+    private function getRandomComment(string $gradeLetter): string
     {
-        $user = User::where('email', $email)->first();
-        return $user ? $user->id : null;
+        $comments = $this->gradeComments[$gradeLetter] ?? ['Silakan konsultasi dengan dosen.'];
+        return $comments[array_rand($comments)];
     }
 }

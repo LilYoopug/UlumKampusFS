@@ -6,7 +6,7 @@ export type { TranslationKey };
 
 export type Language = 'id' | 'en' | 'ar';
 export type UserRole = 'Mahasiswa' | 'Dosen' | 'Prodi Admin' | 'Manajemen Kampus' | 'Super Admin' | 'MABA';
-export type Page = 'dashboard' | 'calendar' | 'courses' | 'course-detail' | 'create-course' | 'edit-course' | 'grades' | 'gradebook' | 'assignments' | 'video-lectures' | 'elibrary' | 'manage-elibrary' | 'profile' | 'settings' | 'worship' | 'help' | 'notifications' | 'announcements' | 'prodi-courses' | 'prodi-students' | 'prodi-lecturers' | 'administrasi' | 'management-administration' | 'student-registration' | 'user-management' | 'manajemen-fakultas';
+export type Page = 'dashboard' | 'calendar' | 'courses' | 'course-detail' | 'create-course' | 'edit-course' | 'grades' | 'gradebook' | 'assignments' | 'video-lectures' | 'elibrary' | 'manage-elibrary' | 'profile' | 'settings' | 'worship' | 'help' | 'notifications' | 'announcements' | 'prodi-courses' | 'prodi-students' | 'prodi-lecturers' | 'administrasi' | 'management-administration' | 'student-registration' | 'user-management' | 'manajemen-fakultas' | 'registrasi';
 export type CourseStatus = 'Published' | 'Draft' | 'Archived';
 
 export interface User {
@@ -40,6 +40,7 @@ export interface Badge {
 
 export interface Major {
     id: string;
+    code: string;
     name: string;
 }
 

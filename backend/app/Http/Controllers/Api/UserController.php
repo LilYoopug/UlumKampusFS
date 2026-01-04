@@ -177,6 +177,8 @@ class UserController extends ApiController
             'name' => ['sometimes', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:500'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'avatar' => ['nullable', 'string', 'max:500'],
             // Students can update their profile details
             'student_id' => [
                 'sometimes',

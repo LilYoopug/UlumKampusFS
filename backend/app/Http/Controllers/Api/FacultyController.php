@@ -29,9 +29,8 @@ class FacultyController extends ApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = $request->input('per_page', 15);
-        $faculties = Faculty::active()->with('majors')->paginate($perPage);
-        return $this->paginated(FacultyResource::collection($faculties));
+        $faculties = Faculty::active()->with('majors')->get();
+        return $this->success(FacultyResource::collection($faculties));
     }
 
     /**

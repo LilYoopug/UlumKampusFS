@@ -182,28 +182,28 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
 
   return (
     <>
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md space-y-4">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-white">Informasi Dasar</h2>
+    <form onSubmit={handleSubmit} className="space-y-6 lg:space-y-8">
+      <div className="bg-white dark:bg-slate-800/50 p-4 lg:p-6 rounded-2xl shadow-md space-y-4">
+        <h2 className="text-lg lg:text-xl font-bold text-slate-800 dark:text-white">Informasi Dasar</h2>
         <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_title')}</label>
-          <input type="text" name="title" id="title" value={formData.title} onChange={handleChange} placeholder={t('create_course_form_title_placeholder')} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" required />
+          <label htmlFor="title" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_title')}</label>
+          <input type="text" name="title" id="title" value={formData.title} onChange={handleChange} placeholder={t('create_course_form_title_placeholder')} className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm" required />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_description')}</label>
-          <textarea name="description" id="description" value={formData.description} onChange={handleChange} rows={3} placeholder={t('create_course_form_description_placeholder')} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" required></textarea>
+          <label htmlFor="description" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_description')}</label>
+          <textarea name="description" id="description" value={formData.description} onChange={handleChange} rows={3} placeholder={t('create_course_form_description_placeholder')} className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm" required></textarea>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label htmlFor="facultyId" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_faculty')}</label>
-                <select name="facultyId" id="facultyId" value={formData.facultyId} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" required>
+                <label htmlFor="facultyId" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_faculty')}</label>
+                <select name="facultyId" id="facultyId" value={formData.facultyId} onChange={handleChange} className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm" required>
                     <option value="" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{t('create_course_form_select_faculty')}</option>
                     {faculties.map(faculty => <option key={faculty.id} value={faculty.id} className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{faculty.name}</option>)}
                 </select>
             </div>
              <div>
-                <label htmlFor="majorId" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_major')}</label>
-                <select name="majorId" id="majorId" value={formData.majorId} onChange={handleChange} disabled={availableMajors.length === 0} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white">
+                <label htmlFor="majorId" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_major')}</label>
+                <select name="majorId" id="majorId" value={formData.majorId} onChange={handleChange} disabled={availableMajors.length === 0} className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm">
                     <option value="" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{t('create_course_form_select_major')}</option>
                     {availableMajors.map(major => <option key={major.id} value={major.id} className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">{major.name}</option>)}
                 </select>
@@ -211,12 +211,12 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="sks" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_sks')}</label>
-            <input type="number" name="sks" id="sks" value={formData.sks} onChange={handleChange} min="1" max="6" className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" required />
+            <label htmlFor="sks" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_sks')}</label>
+            <input type="number" name="sks" id="sks" value={formData.sks} onChange={handleChange} min="1" max="6" className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm" required />
           </div>
           <div>
-            <label htmlFor="status" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_status')}</label>
-            <select name="status" id="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white">
+            <label htmlFor="status" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_status')}</label>
+            <select name="status" id="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm">
                 <option value="Draft" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">Draft</option>
                 <option value="Published" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">Published</option>
                 <option value="Archived" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">Archived</option>
@@ -224,33 +224,33 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
           </div>
         </div>
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('create_course_form_image_url')}</label>
-          <input type="url" name="imageUrl" id="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder={t('create_course_form_image_url_placeholder')} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" />
+          <label htmlFor="imageUrl" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('create_course_form_image_url')}</label>
+          <input type="url" name="imageUrl" id="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder={t('create_course_form_image_url_placeholder')} className="w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm" />
         </div>
       </div>
       
       {/* Modules */}
-      <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md space-y-4">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-white">Modul Pembelajaran</h2>
+      <div className="bg-white dark:bg-slate-800/50 p-4 lg:p-6 rounded-2xl shadow-md space-y-4">
+        <h2 className="text-lg lg:text-xl font-bold text-slate-800 dark:text-white">Modul Pembelajaran</h2>
         {formData.modules.length > 0 ? (
-          <DraggableList 
+          <DraggableList
             items={formData.modules}
             onReorder={(reordered) => setFormData(p => ({...p, modules: reordered}))}
             renderItem={(module: CourseModule) => (
-              <div className="flex items-center gap-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 cursor-grab">
-                <Icon className="w-5 h-5 text-slate-400 flex-shrink-0"><path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"/></Icon>
+              <div className="flex items-center gap-3 lg:gap-4 p-3 lg:p-3 rounded-lg bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 cursor-grab">
+                <Icon className="w-5 h-5 text-slate-400 flex-shrink-0 hidden sm:block"><path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"/></Icon>
                 <div className="flex-shrink-0">{getModuleIcon(module.type)}</div>
-                <div className="flex-1 overflow-hidden">
-                    <p className="font-semibold text-slate-800 dark:text-white truncate">{module.title}</p>
+                <div className="flex-1 overflow-hidden min-w-0">
+                    <p className="font-semibold text-slate-800 dark:text-white truncate text-sm lg:text-base">{module.title}</p>
                 </div>
                 {module.attachmentUrl && (
-                    <a href={module.attachmentUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-1 text-slate-500 hover:text-brand-emerald-600">
+                    <a href={module.attachmentUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-2 lg:p-1 text-slate-500 hover:text-brand-emerald-600 active:scale-[0.95] transition-transform">
                         <Icon className="w-5 h-5"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.59a2 2 0 0 1-2.83-2.83l.79-.79"/></Icon>
                     </a>
                 )}
-                <div className="flex gap-2">
-                    <button type="button" onClick={() => handleEditModule(module)} className="p-1 text-slate-500 hover:text-blue-500"><Icon className="w-5 h-5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></Icon></button>
-                    <button type="button" onClick={() => handleDeleteModule(module.id)} className="p-1 text-slate-500 hover:text-red-500"><Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></Icon></button>
+                <div className="flex gap-1 lg:gap-2">
+                    <button type="button" onClick={() => handleEditModule(module)} className="p-2 lg:p-1 text-slate-500 hover:text-blue-500 active:scale-[0.95] transition-transform"><Icon className="w-5 h-5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></Icon></button>
+                    <button type="button" onClick={() => handleDeleteModule(module.id)} className="p-2 lg:p-1 text-slate-500 hover:text-red-500 active:scale-[0.95] transition-transform"><Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></Icon></button>
                 </div>
               </div>
             )}
@@ -258,15 +258,15 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onSave, onCancel, initia
         ) : (
           <p className="text-center text-slate-500 py-4">{t('detail_no_materials_dosen')}</p>
         )}
-        <button type="button" onClick={() => { setEditingModule(null); setShowModuleForm(true); }} className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+        <button type="button" onClick={() => { setEditingModule(null); setShowModuleForm(true); }} className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 lg:py-2 border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-[0.99] transition-all">
             <Icon className="w-5 h-5"><path d="M5 12h14"/><path d="M12 5v14"/></Icon>
             {t('module_add_button')}
         </button>
       </div>
 
-      <div className="flex justify-end gap-4">
-        <button type="button" onClick={onCancel} className="px-6 py-2 rounded-lg bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">{t('button_cancel')}</button>
-        <button type="submit" className="px-6 py-2 rounded-lg bg-brand-emerald-600 text-white font-semibold hover:bg-brand-emerald-700 transition-colors">{isEditMode ? t('create_course_button_save_changes') : t('create_course_button_create')}</button>
+      <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 lg:gap-4">
+        <button type="button" onClick={onCancel} className="w-full sm:w-auto px-6 py-3 lg:py-2 rounded-lg bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-500 active:scale-[0.98] transition-all">{t('button_cancel')}</button>
+        <button type="submit" className="w-full sm:w-auto px-6 py-3 lg:py-2 rounded-lg bg-brand-emerald-600 text-white font-semibold hover:bg-brand-emerald-700 active:scale-[0.98] transition-all">{isEditMode ? t('create_course_button_save_changes') : t('create_course_button_create')}</button>
       </div>
     </form>
      {showModuleForm && (
@@ -313,22 +313,22 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
         };
         onSave(moduleData);
     };
-    
-    const formInputClass = "w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-50 text-slate-800 dark:text-white";
+
+    const formInputClass = "w-full px-4 py-3 lg:py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-emerald-50 text-slate-800 dark:text-white text-base lg:text-sm";
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="p-4 lg:p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center flex-shrink-0">
+                <h1 className="text-xl lg:text-2xl font-bold text-slate-800 dark:text-white">
                     {isEditMode ? t('module_edit_title') : t('module_add_title')}
                 </h1>
-                <button onClick={onClose} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                <button onClick={onClose} className="p-2.5 lg:p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.95] transition-all">
                     <Icon className="w-6 h-6"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></Icon>
                 </button>
             </div>
-            <form id="module-form" onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+            <form id="module-form" onSubmit={handleSubmit} className="p-4 lg:p-6 space-y-4 lg:space-y-6 flex-1 overflow-y-auto">
                 <div>
-                    <label htmlFor="mod-type" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('module_form_type')}</label>
+                    <label htmlFor="mod-type" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('module_form_type')}</label>
                     <select id="mod-type" value={type} onChange={e => setType(e.target.value as any)} className={formInputClass + " text-slate-800 dark:text-white"}>
                         <option value="video" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">Video</option>
                         <option value="pdf" className="bg-white dark:bg-slate-700 text-slate-800 dark:text-white">PDF</option>
@@ -337,28 +337,28 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="mod-title" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('module_form_title')}</label>
+                    <label htmlFor="mod-title" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('module_form_title')}</label>
                     <input id="mod-title" type="text" value={title} onChange={e => setTitle(e.target.value)} className={formInputClass} required/>
                 </div>
                 <div>
-                    <label htmlFor="mod-desc" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('module_form_description')}</label>
+                    <label htmlFor="mod-desc" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('module_form_description')}</label>
                     <textarea id="mod-desc" value={description} onChange={e => setDescription(e.target.value)} rows={2} placeholder={t('module_form_description_placeholder')} className={formInputClass}></textarea>
                 </div>
-                
+
                 {type === 'live' ? (
                      <>
                         <div>
-                            <label htmlFor="mod-start-time" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('module_form_start_time')}</label>
+                            <label htmlFor="mod-start-time" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('module_form_start_time')}</label>
                             <input id="mod-start-time" type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} className={formInputClass} required/>
                         </div>
                         <div>
-                            <label htmlFor="mod-live-url" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">{t('module_form_live_url')}</label>
+                            <label htmlFor="mod-live-url" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">{t('module_form_live_url')}</label>
                             <input id="mod-live-url" type="url" value={liveUrl} onChange={e => setLiveUrl(e.target.value)} placeholder={t('module_form_live_url_placeholder')} className={formInputClass}/>
                         </div>
                     </>
                 ) : (
                     <div>
-                        <label htmlFor="mod-resource" className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Link Materi Utama (URL)</label>
+                        <label htmlFor="mod-resource" className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">Link Materi Utama (URL)</label>
                         <input id="mod-resource" type="url" value={resourceUrl} onChange={e => setResourceUrl(e.target.value)} placeholder="https://... (untuk video atau PDF)" className={formInputClass}/>
                     </div>
                 )}
@@ -370,11 +370,11 @@ const ModuleForm: React.FC<{onSave: (module: CourseModule) => void, onClose: () 
                         <input type="url" value={attachmentUrl} onChange={e => setAttachmentUrl(e.target.value)} placeholder="https://..." className={formInputClass}/>
                     </div>
                 )}
-                
+
             </form>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
-                <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white rounded-lg font-semibold hover:bg-slate-300 dark:hover:bg-slate-500">{t('button_cancel')}</button>
-                <button type="submit" form="module-form" onClick={handleSubmit} className="px-4 py-2 bg-brand-emerald-600 text-white rounded-lg font-semibold hover:bg-brand-emerald-700">{t('button_save')}</button>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 flex-shrink-0">
+                <button type="button" onClick={onClose} className="px-4 py-3 lg:py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white rounded-lg font-semibold hover:bg-slate-300 dark:hover:bg-slate-500 active:scale-[0.98] transition-all">{t('button_cancel')}</button>
+                <button type="submit" form="module-form" onClick={handleSubmit} className="px-4 py-3 lg:py-2 bg-brand-emerald-600 text-white rounded-lg font-semibold hover:bg-brand-emerald-700 active:scale-[0.98] transition-all">{t('button_save')}</button>
             </div>
         </div>
     );

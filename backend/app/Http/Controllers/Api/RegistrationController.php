@@ -152,7 +152,7 @@ class RegistrationController extends ApiController
             });
         }
 
-        $registrations = $query->orderBy('created_at', 'desc')->paginate($request->per_page ?? 15);
+        $registrations = $query->orderBy('created_at', 'desc')->get();
 
         return $this->success($registrations, 'Registrations retrieved successfully');
     }

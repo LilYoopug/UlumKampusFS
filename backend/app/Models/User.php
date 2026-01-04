@@ -163,27 +163,93 @@ class User extends Authenticatable
     /**
      * Get all payment items with their status for this user
      * Returns payment items with status (paid/pending/unpaid)
-     * If no status exists, defaults to 'unpaid'
+     * Checks both UserPaymentStatus and PaymentHistory to determine status
+     * If no status exists in either, defaults to 'unpaid'
      */
     public function getPaymentItemsWithStatus()
     {
         $allPaymentItems = PaymentItem::all();
         $userPaymentStatuses = $this->userPaymentStatuses()->get()->keyBy('payment_item_id');
         
-        return $allPaymentItems->map(function ($paymentItem) use ($userPaymentStatuses) {
+        // Also check PaymentHistory for completed payments
+        // Match by title similarity (title_key in payment_item vs title in payment_history)
+        $paymentHistories = $this->paymentHistories()
+            ->whereIn('status', ['completed', 'paid'])
+            ->get();
+
+        return $allPaymentItems->map(function ($paymentItem) use ($userPaymentStatuses, $paymentHistories) {
             $status = $userPaymentStatuses->get($paymentItem->id);
             
+            // Check if there's a matching payment history record
+            $hasPaymentHistory = $paymentHistories->first(function ($history) use ($paymentItem) {
+                $paymentItemTitle = strtolower($paymentItem->title_key ?: $paymentItem->title ?: '');
+                $historyTitle = strtolower($history->title ?: '');
+                
+                // Check for partial match or similar titles
+                return str_contains($historyTitle, $paymentItemTitle) 
+                    || str_contains($paymentItemTitle, $historyTitle)
+                    || $this->titlesMatch($paymentItemTitle, $historyTitle);
+            });
+
+            // Determine final status - if either UserPaymentStatus or PaymentHistory shows paid
+            $finalStatus = 'unpaid';
+            $paidAt = null;
+            $dueDate = null;
+            
+            if ($status && $status->status === 'paid') {
+                $finalStatus = 'paid';
+                $paidAt = $status->paid_at;
+                $dueDate = $status->due_date;
+            } elseif ($hasPaymentHistory) {
+                $finalStatus = 'paid';
+                $paidAt = $hasPaymentHistory->payment_date;
+            } elseif ($status) {
+                $finalStatus = $status->status;
+                $paidAt = $status->paid_at;
+                $dueDate = $status->due_date;
+            }
+
             return [
                 'id' => $paymentItem->id,
                 'item_id' => $paymentItem->item_id,
-                'title_key' => $paymentItem->title_key,
-                'description_key' => $paymentItem->description_key,
+                'title_key' => $paymentItem->title_key ?: $paymentItem->title,
+                'description_key' => $paymentItem->description_key ?: $paymentItem->description,
                 'amount' => $paymentItem->amount,
-                'status' => $status ? $status->status : 'unpaid',
-                'due_date' => $status ? $status->due_date : null,
-                'paid_at' => $status ? $status->paid_at : null,
+                'status' => $finalStatus,
+                'due_date' => $dueDate,
+                'paid_at' => $paidAt,
             ];
         });
+    }
+    
+    /**
+     * Check if two payment titles match based on common keywords
+     */
+    private function titlesMatch(string $title1, string $title2): bool
+    {
+        // Define keyword mappings for common payment types
+        $keywordMappings = [
+            ['pendaftaran', 'registration', 'biaya pendaftaran'],
+            ['semester', 'biaya semester', 'spp'],
+            ['ujian', 'exam', 'biaya ujian', 'uts', 'uas'],
+            ['lain', 'other', 'miscellaneous'],
+        ];
+        
+        foreach ($keywordMappings as $keywords) {
+            $title1Matches = false;
+            $title2Matches = false;
+            
+            foreach ($keywords as $keyword) {
+                if (str_contains($title1, $keyword)) $title1Matches = true;
+                if (str_contains($title2, $keyword)) $title2Matches = true;
+            }
+            
+            if ($title1Matches && $title2Matches) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**

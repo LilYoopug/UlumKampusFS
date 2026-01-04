@@ -144,13 +144,13 @@ export const Dashboard: React.FC<{
       },
       {
         id: 'aqidah_foundations',
-        icon: <Icon className="w-8 h-8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 2a9 9 0 0 0-9 9c0 4.28 2.5 8 9 12 6.5-4 9-7.72 9-12a9 9 0 0-9-9z"/></Icon>,
+        icon: <Icon className="w-8 h-8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12h6"/><path d="M12 9v6"/></Icon>,
         titleKey: 'badge_aqidah_title',
         descriptionKey: 'badge_aqidah_desc',
       },
       {
         id: 'muamalat_expert',
-        icon: <Icon className="w-8 h-8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 7h5a3.5 3.5 0 1 0 7H6"/></Icon>,
+        icon: <Icon className="w-8 h-8"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></Icon>,
         titleKey: 'badge_muamalat_title',
         descriptionKey: 'badge_muamalat_desc',
       },
@@ -239,7 +239,7 @@ export const Dashboard: React.FC<{
                 <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800 dark:text-white">
                         <Icon className="w-6 h-6 text-brand-emerald-500">
-                           <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0-6.74 2.74L3 8"/>
+                           <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                            <path d="M3 3v5h5"/>
                         </Icon>
                         {t('dashboard_past_semester_summary')}
@@ -271,7 +271,7 @@ export const Dashboard: React.FC<{
                 <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
                     <h2 className="text-xl font-bold mb-4 text-slate-80 dark:text-white">{t('dashboard_worship_progress')}</h2>
                     <div className="h-64" dir="ltr">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
                             <BarChart data={ibadahData} layout={language === 'ar' ? 'vertical' : 'horizontal'} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.2)" />
                                 {language === 'ar' ? (

@@ -140,17 +140,17 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
         return (
             <div className="flex justify-between items-center px-2 py-4">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                    <h2 className="text-lg lg:text-xl font-bold text-slate-800 dark:text-white">
                         {t(monthNames[currentDate.getMonth()])}
                     </h2>
-                    <span className="text-xl font-light text-slate-500 dark:text-slate-400">{currentDate.getFullYear()}</span>
+                    <span className="text-lg lg:text-xl font-light text-slate-500 dark:text-slate-400">{currentDate.getFullYear()}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={goToToday} className="px-3 py-1 text-sm font-semibold border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-200">{t('calendar_today')}</button>
-                    <button onClick={() => changeMonth(-1)} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200" aria-label="Previous month">
+                <div className="flex items-center gap-1 lg:gap-2">
+                    <button onClick={goToToday} className="px-2.5 lg:px-3 py-1.5 lg:py-1 text-xs lg:text-sm font-semibold border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-[0.98] transition-all text-slate-700 dark:text-slate-200">{t('calendar_today')}</button>
+                    <button onClick={() => changeMonth(-1)} className="p-2.5 lg:p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] transition-all text-slate-700 dark:text-slate-200" aria-label="Previous month">
                         <Icon className="w-5 h-5 rtl:scale-x-[-1]"><path d="m15 18-6-6 6-6"/></Icon>
                     </button>
-                    <button onClick={() => changeMonth(1)} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200" aria-label="Next month">
+                    <button onClick={() => changeMonth(1)} className="p-2.5 lg:p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] transition-all text-slate-700 dark:text-slate-200" aria-label="Next month">
                         <Icon className="w-5 h-5 rtl:scale-x-[-1]"><path d="m9 18 6-6-6-6"/></Icon>
                     </button>
                 </div>
@@ -160,8 +160,8 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
 
     const renderDays = () => {
         return (
-            <div className="grid grid-cols-7 text-center text-sm font-semibold text-slate-500 dark:text-slate-400 pb-2">
-                {dayNames.map(day => <div key={day}>{t(day)}</div>)}
+            <div className="grid grid-cols-7 text-center text-xs lg:text-sm font-semibold text-slate-500 dark:text-slate-400 pb-2">
+                {dayNames.map(day => <div key={day} className="py-1">{t(day)}</div>)}
             </div>
         );
     };
@@ -171,13 +171,13 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
         const year = currentDate.getFullYear();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
+
         const cells = [];
         const today = new Date();
-        
+
         // Blank cells for previous month
         for (let i = 0; i < firstDayOfMonth; i++) {
-            cells.push(<div key={`blank-${i}`} className="p-2 border-t border-e border-slate-100 dark:border-slate-800"></div>);
+            cells.push(<div key={`blank-${i}`} className="p-1 lg:p-2 border-t border-e border-slate-100 dark:border-slate-800"></div>);
         }
 
         // Days of current month
@@ -189,19 +189,19 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
             const eventsOnDay = eventsByDate.get(dateStr);
 
             cells.push(
-                <div 
+                <div
                     key={day}
                     onClick={() => setSelectedDate(cellDate)}
-                    className={`relative p-2 h-20 sm:h-24 border-t border-e border-slate-100 dark:border-slate-800 transition-colors cursor-pointer ${isSelected ? 'bg-brand-emerald-50 dark:bg-brand-emerald-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                    className={`relative p-1 lg:p-2 h-14 sm:h-20 lg:h-24 border-t border-e border-slate-100 dark:border-slate-800 transition-colors cursor-pointer active:scale-[0.98] ${isSelected ? 'bg-brand-emerald-50 dark:bg-brand-emerald-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
                 >
-                    <span className={`flex items-center justify-center w-7 h-7 rounded-full text-sm font-semibold ${isToday ? 'bg-brand-emerald-600 text-white' : 'text-slate-800 dark:text-slate-200'} ${isSelected ? 'ring-2 ring-brand-emerald-50' : ''}`}>
+                    <span className={`flex items-center justify-center w-6 h-6 lg:w-7 lg:h-7 rounded-full text-xs lg:text-sm font-semibold ${isToday ? 'bg-brand-emerald-600 text-white' : 'text-slate-800 dark:text-slate-200'} ${isSelected ? 'ring-2 ring-brand-emerald-500' : ''}`}>
                         {day}
                     </span>
                     {eventsOnDay && (
-                        <div className="absolute bottom-2 start-2 end-2 flex justify-center gap-1.5">
-                            {eventsOnDay.liveClasses && <div className="w-2 h-2 rounded-full bg-brand-emerald-500"></div>}
-                            {eventsOnDay.assignments && <div className="w-2 h-2 rounded-full bg-brand-sand-500"></div>}
-                            {eventsOnDay.academic && <div className="w-2 h-2 rounded-full bg-indigo-500"></div>}
+                        <div className="absolute bottom-1 lg:bottom-2 start-1 lg:start-2 end-1 lg:end-2 flex justify-center gap-1">
+                            {eventsOnDay.liveClasses && <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-brand-emerald-500"></div>}
+                            {eventsOnDay.assignments && <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-brand-sand-500"></div>}
+                            {eventsOnDay.academic && <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-indigo-500"></div>}
                         </div>
                     )}
                 </div>
@@ -224,13 +224,13 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
         };
 
         return (
-             <div className="flex items-center gap-4">
-                <div className={`flex-shrink-0 w-3 h-3 rounded-full ${event.type === 'live-class' ? 'bg-brand-emerald-500' : event.type === 'assignment' ? 'bg-brand-sand-500' : 'bg-indigo-500'}`}></div>
-                <div className="flex-1">
-                    <p className="font-semibold text-slate-800 dark:text-white">{event.title}</p>
-                    {event.courseTitle && <p className="text-sm text-slate-500 dark:text-slate-400">{event.courseTitle}</p>}
+             <div className="flex items-start gap-3 lg:gap-4">
+                <div className={`flex-shrink-0 w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full mt-1.5 ${event.type === 'live-class' ? 'bg-brand-emerald-500' : event.type === 'assignment' ? 'bg-brand-sand-500' : 'bg-indigo-500'}`}></div>
+                <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 dark:text-white text-sm lg:text-base">{event.title}</p>
+                    {event.courseTitle && <p className="text-xs lg:text-sm text-slate-500 dark:text-slate-400 truncate">{event.courseTitle}</p>}
                     <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                        {event.type === 'academic' 
+                        {event.type === 'academic'
                             ? getCategoryLabel()
                             : `${event.date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${event.type === 'live-class' ? t('calendar_live_class') : t('calendar_assignment_due')}`
                         }
@@ -240,10 +240,10 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
                     <a
                         href="#"
                         onClick={(e) => e.preventDefault()}
-                        className="ms-auto flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-brand-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-emerald-700 transition-colors"
+                        className="ms-auto flex-shrink-0 flex items-center gap-1.5 px-3 py-2 lg:py-1.5 bg-brand-emerald-600 text-white text-xs lg:text-sm font-semibold rounded-lg hover:bg-brand-emerald-700 active:scale-[0.98] transition-all"
                     >
                         <Icon className="w-4 h-4"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.934a.5.5 0 0 0-.777-.416L16 11"/><rect x="2" y="7" width="14" height="10" rx="2" ry="2"/></Icon>
-                        <span className="hidden sm:inline lg:hidden xl:inline">{t('calendar_join_class')}</span>
+                        <span className="hidden sm:inline">{t('calendar_join_class')}</span>
                     </a>
                 )}
             </div>
@@ -251,41 +251,41 @@ export const Calendar: React.FC<{ courses: Course[], currentUser: User, assignme
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 lg:space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-slate-800 dark:text-white">{t('calendar_title')}</h1>
-                <p className="text-slate-500 dark:text-slate-400 mt-1">{t('calendar_subtitle')}</p>
+                <h1 className="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white">{t('calendar_title')}</h1>
+                <p className="text-sm lg:text-base text-slate-500 dark:text-slate-400 mt-1">{t('calendar_subtitle')}</p>
             </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white dark:bg-slate-800/50 rounded-2xl shadow-md p-4">
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-800/50 rounded-2xl shadow-md p-3 lg:p-4">
                     {renderHeader()}
                     {renderDays()}
                     {renderCells()}
                 </div>
                 <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-md p-6">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                    <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-md p-4 lg:p-6">
+                        <h3 className="text-base lg:text-lg font-bold text-slate-800 dark:text-white">
                             {selectedDate.toLocaleDateString(t('language') === 'id' ? 'id-ID' : t('language'), { weekday: 'long', day: 'numeric', month: 'long' })}
                         </h3>
-                         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
+                         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4 max-h-48 lg:max-h-none overflow-y-auto">
                             {selectedDateEvents.length > 0 ? (
                                 selectedDateEvents.map((event, index) => <EventItem key={index} event={event} />)
                             ) : (
-                                <p className="text-slate-500 dark:text-slate-400 text-sm text-center py-8">{t('calendar_no_events')}</p>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm text-center py-6 lg:py-8">{t('calendar_no_events')}</p>
                             )}
                         </div>
-                        <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm">
+                        <div className="mt-4 lg:mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-wrap lg:flex-col gap-3 lg:gap-2 text-xs lg:text-sm">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-brand-emerald-500"></div>
+                                <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-brand-emerald-500"></div>
                                 <span className="text-slate-600 dark:text-slate-300">{t('calendar_legend_live')}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-brand-sand-500"></div>
+                                <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-brand-sand-500"></div>
                                 <span className="text-slate-600 dark:text-slate-300">{t('calendar_legend_assignment')}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+                                <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-indigo-500"></div>
                                 <span className="text-slate-600 dark:text-slate-300">{t('calendar_legend_academic')}</span>
                             </div>
                         </div>

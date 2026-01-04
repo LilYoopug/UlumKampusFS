@@ -193,29 +193,29 @@ export const UserManagementPage: React.FC = () => {
             </div>
 
             <div className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-md">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-                    <div className="relative flex-grow w-full sm:w-auto">
+                <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4 mb-4">
+                    <div className="relative flex-grow w-full lg:w-auto">
                         <Icon className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
                             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
                         </Icon>
-                        <input type="text" placeholder={t('admin_search_users')} className="w-full ps-10 pe-4 py-2 rounded-full bg-slate-100 dark:bg-slate-700 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white" />
+                        <input type="text" placeholder={t('admin_search_users')} className="w-full ps-10 pe-4 py-3 lg:py-2 rounded-full bg-slate-100 dark:bg-slate-700 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-emerald-500 text-slate-800 dark:text-white text-base lg:text-sm" />
                     </div>
-                     <button className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                        <Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></Icon>
-                        {t('button_filter')}
-                    </button>
-                    <div className="flex-grow flex justify-start sm:justify-end items-center gap-2 w-full sm:w-auto">
-                         <button onClick={handleExportPDF} className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 rounded-full transition-colors" title={t('admin_export_pdf')}>
+                    <div className="flex items-center gap-2">
+                        <button className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-3 lg:py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-[0.98] transition-all">
+                            <Icon className="w-5 h-5"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></Icon>
+                            {t('button_filter')}
+                        </button>
+                        <button onClick={handleExportPDF} className="p-3 lg:p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 rounded-full active:scale-[0.98] transition-all" title={t('admin_export_pdf')}>
                             <Icon className="w-5 h-5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12v-1h3v1"/><path d="M10 15h3"/><path d="M10 18h3"/></Icon>
                         </button>
-                        <button onClick={handleExportXLSX} className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/50 rounded-full transition-colors" title={t('admin_export_xlsx')}>
+                        <button onClick={handleExportXLSX} className="p-3 lg:p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/50 rounded-full active:scale-[0.98] transition-all" title={t('admin_export_xlsx')}>
                              <Icon className="w-5 h-5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-4_M15 14h-3_M9 14h3"/><path d="M10.5 10.5 13.5 7.5M13.5 10.5 10.5 7.5"/></Icon>
                         </button>
-                        <button onClick={handleAddNew} className="flex items-center gap-2 px-4 py-2 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 transition-colors">
-                            <Icon className="w-5 h-5"><path d="M6 8L2 12l4 4"/><path d="M10 20v-3.3a2.4 2.4 0 0 1 .7-1.7l6.6-6.6a2.4 2.4 0 0 1 3.4 0l1.6 1.6a2.4 2.4 0 0 1 0 3.4L15 16.7a2.4 2.4 0 0 1-1.7.7H10"/></Icon>
-                            {t('admin_add_user')}
-                        </button>
                     </div>
+                    <button onClick={handleAddNew} className="w-full lg:w-auto flex items-center justify-center gap-2 px-4 py-3 lg:py-2 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 active:scale-[0.98] transition-all">
+                        <Icon className="w-5 h-5"><path d="M12 5v14"/><path d="M5 12h14"/></Icon>
+                        {t('admin_add_user')}
+                    </button>
                 </div>
                 
                 {loading && allUsers.length === 0 ? (
@@ -223,51 +223,116 @@ export const UserManagementPage: React.FC = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-emerald-600"></div>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto max-h-[60vh]">
-                        <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400">
-                            <thead className="text-xs text-slate-70 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300 sticky top-0">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3">{t('admin_user_name')}</th>
-                                    <th scope="col" className="px-6 py-3">{t('admin_user_email')}</th>
-                                    <th scope="col" className="px-6 py-3">{t('admin_user_role')}</th>
-                                    <th scope="col" className="px-6 py-3">{t('admin_user_phone')}</th>
-                                    <th scope="col" className="px-6 py-3 text-end">{t('admin_user_actions')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allUsers.length > 0 ? (
-                                    allUsers.map(user => (
-                                        <tr key={user.id || user.studentId} className="bg-white border-b dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600/50">
-                                            <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{user.name}</td>
-                                            <td className="px-6 py-4">{user.email}</td>
-                                            <td className="px-6 py-4">{user.role}</td>
-                                            <td className="px-6 py-4">
-                                                {user.phoneNumber || user.phone || '-'}
-                                            </td>
-                                            <td className="px-6 py-4 text-end">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button onClick={() => handleEdit(user)} className="font-medium text-brand-emerald-600 dark:text-brand-emerald-500 hover:underline">{t('admin_manage_user')}</button>
-                                                    <button onClick={() => handleDeleteClick(user)} className="font-medium text-red-600 dark:text-red-500 hover:underline">{t('button_delete')}</button>
+                    <>
+                        {/* Desktop Table View */}
+                        <div className="hidden lg:block overflow-x-auto max-h-[60vh]">
+                            <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+                                <thead className="text-xs text-slate-70 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300 sticky top-0">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3">{t('admin_user_name')}</th>
+                                        <th scope="col" className="px-6 py-3">{t('admin_user_email')}</th>
+                                        <th scope="col" className="px-6 py-3">{t('admin_user_role')}</th>
+                                        <th scope="col" className="px-6 py-3">{t('admin_user_phone')}</th>
+                                        <th scope="col" className="px-6 py-3 text-end">{t('admin_user_actions')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {allUsers.length > 0 ? (
+                                        allUsers.map(user => (
+                                            <tr key={user.id || user.studentId} className="bg-white border-b dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600/50">
+                                                <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{user.name}</td>
+                                                <td className="px-6 py-4">{user.email}</td>
+                                                <td className="px-6 py-4">{user.role}</td>
+                                                <td className="px-6 py-4">
+                                                    {user.phoneNumber || user.phone || '-'}
+                                                </td>
+                                                <td className="px-6 py-4 text-end">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button onClick={() => handleEdit(user)} className="font-medium text-brand-emerald-600 dark:text-brand-emerald-500 hover:underline">{t('admin_manage_user')}</button>
+                                                        <button onClick={() => handleDeleteClick(user)} className="font-medium text-red-600 dark:text-red-500 hover:underline">{t('button_delete')}</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-12 text-center">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    <Icon className="w-12 h-12 text-slate-4 mb-3">
+                                                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 1-2 2Z"/>
+                                                    </Icon>
+                                                    <p className="text-slate-500 dark:text-slate-400 font-medium">{t('admin_no_user_data')}</p>
+                                                    <p className="text-slate-40 dark:text-slate-500 text-sm mt-1">{t('admin_add_user_to_get_started')}</p>
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center">
-                                            <div className="flex flex-col items-center justify-center">
-                                                <Icon className="w-12 h-12 text-slate-4 mb-3">
-                                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 1-2 2Z"/>
-                                                </Icon>
-                                                <p className="text-slate-500 dark:text-slate-400 font-medium">{t('admin_no_user_data')}</p>
-                                                <p className="text-slate-40 dark:text-slate-500 text-sm mt-1">{t('admin_add_user_to_get_started')}</p>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="lg:hidden space-y-3 max-h-[60vh] overflow-y-auto">
+                            {allUsers.length > 0 ? (
+                                allUsers.map(user => (
+                                    <div key={user.id || user.studentId} className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-12 h-12 rounded-full bg-brand-emerald-100 dark:bg-brand-emerald-900/50 flex items-center justify-center flex-shrink-0">
+                                                <span className="text-lg font-bold text-brand-emerald-600 dark:text-brand-emerald-400">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </span>
                                             </div>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-semibold text-slate-800 dark:text-white text-base truncate">{user.name}</h3>
+                                                <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                                            </div>
+                                            <span className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                                user.role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' :
+                                                user.role === 'lecturer' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' :
+                                                'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                                            }`}>
+                                                {user.role}
+                                            </span>
+                                        </div>
+
+                                        {(user.phoneNumber || user.phone) && (
+                                            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                                <Icon className="w-4 h-4">
+                                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                                </Icon>
+                                                <span>{user.phoneNumber || user.phone}</span>
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-600">
+                                            <button
+                                                onClick={() => handleEdit(user)}
+                                                className="flex-1 py-2.5 px-4 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 active:scale-[0.98] transition-all text-sm"
+                                            >
+                                                {t('admin_manage_user')}
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteClick(user)}
+                                                className="py-2.5 px-4 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-200 dark:hover:bg-red-900 active:scale-[0.98] transition-all text-sm"
+                                            >
+                                                <Icon className="w-5 h-5">
+                                                    <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                                </Icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <Icon className="w-12 h-12 text-slate-400 mb-3">
+                                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 1-2 2Z"/>
+                                    </Icon>
+                                    <p className="text-slate-500 dark:text-slate-400 font-medium">{t('admin_no_user_data')}</p>
+                                    <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">{t('admin_add_user_to_get_started')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </>
                 )}
             </div>
         </div>

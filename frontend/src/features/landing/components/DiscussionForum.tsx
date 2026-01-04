@@ -12,6 +12,8 @@ interface DiscussionForumProps {
     initialThreadId?: string;
 }
 
+type MobileView = 'threads' | 'chat';
+
 export const DiscussionForum: React.FC<DiscussionForumProps> = ({ courseId, currentUser, initialThreadId }) => {
     const { t } = useLanguage();
     const [threads, setThreads] = useState<DiscussionThread[]>([]);
@@ -24,6 +26,7 @@ export const DiscussionForum: React.FC<DiscussionForumProps> = ({ courseId, curr
     const [newThreadContent, setNewThreadContent] = useState('');
     const [replyContent, setReplyContent] = useState('');
     const [posting, setPosting] = useState(false);
+    const [mobileView, setMobileView] = useState<MobileView>('threads');
 
     // Fetch threads when component mounts or courseId changes
     useEffect(() => {
@@ -145,6 +148,13 @@ export const DiscussionForum: React.FC<DiscussionForumProps> = ({ courseId, curr
     const handleSelectThread = (thread: DiscussionThread) => {
         setSelectedThread(thread);
         setShowNewThreadForm(false);
+        setMobileView('chat'); // Switch to chat view on mobile
+    };
+
+    const handleBackToThreads = () => {
+        setMobileView('threads');
+        setSelectedThread(null);
+        setShowNewThreadForm(false);
     };
 
     const handleCreateThread = async (e: React.FormEvent) => {
@@ -265,43 +275,65 @@ export const DiscussionForum: React.FC<DiscussionForumProps> = ({ courseId, curr
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[70vh] overflow-hidden">
-            {/* Left Column: Thread List */}
-            <div className="lg:col-span-1 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 flex flex-col border border-slate-200 dark:border-slate-700">
-                <div className="relative mb-2">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6 h-[calc(100vh-12rem)] lg:h-[calc(100vh-14rem)] min-h-[500px] overflow-hidden">
+            {/* Left Column: Thread List - Hidden on mobile when viewing chat */}
+            <div className={`${mobileView === 'chat' ? 'hidden' : 'flex'} lg:flex lg:col-span-1 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 lg:p-4 flex-col border border-slate-200 dark:border-slate-700 h-full`}>
+                <div className="relative mb-3">
                     <Icon className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></Icon>
-                    <input type="text" placeholder="Cari utas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full ps-10 pe-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-60 text-slate-800 dark:text-white"/>
+                    <input
+                        type="text"
+                        placeholder="Cari utas..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="w-full ps-10 pe-4 py-3 text-base rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-emerald-500 focus:border-transparent transition-all"
+                    />
                 </div>
-                <button onClick={() => { setShowNewThreadForm(true); setSelectedThread(null); }} className="w-full my-2 px-4 py-2 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700">
-                    Mulai Utas Baru
+                <button
+                    onClick={() => { setShowNewThreadForm(true); setSelectedThread(null); setMobileView('chat'); }}
+                    className="w-full mb-3 px-4 py-3 bg-brand-emerald-600 text-white font-semibold rounded-xl hover:bg-brand-emerald-700 active:scale-[0.98] transition-all text-base"
+                >
+                    + Mulai Utas Baru
                 </button>
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto -mx-2 px-2">
                     {loading ? (
                         <div className="flex items-center justify-center h-full text-slate-500">
-                            <p>Memuat diskusi...</p>
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-8 h-8 border-2 border-brand-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                                <p className="text-base">Memuat diskusi...</p>
+                            </div>
                         </div>
                     ) : error ? (
                         <div className="flex items-center justify-center h-full text-red-500">
-                            <p>{error}</p>
+                            <p className="text-base">{error}</p>
+                        </div>
+                    ) : filteredThreads.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-slate-400 py-8">
+                            <Icon className="w-12 h-12 mb-3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></Icon>
+                            <p className="text-base text-center">Belum ada diskusi.<br/>Mulai utas baru!</p>
                         </div>
                     ) : (
-                        <ul className="space-y-1">
+                        <ul className="space-y-2">
                             {filteredThreads.map(thread => {
-                                // Get author from first post if available, otherwise use getUser
                                 const firstPost = thread.posts[0];
-                                const author = firstPost ? 
+                                const author = firstPost ?
                                     getUser(thread.authorId, firstPost.authorName, firstPost.authorAvatar, firstPost.authorRole) :
                                     getUser(thread.authorId);
-                                const lastPost = thread.posts[thread.posts.length - 1];
                                 return (
-                                <li key={thread.id} onClick={() => handleSelectThread(thread)} className={`p-3 rounded-lg cursor-pointer transition-colors ${selectedThread?.id === thread.id ? 'bg-brand-emerald-100 dark:bg-brand-emerald-900/50' : 'hover:bg-slate-200 dark:hover:bg-slate-800'}`}>
-                                    <div className="flex items-center gap-2">
-                                        {thread.isPinned && <Icon className="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor"><path d="M12 17v5"/><path d="M15 17H9"/><path d="M18 8.16a3 3 0 0 0-3-3 3 3 0 0 0-3 3v5.16l2 2.82V20h2v-3.84l2-2.82V8.16Z"/></Icon>}
-                                        <p className="font-semibold text-slate-800 dark:text-white truncate">{thread.title}</p>
-                                    </div>
-                                    <div className="flex justify-between items-center text-xs text-slate-50 dark:text-slate-400 mt-1">
-                                        <span>Oleh {author.name}</span>
-                                        <span>{thread.posts.length} balasan</span>
+                                <li
+                                    key={thread.id}
+                                    onClick={() => handleSelectThread(thread)}
+                                    className={`p-4 rounded-xl cursor-pointer transition-all active:scale-[0.98] ${selectedThread?.id === thread.id ? 'bg-brand-emerald-100 dark:bg-brand-emerald-900/50 border-2 border-brand-emerald-500' : 'bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        {thread.isPinned && <Icon className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor"><path d="M12 17v5"/><path d="M15 17H9"/><path d="M18 8.16a3 3 0 0 0-3-3 3 3 0 0 0-3 3v5.16l2 2.82V20h2v-3.84l2-2.82V8.16Z"/></Icon>}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-slate-800 dark:text-white text-base leading-snug line-clamp-2">{thread.title}</p>
+                                            <div className="flex items-center gap-2 mt-2 text-sm text-slate-500 dark:text-slate-400">
+                                                <span className="truncate">{author.name}</span>
+                                                <span>•</span>
+                                                <span className="flex-shrink-0">{thread.posts.length} balasan</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </li>
                                 )
@@ -311,76 +343,123 @@ export const DiscussionForum: React.FC<DiscussionForumProps> = ({ courseId, curr
                 </div>
             </div>
 
-            {/* Right Column: Thread Detail / New Thread Form */}
-            <div className="lg:col-span-2 bg-white dark:bg-slate-800/50 rounded-lg p-6 flex flex-col border border-slate-200 dark:border-slate-700 overflow-hidden">
+            {/* Right Column: Thread Detail / New Thread Form - Fullscreen on mobile */}
+            <div className={`${mobileView === 'threads' ? 'hidden' : 'flex'} lg:flex lg:col-span-2 bg-white dark:bg-slate-800/50 rounded-xl flex-col border border-slate-200 dark:border-slate-700 overflow-hidden h-full`}>
                 {showNewThreadForm ? (
-                    <div className="flex-1 flex flex-col">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Buat Utas Diskusi Baru</h3>
-                        <form onSubmit={handleCreateThread} className="flex-1 flex-col">
-                            <input type="text" value={newThreadTitle} onChange={e => setNewThreadTitle(e.target.value)} placeholder="Judul Utas" className="w-full p-2 mb-4 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-60 text-slate-800 dark:text-white" required />
-                            <textarea value={newThreadContent} onChange={e => setNewThreadContent(e.target.value)} placeholder="Tulis pertanyaan atau topik diskusi Anda di sini..." className="w-full flex-1 p-2 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white" required rows={10}></textarea>
-                            <div className="mt-4 text-end">
-                                <button type="button" onClick={() => setShowNewThreadForm(false)} className="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-60 text-slate-800 dark:text-white font-semibold mr-2 hover:bg-slate-300 dark:hover:bg-slate-700">Batal</button>
-                                <button 
-                                type="submit" 
-                                className="px-4 py-2 rounded-lg bg-brand-emerald-600 text-white font-semibold hover:bg-brand-emerald-700 disabled:opacity-50"
-                                disabled={posting}
-                            >
-                                {posting ? 'Mengirim...' : 'Kirim'}
-                            </button>
+                    <div className="flex-1 flex flex-col p-4 lg:p-6">
+                        {/* Mobile back button */}
+                        <button
+                            onClick={handleBackToThreads}
+                            className="lg:hidden flex items-center gap-2 text-slate-600 dark:text-slate-300 mb-4 -ml-1 py-2"
+                        >
+                            <Icon className="w-5 h-5"><path d="m15 18-6-6 6-6"/></Icon>
+                            <span className="text-base font-medium">Kembali</span>
+                        </button>
+                        <h3 className="text-xl lg:text-2xl font-bold text-slate-800 dark:text-white mb-4">Buat Utas Diskusi Baru</h3>
+                        <form onSubmit={handleCreateThread} className="flex-1 flex flex-col">
+                            <input
+                                type="text"
+                                value={newThreadTitle}
+                                onChange={e => setNewThreadTitle(e.target.value)}
+                                placeholder="Judul Utas"
+                                className="w-full p-3 lg:p-4 mb-4 rounded-xl bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white text-base lg:text-lg focus:ring-2 focus:ring-brand-emerald-500 focus:border-transparent"
+                                required
+                            />
+                            <textarea
+                                value={newThreadContent}
+                                onChange={e => setNewThreadContent(e.target.value)}
+                                placeholder="Tulis pertanyaan atau topik diskusi Anda di sini..."
+                                className="w-full flex-1 p-3 lg:p-4 rounded-xl bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white text-base lg:text-lg focus:ring-2 focus:ring-brand-emerald-500 focus:border-transparent resize-none"
+                                required
+                                rows={8}
+                            ></textarea>
+                            <div className="mt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={handleBackToThreads}
+                                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-500 transition-all text-base"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-brand-emerald-600 text-white font-semibold hover:bg-brand-emerald-700 disabled:opacity-50 transition-all text-base"
+                                    disabled={posting}
+                                >
+                                    {posting ? 'Mengirim...' : 'Kirim'}
+                                </button>
                             </div>
                         </form>
                     </div>
                 ) : selectedThread ? (
                     <div className="flex-1 flex flex-col overflow-hidden">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-700">{selectedThread.title}</h3>
-                        <div className="flex-1 overflow-y-auto my-4">
-                            <ul className="space-y-4">
+                        {/* Header with back button */}
+                        <div className="p-4 lg:p-6 border-b border-slate-200 dark:border-slate-700">
+                            <button
+                                onClick={handleBackToThreads}
+                                className="lg:hidden flex items-center gap-2 text-slate-600 dark:text-slate-300 mb-3 -ml-1"
+                            >
+                                <Icon className="w-5 h-5"><path d="m15 18-6-6 6-6"/></Icon>
+                                <span className="text-base font-medium">Kembali</span>
+                            </button>
+                            <h3 className="text-lg lg:text-xl font-bold text-slate-800 dark:text-white leading-snug">{selectedThread.title}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{selectedThread.posts.length} balasan</p>
+                        </div>
+
+                        {/* Posts/Chat area */}
+                        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+                            <ul className="space-y-4 lg:space-y-5">
                                 {selectedThread.posts.map(post => {
                                     const author = getUser(post.authorId, post.authorName, post.authorAvatar, post.authorRole);
                                     const isDosen = author.role === 'Dosen' || author.role === 'Prodi Admin';
                                     return (
-                                        <li key={post.id} className="flex items-start gap-4">
-                                            <img src={author.avatarUrl} alt={author.name} className="w-10 h-10 rounded-full"/>
-                                            <div className={`flex-1 p-3 rounded-lg ${isDosen ? 'bg-brand-sand-50 dark:bg-brand-sand-900/50 border border-brand-sand-200 dark:border-brand-sand-800' : 'bg-slate-100 dark:bg-slate-700'}`}>
-                                                <div className="flex justify-between items-center">
-                                                    <p className="font-semibold text-slate-700 dark:text-slate-200">{author.name} {isDosen && <span className="text-xs font-normal bg-brand-sand-200 dark:bg-brand-sand-700 px-1.5 py-0.5 rounded-sm">Dosen</span>}</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400">{timeAgo(post.createdAt)}</p>
+                                        <li key={post.id} className="flex items-start gap-3 lg:gap-4">
+                                            <img src={author.avatarUrl} alt={author.name} className="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex-shrink-0 object-cover"/>
+                                            <div className={`flex-1 p-3 lg:p-4 rounded-2xl ${isDosen ? 'bg-brand-sand-50 dark:bg-brand-sand-900/50 border border-brand-sand-200 dark:border-brand-sand-800' : 'bg-slate-100 dark:bg-slate-700'}`}>
+                                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-200 text-base">{author.name}</p>
+                                                    {isDosen && <span className="text-xs font-medium bg-brand-sand-200 dark:bg-brand-sand-700 text-brand-sand-800 dark:text-brand-sand-200 px-2 py-0.5 rounded-full">Dosen</span>}
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 ml-auto">{timeAgo(post.createdAt)}</span>
                                                 </div>
-                                                <p className="mt-2 text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{post.content}</p>
+                                                <p className="text-base lg:text-[15px] text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">{post.content}</p>
                                             </div>
                                         </li>
                                     )
                                 })}
                             </ul>
                         </div>
+
+                        {/* Reply form */}
                         {!selectedThread.isClosed ? (
-                             <form onSubmit={handlePostReply} className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700">
-                            <textarea 
-                                value={replyContent} 
-                                onChange={e => setReplyContent(e.target.value)} 
-                                placeholder="Tulis balasan Anda..." 
-                                className="w-full p-2 mb-2 rounded bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" 
-                                rows={3} 
-                                required
-                                disabled={posting}
-                            ></textarea>
-                            <button 
-                                type="submit" 
-                                className="px-4 py-2 bg-brand-emerald-600 text-white font-semibold rounded-lg float-right disabled:opacity-50"
-                                disabled={posting}
-                            >
-                                {posting ? 'Mengirim...' : 'Kirim Balasan'}
-                            </button>
+                            <form onSubmit={handlePostReply} className="p-4 lg:p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30">
+                                <div className="flex gap-3">
+                                    <textarea
+                                        value={replyContent}
+                                        onChange={e => setReplyContent(e.target.value)}
+                                        placeholder="Tulis balasan Anda..."
+                                        className="flex-1 p-3 lg:p-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white text-base focus:ring-2 focus:ring-brand-emerald-500 focus:border-transparent resize-none"
+                                        rows={2}
+                                        required
+                                        disabled={posting}
+                                    ></textarea>
+                                    <button
+                                        type="submit"
+                                        className="self-end px-4 lg:px-6 py-3 bg-brand-emerald-600 text-white font-semibold rounded-xl disabled:opacity-50 hover:bg-brand-emerald-700 transition-all flex-shrink-0"
+                                        disabled={posting}
+                                    >
+                                        <span className="hidden sm:inline">{posting ? 'Mengirim...' : 'Kirim'}</span>
+                                        <Icon className="w-5 h-5 sm:hidden"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="M22 2 11 13"/></Icon>
+                                    </button>
+                                </div>
                             </form>
                         ) : (
-                            <div className="text-center text-sm text-slate-50 py-4 border-t border-slate-200 dark:border-slate-70">Diskusi ini telah ditutup.</div>
+                            <div className="p-4 lg:p-6 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700">Diskusi ini telah ditutup.</div>
                         )}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-slate-50">
-                        <Icon className="w-16 h-16 text-slate-300 dark:text-slate-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></Icon>
-                        <p className="mt-2">Pilih utas untuk dibaca atau mulai utas baru.</p>
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 p-6">
+                        <Icon className="w-16 h-16 lg:w-20 lg:h-20 text-slate-300 dark:text-slate-600 mb-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></Icon>
+                        <p className="text-base text-center">Pilih utas untuk dibaca<br/>atau mulai utas baru.</p>
                     </div>
                 )}
             </div>

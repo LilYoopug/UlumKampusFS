@@ -4,6 +4,7 @@ import { Icon } from '@/src/ui/components/Icon';
 // FIX: Imported TranslationKey and User to fix type errors and use correct props.
 import { TranslationKey, User } from '@/types';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { userAPI } from '@/services/apiService';
 
 type SettingsSection = 'profile' | 'appearance' | 'notifications' | 'account';
 
@@ -13,11 +14,28 @@ interface SettingsProps {
     currentUser: User;
 }
 
-const ToggleSwitch: React.FC<{ checked: boolean; onChange: () => void }> = ({ checked, onChange }) => {
+interface ToggleSwitchProps {
+    checked: boolean;
+    onChange: () => void;
+    label?: string;
+    id?: string;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange, label, id }) => {
+    const switchId = id || `toggle-${Math.random().toString(36).substr(2, 9)}`;
     return (
-        <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked={checked} onChange={onChange} className="sr-only peer" />
-            <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 rounded-full peer peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-emerald-300 dark:peer-focus:ring-brand-emerald-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-brand-emerald-600"></div>
+        <label htmlFor={switchId} className="relative inline-flex items-center cursor-pointer">
+            <input
+                type="checkbox"
+                id={switchId}
+                checked={checked}
+                onChange={onChange}
+                className="sr-only peer"
+                role="switch"
+                aria-checked={checked}
+                aria-label={label}
+            />
+            <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 rounded-full peer peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-emerald-300 dark:peer-focus:ring-brand-emerald-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-brand-emerald-600 pointer-events-none"></div>
         </label>
     );
 };
@@ -34,30 +52,28 @@ export const Settings: React.FC<SettingsProps> = ({ isDarkMode, toggleDarkMode, 
     const [newAvatarUrl, setNewAvatarUrl] = useState('');
     const [previewUrl, setPreviewUrl] = useState(currentUser.avatarUrl);
     
+    // State for saving
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
     // Function to save profile changes
     const saveProfile = async () => {
+        setIsSaving(true);
+        setSaveMessage(null);
         try {
-            // In a real implementation, you would call an API to save changes
-            // Example API call:
-            // await fetch('/api/user/profile', {
-            //     method: 'PUT',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${token}`, // if authentication is needed
-            //     },
-            //     body: JSON.stringify({
-            //         name: name,
-            //         bio: bio,
-            //         avatarUrl: avatarUrl
-            //     })
-            // });
-            
-            // For now, we'll just simulate the save operation
-            
-            // Update the currentUser with the new values
-            // This would typically be handled by a context or state management system
+            await userAPI.updateMe({
+                name: name,
+                bio: bio || '',
+                avatarUrl: avatarUrl
+            });
+            setSaveMessage({ type: 'success', text: t('settings_profile_saved') });
+            // Clear message after 3 seconds
+            setTimeout(() => setSaveMessage(null), 3000);
         } catch (error) {
             console.error('Error saving profile:', error);
+            setSaveMessage({ type: 'error', text: t('settings_profile_save_error') });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -103,8 +119,26 @@ export const Settings: React.FC<SettingsProps> = ({ isDarkMode, toggleDarkMode, 
                                 <label htmlFor="bio" className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">{t('settings_profile_bio')}</label>
                                 <textarea id="bio" value={bio} onChange={e => setBio(e.target.value)} rows={4} className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-60 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-emerald-500"></textarea>
                             </div>
-                            <div className="border-t border-slate-200 dark:border-slate-700 pt-6 flex justify-end">
-                                <button type="submit" className="px-5 py-2.5 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 transition-colors">{t('settings_profile_save')}</button>
+                            <div className="border-t border-slate-200 dark:border-slate-700 pt-6 flex items-center justify-between">
+                                {saveMessage && (
+                                    <p className={`text-sm ${saveMessage.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                        {saveMessage.text}
+                                    </p>
+                                )}
+                                <div className="flex-1" />
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                    className="px-5 py-2.5 bg-brand-emerald-600 text-white font-semibold rounded-lg hover:bg-brand-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {isSaving && (
+                                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    )}
+                                    {isSaving ? t('saving') : t('settings_profile_save')}
+                                </button>
                             </div>
                         </form>
                         
@@ -286,7 +320,7 @@ export const Settings: React.FC<SettingsProps> = ({ isDarkMode, toggleDarkMode, 
                         <p className="text-slate-500 dark:text-slate-400 mb-6">{t('settings_appearance_desc')}</p>
                         <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50">
                             <span className="font-medium text-slate-800 dark:text-white">{isDarkMode ? t('settings_appearance_dark') : t('settings_appearance_light')}</span>
-                            <ToggleSwitch checked={isDarkMode} onChange={toggleDarkMode} />
+                            <ToggleSwitch checked={isDarkMode} onChange={toggleDarkMode} label="Toggle dark mode" id="theme-toggle" />
                         </div>
                     </div>
                 );
@@ -300,21 +334,21 @@ export const Settings: React.FC<SettingsProps> = ({ isDarkMode, toggleDarkMode, 
                                     <p className="font-medium text-slate-800 dark:text-slate-100">{t('settings_notifications_course')}</p>
                                     <p className="text-sm text-slate-500 dark:text-slate-400">{t('settings_notifications_course_desc')}</p>
                                 </div>
-                                <ToggleSwitch checked={courseNotifications} onChange={() => setCourseNotifications(p => !p)} />
+                                <ToggleSwitch checked={courseNotifications} onChange={() => setCourseNotifications(p => !p)} label="Toggle course notifications" id="course-notifications" />
                            </li>
                            <li className="py-4 flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-slate-800 dark:text-slate-100">{t('settings_notifications_assignments')}</p>
                                     <p className="text-sm text-slate-500 dark:text-slate-400">{t('settings_notifications_assignments_desc')}</p>
                                 </div>
-                                <ToggleSwitch checked={assignmentNotifications} onChange={() => setAssignmentNotifications(p => !p)} />
+                                <ToggleSwitch checked={assignmentNotifications} onChange={() => setAssignmentNotifications(p => !p)} label="Toggle assignment notifications" id="assignment-notifications" />
                            </li>
                            <li className="py-4 flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-slate-800 dark:text-slate-100">{t('settings_notifications_forum')}</p>
                                     <p className="text-sm text-slate-500 dark:text-slate-400">{t('settings_notifications_forum_desc')}</p>
                                 </div>
-                                <ToggleSwitch checked={forumNotifications} onChange={() => setForumNotifications(p => !p)} />
+                                <ToggleSwitch checked={forumNotifications} onChange={() => setForumNotifications(p => !p)} label="Toggle forum notifications" id="forum-notifications" />
                            </li>
                         </ul>
                     </div>

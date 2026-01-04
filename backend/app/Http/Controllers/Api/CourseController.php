@@ -84,11 +84,10 @@ class CourseController extends ApiController
         // Apply ordering
         $query->orderBy('code');
 
-        // Paginate results
-        $perPage = $request->input('per_page', 15);
-        $courses = $query->paginate($perPage);
+        // Get all results
+        $courses = $query->get();
 
-        return $this->paginated(
+        return $this->success(
             CourseResource::collection($courses),
             'Courses retrieved successfully'
         );
@@ -649,12 +648,11 @@ class CourseController extends ApiController
         // Eager load relationships
         $query->with(['faculty', 'major', 'instructor']);
 
-        // Apply ordering and paginate
+        // Apply ordering and get all
         $query->orderBy('code');
-        $perPage = $request->input('per_page', 15);
-        $courses = $query->paginate($perPage);
+        $courses = $query->get();
 
-        return $this->paginated(
+        return $this->success(
             CourseResource::collection($courses),
             'Public courses retrieved successfully'
         );

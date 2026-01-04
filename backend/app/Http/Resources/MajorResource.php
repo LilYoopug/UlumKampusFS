@@ -28,6 +28,7 @@ class MajorResource extends JsonResource
     {
         return [
             'id' => $this->code,
+            'code' => $this->code,
             'name' => $this->name,
         ];
     }

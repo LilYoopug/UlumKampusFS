@@ -155,6 +155,9 @@ class PaymentItemController extends ApiController
         );
 
         // Create payment history record
+        // Use title if available, fallback to title_key
+        $paymentTitle = $paymentItem->title ?? $paymentItem->title_key ?? 'Payment';
+
         PaymentHistory::create([
             'history_id' => 'PAY-' . Date::now()->format('YmdHis') . '-' . $user->id,
             'user_id' => $user->id,
@@ -162,7 +165,7 @@ class PaymentItemController extends ApiController
             'amount' => $paymentItem->amount,
             'status' => 'completed',
             'payment_date' => Date::now(),
-            'title' => $paymentItem->title_key,
+            'title' => $paymentTitle,
         ]);
 
         return $this->success([

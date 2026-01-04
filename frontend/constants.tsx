@@ -90,10 +90,10 @@ export interface PaymentMethod {
 }
 
 // Default payment methods (will be fetched from API in production)
+// IDs must match backend's method_id values
 export const PAYMENT_METHODS: PaymentMethod[] = [
-  { id: '1', name: 'Bank Transfer BCA', type: 'bank_transfer', is_active: true },
-  { id: '2', name: 'Bank Transfer Mandiri', type: 'bank_transfer', is_active: true },
-  { id: '3', name: 'GoPay', type: 'e_wallet', is_active: true },
-  { id: '4', name: 'OVO', type: 'e_wallet', is_active: true },
-  { id: '5', name: 'Credit Card', type: 'credit_card', is_active: true },
+  { id: 'bank_transfer', name: 'Transfer Bank', type: 'bank_transfer', icon: '🏦', is_active: true },
+  { id: 'credit_card', name: 'Kartu Kredit', type: 'credit_card', icon: '💳', is_active: true },
+  { id: 'e_wallet', name: 'E-Wallet', type: 'e_wallet', icon: '📱', is_active: true },
+  { id: 'virtual_account', name: 'Virtual Account', type: 'virtual_account', icon: '📋', is_active: true },
 ];

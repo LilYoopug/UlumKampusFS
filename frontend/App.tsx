@@ -62,6 +62,26 @@ export const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
 
 type AppView = Page | 'home' | 'login' | 'register' | 'public-catalog';
 
+// Helper function to get the default page for each role
+const getDefaultPageForRole = (role: string): AppView => {
+    switch (role) {
+        case 'MABA':
+            return 'registrasi';
+        case 'Mahasiswa':
+            return 'dashboard';
+        case 'Dosen':
+            return 'dashboard';
+        case 'Prodi Admin':
+            return 'dashboard';
+        case 'Manajemen Kampus':
+            return 'dashboard';
+        case 'Super Admin':
+            return 'dashboard';
+        default:
+            return 'dashboard';
+    }
+};
+
 function App() {
     const { isDarkMode, toggleDarkMode } = useDarkMode();
 
@@ -147,13 +167,9 @@ function App() {
                 localStorage.setItem('current_user_id', response.data.user.studentId || response.data.user.id || '');
                 setCurrentUser(response.data.user);
                 await fetchData(response.data.user.role);
-                
-                // MABA users go to registration page, others go to dashboard
-                if (response.data.user.role === 'MABA') {
-                    setView('registrasi');
-                } else {
-                    setView('dashboard');
-                }
+
+                // Navigate to the appropriate default page for the user's role
+                setView(getDefaultPageForRole(response.data.user.role));
             } else {
                 throw new Error('Invalid response from server');
             }
@@ -190,13 +206,9 @@ function App() {
 
     const handleSetCurrentUser = (user: User) => {
         setCurrentUser(user);
-        
-        // MABA users go to registration page, others go to dashboard
-        if (user.role === 'MABA') {
-            setView('registrasi');
-        } else {
-            setView('dashboard');
-        }
+
+        // Navigate to the appropriate default page for the user's role
+        setView(getDefaultPageForRole(user.role));
     }
     
     // Data modification functions
@@ -307,13 +319,9 @@ function App() {
                         setCurrentUser(response.data);
                         localStorage.setItem('current_user_id', response.data.id || response.data.studentId || '');
                         await fetchData(response.data.role);
-                        
-                        // Redirect based on role after fetching user data
-                        if (response.data.role === 'MABA') {
-                            setView('registrasi');
-                        } else {
-                            setView('dashboard');
-                        }
+
+                        // Redirect to appropriate default page based on role
+                        setView(getDefaultPageForRole(response.data.role));
                     }
                 } catch (error) {
                     console.error('Failed to fetch current user:', error);
@@ -328,6 +336,16 @@ function App() {
 
     const renderLoggedInContent = () => {
         if (!currentUser) return null;
+        
+        // Show loading state while data is being fetched or during view transitions
+        if (isLoading) {
+            return (
+                <div className="flex flex-col items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600 dark:border-emerald-400 mb-4"></div>
+                    <p className="text-lg text-slate-600 dark:text-slate-300">Memuat data...</p>
+                </div>
+            );
+        }
         
         switch (view) {
             case 'dashboard':
@@ -441,7 +459,7 @@ case 'prodi-courses':
                             localStorage.setItem('current_user_id', response.data.user.id || response.data.user.studentId || '');
                             setCurrentUser(response.data.user);
                             await fetchData(response.data.user.role);
-                            setView('dashboard');
+                            setView(getDefaultPageForRole(response.data.user.role));
                         } else {
                             throw new Error('Invalid response from server');
                         }
@@ -471,8 +489,6 @@ case 'prodi-courses':
                     <Header
                         toggleDarkMode={toggleDarkMode}
                         isDarkMode={isDarkMode}
-                        currentUser={currentUser}
-                        setCurrentUser={handleSetCurrentUser}
                         navigateTo={navigateTo}
                         handleNotificationClick={(link) => navigateTo(link.page, link.params)}
                         onToggleMobileSidebar={toggleMobileSidebar}

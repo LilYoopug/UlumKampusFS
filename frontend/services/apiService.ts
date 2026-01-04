@@ -196,9 +196,15 @@ export const userAPI = {
   },
 
   updateMe: (userData: Partial<User>): Promise<AxiosResponse<User>> => {
-    return api.put('/users/me/profile', userData).then(response => ({
+    // Map frontend field names to backend field names
+    const payload: any = { ...userData };
+    if (payload.avatarUrl !== undefined) {
+      payload.avatar = payload.avatarUrl;
+      delete payload.avatarUrl;
+    }
+    return api.put('/users/me/profile', payload).then(response => ({
       ...response,
-      data: transformUser(response.data)
+      data: transformUser(response.data?.data || response.data)
     }));
   },
 

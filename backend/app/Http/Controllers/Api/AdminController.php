@@ -135,9 +135,8 @@ class AdminController extends ApiController
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginate
-        $perPage = $request->get('per_page', 20);
-        $users = $query->paginate($perPage);
+        // Get all results
+        $users = $query->get();
 
         return $this->success($users);
     }
